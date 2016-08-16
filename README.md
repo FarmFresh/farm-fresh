@@ -21,7 +21,6 @@ Organic food industry is a hot area of growth. Many home grown or farm grown org
     *   Distance
     *   Link to Seller profile 
     *   Link to a payment method i.e. Venmo 
-
 * Seller profile 
     *   List of inventory
     *   Distance to buyer

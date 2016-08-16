@@ -5,7 +5,7 @@
 Motivation
 Organic food industry is a hot area of growth. Many home grown or farm grown organic foods never make to the farmer’s market or grocery stores. We intend to bridge home grown or farm grown organic foods (fruits,vegetables) directly with consumers. The app is targeted towards folks who wish to buy/sell products directly from local farms or individuals. 
 
-**required** User Stories
+**REQUIRED** User Stories
 
 * Search page
     * Search by map 
@@ -33,7 +33,7 @@ Organic food industry is a hot area of growth. Many home grown or farm grown org
 * Login
     *   Login page for each user, register through Facebook or gmail, for an account. The same account is for both buyer and seller purpose 
 
-OPTIONAL: 
+**OPTIONAL** User Stories
 * User profile : Seller
     *   List of items sold
     *   List of inventory

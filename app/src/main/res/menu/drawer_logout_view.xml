@@ -7,7 +7,7 @@
                 <item
                     android:id="@+id/googleLogin"
                     app:actionLayout="@layout/layout_google_login"
-                    android:title="Google Login" />
+                    android:title="" />
                 <item
                     android:id="@+id/other_1"
                     android:icon="@drawable/ic_family_guy"

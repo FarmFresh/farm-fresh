@@ -6,14 +6,13 @@ import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.support.design.widget.NavigationView;
-import android.support.v4.app.Fragment;
+import android.support.v4.app.FragmentTransaction;
 import android.support.v4.widget.DrawerLayout;
 import android.support.v7.app.ActionBarDrawerToggle;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
 import android.util.Log;
 import android.view.MenuItem;
-import android.view.View;
 import android.widget.Toast;
 
 import com.farmfresh.farmfresh.R;
@@ -34,7 +33,7 @@ import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.auth.GoogleAuthProvider;
 
 public class MainActivity extends AppCompatActivity implements
-        GoogleApiClient.OnConnectionFailedListener, View.OnClickListener {
+        GoogleApiClient.OnConnectionFailedListener {
 
     private final static String TAG = MainActivity.class.getSimpleName();
     private DrawerLayout mDrawer;
@@ -44,24 +43,12 @@ public class MainActivity extends AppCompatActivity implements
     private GoogleApiClient mGoogleApiClient;
     private FirebaseAuth mAuth;
     private FirebaseAuth.AuthStateListener mAuthListener;
-
+    private FirebaseUser mCurrentUser;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
 
-        mAuth = FirebaseAuth.getInstance();
-        mAuthListener = new FirebaseAuth.AuthStateListener() {
-            @Override
-            public void onAuthStateChanged(@NonNull FirebaseAuth firebaseAuth) {
-                final FirebaseUser currentUser = firebaseAuth.getCurrentUser();
-                if(currentUser != null) {
-                    Log.d(TAG, "onAuthStateChanged:signed_in:" + currentUser.getDisplayName());
-                }else {
-                    Log.d(TAG, "onAuthStateChanged:signed_out");
-                }
-            }
-        };
 
         mToolbar = (Toolbar) findViewById(R.id.toolbar);
         mDrawer = (DrawerLayout) findViewById(R.id.layout_main);
@@ -76,6 +63,34 @@ public class MainActivity extends AppCompatActivity implements
 
         mDrawerToggle = setupDrawerToggle();
         mDrawer.addDrawerListener(mDrawerToggle);
+
+        mAuth = FirebaseAuth.getInstance();
+        mAuthListener = new FirebaseAuth.AuthStateListener() {
+            @Override
+            public void onAuthStateChanged(@NonNull FirebaseAuth firebaseAuth) {
+                mCurrentUser = firebaseAuth.getCurrentUser();
+                if(mCurrentUser != null) {
+                    Log.d(TAG, "onAuthStateChanged:signed_in:" + mCurrentUser.getDisplayName());
+                    TestFragment testFragment = (TestFragment)getSupportFragmentManager()
+                            .findFragmentByTag(TestFragment.TAG);
+                    final String text = "Signed User:" + mCurrentUser.getDisplayName();
+                    if(testFragment == null){
+                        testFragment = TestFragment.newInstance(text);
+                        getSupportFragmentManager().beginTransaction()
+                                .replace(R.id.flContent,
+                                        testFragment,
+                                        TestFragment.TAG)
+                                .commit();
+                        getSupportFragmentManager().executePendingTransactions();
+                    }
+                    testFragment = (TestFragment)getSupportFragmentManager().findFragmentByTag(TestFragment.TAG);
+                    testFragment.setMTvTest("Sign In:" + mCurrentUser.getDisplayName());
+                }else {
+                    Log.d(TAG, "onAuthStateChanged:signed_out");
+                }
+            }
+        };
+
         //setup google sign in
         setupGoogleSignIn();
 
@@ -134,15 +149,6 @@ public class MainActivity extends AppCompatActivity implements
         }
     }
 
-    @Override
-    public void onClick(View view) {
-        switch (view.getId()){
-            case R.id.googleSignInButton:
-                googleSignIn();
-                break;
-        }
-    }
-
     private void setupGoogleSignIn() {
         // Configure Google Sign In
         GoogleSignInOptions gso = new GoogleSignInOptions.Builder(GoogleSignInOptions.DEFAULT_SIGN_IN)
@@ -174,10 +180,10 @@ public class MainActivity extends AppCompatActivity implements
 
     private void selectDrawerItem(MenuItem item) {
         String title;
+        TestFragment testFragment;
         switch (item.getItemId()) {
             case R.id.googleLogin:
                 title = "Google Login";
-                googleSignIn();
                 break;
             case R.id.other_1:
                 title = "Other-1";
@@ -188,17 +194,29 @@ public class MainActivity extends AppCompatActivity implements
             default:
                 title = "invalid";
         }
-        Fragment testFragment = TestFragment.newInstance(title);
-        getSupportFragmentManager().beginTransaction()
-                .replace(R.id.flContent, testFragment)
-                .commit();
 
+        testFragment = TestFragment.newInstance(title);
+        final FragmentTransaction fragmentTransaction = getSupportFragmentManager().beginTransaction();
+        fragmentTransaction
+                .replace(R.id.flContent, testFragment, TestFragment.TAG);
+        fragmentTransaction.commit();
+        getSupportFragmentManager().executePendingTransactions();
         //Highlight the selected item
         item.setChecked(true);
         //Set the toolbar title
         setTitle(title);
         //close the navigation drawer
         mDrawer.closeDrawers();
+
+        if(item.getItemId() == R.id.googleLogin){
+            if(mCurrentUser == null){
+                googleSignIn();
+            }else{
+                testFragment = (TestFragment)getSupportFragmentManager()
+                        .findFragmentByTag(TestFragment.TAG);
+                testFragment.setMTvTest("Sign In:" + mCurrentUser.getDisplayName());
+            }
+        }
     }
 
     private ActionBarDrawerToggle setupDrawerToggle() {

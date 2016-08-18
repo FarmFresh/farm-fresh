@@ -75,6 +75,7 @@ public class MainActivity extends AppCompatActivity implements
                             .findFragmentByTag(TestFragment.TAG);
                     final String text = "Signed User:" + mCurrentUser.getDisplayName();
                     if(testFragment == null){
+                        mNvView.getMenu().findItem(R.id.googleLogin).setChecked(true);
                         testFragment = TestFragment.newInstance(text);
                         getSupportFragmentManager().beginTransaction()
                                 .replace(R.id.flContent,
@@ -84,7 +85,7 @@ public class MainActivity extends AppCompatActivity implements
                         getSupportFragmentManager().executePendingTransactions();
                     }
                     testFragment = (TestFragment)getSupportFragmentManager().findFragmentByTag(TestFragment.TAG);
-                    testFragment.setMTvTest("Sign In:" + mCurrentUser.getDisplayName());
+                    testFragment.setMTvTest("onAuthStateChanged:Current User:" + mCurrentUser.getDisplayName());
                 }else {
                     Log.d(TAG, "onAuthStateChanged:signed_out");
                 }
@@ -214,7 +215,7 @@ public class MainActivity extends AppCompatActivity implements
             }else{
                 testFragment = (TestFragment)getSupportFragmentManager()
                         .findFragmentByTag(TestFragment.TAG);
-                testFragment.setMTvTest("Sign In:" + mCurrentUser.getDisplayName());
+                testFragment.setMTvTest("selectDrawerItem:Current User:" + mCurrentUser.getDisplayName());
             }
         }
     }

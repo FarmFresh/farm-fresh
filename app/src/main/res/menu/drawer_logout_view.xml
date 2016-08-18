@@ -1,0 +1,24 @@
+<?xml version="1.0" encoding="utf-8"?>
+<menu xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto">
+    <item android:title="Login">
+        <menu>
+            <group android:checkableBehavior="single">
+                <item
+                    android:id="@+id/googleLogin"
+                    app:actionLayout="@layout/layout_google_login"
+                    android:title="Google Login" />
+                <item
+                    android:id="@+id/other_1"
+                    android:icon="@drawable/ic_family_guy"
+                    android:title="Other-1" />
+                <item
+                    android:id="@+id/other_2"
+                    android:icon="@drawable/ic_family_guy"
+                    android:title="Other-2" />
+            </group>
+        </menu>
+    </item>
+
+
+</menu>

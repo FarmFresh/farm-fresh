@@ -63,3 +63,6 @@ local.properties
 .idea
 build
 import-summary.txt
+
+# Secret API keys
+*keys.xml

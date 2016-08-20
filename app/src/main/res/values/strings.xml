@@ -3,5 +3,6 @@
     <string name="drawer_open">Open navigation drawer</string>
     <string name="drawer_close">Close navigation drawer</string>
     <string name="google_sign_in">Google</string>
-    <string name="facebook_sign_in">Other-1</string>
+    <string name="facebook_sign_in">Facebook</string>
+    <string name="facebook_app_id">1562008457441280</string>
 </resources>

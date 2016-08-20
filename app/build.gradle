@@ -31,5 +31,8 @@ dependencies {
     //design support library and app compat library dependencies
     compile 'com.android.support:appcompat-v7:24.1.1'
     compile 'com.android.support:design:24.1.1'
+
+    //facebook android sdk
+    compile 'com.facebook.android:facebook-android-sdk:[4,5)'
 }
 apply plugin: 'com.google.gms.google-services'

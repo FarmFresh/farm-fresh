@@ -15,6 +15,8 @@ import android.util.Log;
 import android.view.MenuItem;
 import android.widget.Toast;
 
+import com.facebook.FacebookSdk;
+import com.facebook.appevents.AppEventsLogger;
 import com.farmfresh.farmfresh.R;
 import com.farmfresh.farmfresh.fragments.TestFragment;
 import com.farmfresh.farmfresh.utils.Constants;
@@ -95,7 +97,13 @@ public class MainActivity extends AppCompatActivity implements
         //setup google sign in
         setupGoogleSignIn();
 
+        //facebook SDK initialization
+        FacebookSdk.sdkInitialize(getApplicationContext());
+        //Facebook app event registration
+        AppEventsLogger.activateApp(this.getApplication());
+
     }
+
 
     @Override
     protected void onStart() {

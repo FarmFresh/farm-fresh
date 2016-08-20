@@ -1,3 +1,7 @@
 <resources>
     <string name="app_name">FarmFresh</string>
+    <string name="drawer_open">Open navigation drawer</string>
+    <string name="drawer_close">Close navigation drawer</string>
+    <string name="google_sign_in">Google</string>
+    <string name="facebook_sign_in">Other-1</string>
 </resources>

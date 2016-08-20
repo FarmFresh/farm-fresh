@@ -1,6 +1,19 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
+    <!--
     <color name="colorPrimary">#3F51B5</color>
     <color name="colorPrimaryDark">#303F9F</color>
     <color name="colorAccent">#FF4081</color>
+    -->
+
+    <!-- Colors are chosen based on http://www.materialpalette.com/pink/light-green -->
+    <color name="colorPrimary">#E91E63</color>
+    <color name="colorLightPrimary">#F8BBD0</color>
+    <color name="colorPrimaryDark">#C2185B</color>
+    <color name="colorTextIcons">#F8BBD0</color>
+    <color name="colorDivider">#BDBDBD</color>
+    <color name="colorAccent">#8BC34A</color>
+    <color name="colorPrimaryText">#212121</color>
+    <color name="colorSecondaryText">#757575</color>
+
 </resources>

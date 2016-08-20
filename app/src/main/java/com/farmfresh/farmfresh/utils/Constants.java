@@ -5,4 +5,5 @@ package com.farmfresh.farmfresh.utils;
  */
 public class Constants {
     public static final int RC_GOOGLE_SIGN_IN = 10001;
+    public static final int RC_FACEBOOK_SIGN_IN = 10002;
 }

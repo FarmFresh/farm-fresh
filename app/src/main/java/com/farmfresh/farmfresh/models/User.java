@@ -12,6 +12,7 @@ public class User {
     private ArrayList<Long> inventory;
     private ArrayList<Long> productBought;
     private ArrayList<Long> productSold;
+    private String email;
 
     public void setId(Long id) {
         this.id = id;
@@ -37,6 +38,10 @@ public class User {
         this.productSold = productSold;
     }
 
+    public void setEmail(String email) {
+        this.email = email;
+    }
+
     public Long getId() {
         return id;
     }
@@ -59,6 +64,10 @@ public class User {
 
     public ArrayList<Long> getProductSold() {
         return productSold;
+    }
+
+    public String getEmail() {
+        return email;
     }
 }
 

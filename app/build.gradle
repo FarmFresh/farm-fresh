@@ -1,4 +1,5 @@
 apply plugin: 'com.android.application'
+apply plugin: 'com.github.dcendents.android-maven'
 
 android {
     compileSdkVersion 24
@@ -27,9 +28,23 @@ dependencies {
     //firebase auth dependencies
     compile 'com.google.firebase:firebase-auth:9.4.0'
     compile 'com.google.android.gms:play-services-auth:9.4.0'
+    compile 'com.google.firebase:firebase-core:9.4.0'
+    compile 'com.google.firebase:firebase-database:9.4.0'
 
     //design support library and app compat library dependencies
     compile 'com.android.support:appcompat-v7:24.1.1'
     compile 'com.android.support:design:24.1.1'
+    compile 'com.android.support:recyclerview-v7:23.2.1'
+    compile 'com.synnapps:carouselview:0.0.9'
 }
+
+install {
+    repositories.mavenInstaller {
+        pom.project {
+            group "com.codepath.libraries"
+            version "1.0.0"
+        }
+    }
+}
+
 apply plugin: 'com.google.gms.google-services'

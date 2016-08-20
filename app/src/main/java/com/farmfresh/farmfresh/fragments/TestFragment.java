@@ -13,7 +13,7 @@ import com.farmfresh.farmfresh.R;
 /**
  * Created by pbabu on 8/18/16.
  */
-public class TestFragment  extends Fragment {
+public class TestFragment extends Fragment {
 
     private String title;
     private TextView mTvTest;

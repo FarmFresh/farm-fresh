@@ -1,8 +1,5 @@
 package com.farmfresh.farmfresh.activities;
 
-import android.content.pm.PackageInfo;
-import android.content.pm.PackageManager;
-import android.content.pm.Signature;
 import android.content.res.Configuration;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
@@ -13,7 +10,6 @@ import android.support.v4.widget.DrawerLayout;
 import android.support.v7.app.ActionBarDrawerToggle;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
-import android.util.Base64;
 import android.util.Log;
 import android.view.MenuItem;
 
@@ -23,9 +19,6 @@ import com.farmfresh.farmfresh.R;
 import com.farmfresh.farmfresh.fragments.LoginFragment;
 import com.farmfresh.farmfresh.fragments.TestFragment;
 import com.google.firebase.auth.FirebaseUser;
-
-import java.security.MessageDigest;
-import java.security.NoSuchAlgorithmException;
 
 public class MainActivity extends AppCompatActivity implements LoginFragment.FireBaseLoginListener {
 
@@ -40,7 +33,6 @@ public class MainActivity extends AppCompatActivity implements LoginFragment.Fir
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
-
 
         mToolbar = (Toolbar) findViewById(R.id.toolbar);
         mDrawer = (DrawerLayout) findViewById(R.id.layout_main);
@@ -60,21 +52,6 @@ public class MainActivity extends AppCompatActivity implements LoginFragment.Fir
         FacebookSdk.sdkInitialize(getApplicationContext());
         //Facebook app event registration
         AppEventsLogger.activateApp(getApplication());
-
-        try {
-            PackageInfo info = getPackageManager().getPackageInfo(
-                    "com.farmfresh.farmfresh",
-                    PackageManager.GET_SIGNATURES);
-            for (Signature signature : info.signatures) {
-                MessageDigest md = MessageDigest.getInstance("SHA");
-                md.update(signature.toByteArray());
-                Log.d("KeyHash:", Base64.encodeToString(md.digest(), Base64.DEFAULT));
-            }
-        } catch (PackageManager.NameNotFoundException e) {
-
-        } catch (NoSuchAlgorithmException e) {
-
-        }
     }
 
     @Override

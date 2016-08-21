@@ -1,8 +1,10 @@
 package com.farmfresh.farmfresh.activities;
 
+import android.content.pm.PackageInfo;
+import android.content.pm.PackageManager;
+import android.content.pm.Signature;
 import android.content.res.Configuration;
 import android.os.Bundle;
-import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.support.design.widget.NavigationView;
 import android.support.v4.app.Fragment;
@@ -11,6 +13,8 @@ import android.support.v4.widget.DrawerLayout;
 import android.support.v7.app.ActionBarDrawerToggle;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
+import android.util.Base64;
+import android.util.Log;
 import android.view.MenuItem;
 
 import com.facebook.FacebookSdk;
@@ -18,17 +22,19 @@ import com.facebook.appevents.AppEventsLogger;
 import com.farmfresh.farmfresh.R;
 import com.farmfresh.farmfresh.fragments.LoginFragment;
 import com.farmfresh.farmfresh.fragments.TestFragment;
-import com.google.android.gms.common.ConnectionResult;
-import com.google.android.gms.common.api.GoogleApiClient;
+import com.google.firebase.auth.FirebaseUser;
 
-public class MainActivity extends AppCompatActivity implements
-        GoogleApiClient.OnConnectionFailedListener {
+import java.security.MessageDigest;
+import java.security.NoSuchAlgorithmException;
+
+public class MainActivity extends AppCompatActivity implements LoginFragment.FireBaseLoginListener {
 
     private final static String TAG = MainActivity.class.getSimpleName();
     private DrawerLayout mDrawer;
     private NavigationView mNvView;
     private ActionBarDrawerToggle mDrawerToggle;
     private Toolbar mToolbar;
+    private FirebaseUser mCurrentUser;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -53,8 +59,22 @@ public class MainActivity extends AppCompatActivity implements
         //facebook SDK initialization
         FacebookSdk.sdkInitialize(getApplicationContext());
         //Facebook app event registration
-        AppEventsLogger.activateApp(this.getApplication());
+        AppEventsLogger.activateApp(getApplication());
 
+        try {
+            PackageInfo info = getPackageManager().getPackageInfo(
+                    "com.farmfresh.farmfresh",
+                    PackageManager.GET_SIGNATURES);
+            for (Signature signature : info.signatures) {
+                MessageDigest md = MessageDigest.getInstance("SHA");
+                md.update(signature.toByteArray());
+                Log.d("KeyHash:", Base64.encodeToString(md.digest(), Base64.DEFAULT));
+            }
+        } catch (PackageManager.NameNotFoundException e) {
+
+        } catch (NoSuchAlgorithmException e) {
+
+        }
     }
 
     @Override
@@ -79,10 +99,27 @@ public class MainActivity extends AppCompatActivity implements
     }
 
     @Override
-    public void onConnectionFailed(@NonNull ConnectionResult connectionResult) {
+    public void onLoginFailure() {
 
     }
 
+    @Override
+    public void onLoginSuccess(FirebaseUser user) {
+        mCurrentUser = user;
+        Log.d(TAG, String.format("onLoginSuccess:fire base login successful:[id:%s, display name:%s]",
+                mCurrentUser.getUid(),
+                mCurrentUser.getDisplayName()));
+        //TODO: update navigation header
+        //TODO: update navigation menu items
+        //TODO: go to state before login
+    }
+
+    @Override
+    public void onLogout() {
+        //TODO: update navigation header
+        //TODO: update navigation menu items
+        //TODO: go to landing page
+    }
 
     private void setupDrawerContent() {
         mNvView.setNavigationItemSelectedListener(new NavigationView.OnNavigationItemSelectedListener() {

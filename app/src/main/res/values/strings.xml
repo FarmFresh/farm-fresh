@@ -3,5 +3,14 @@
     <string name="drawer_open">Open navigation drawer</string>
     <string name="drawer_close">Close navigation drawer</string>
     <string name="google_sign_in">Google</string>
-    <string name="facebook_sign_in">Other-1</string>
+    <string name="facebook_sign_in">Facebook</string>
+    <string name="menu_sign_in">Sign In</string>
+    <string name="facebook_app_id">1562008457441280</string>
+    <string name="fb_login_protocol_scheme">fb1562008457441280</string>
+    <string name="menu_home">Home</string>
+    <string name="menu_profile">Profile</string>
+    <string name="menu_selling">Selling</string>
+    <string name="menu_sign_out">Logout</string>
+    <string name="user_profile_image">Profile Image</string>
+    <string name="header_background">header background</string>
 </resources>

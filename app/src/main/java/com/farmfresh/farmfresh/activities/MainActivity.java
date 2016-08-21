@@ -1,11 +1,11 @@
 package com.farmfresh.farmfresh.activities;
 
-import android.content.Intent;
 import android.content.res.Configuration;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.support.design.widget.NavigationView;
+import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentTransaction;
 import android.support.v4.widget.DrawerLayout;
 import android.support.v7.app.ActionBarDrawerToggle;
@@ -13,48 +13,54 @@ import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
 import android.util.Log;
 import android.view.MenuItem;
-import android.widget.Toast;
+import android.view.View;
+import android.widget.TextView;
 
+import com.facebook.FacebookSdk;
+import com.facebook.appevents.AppEventsLogger;
 import com.farmfresh.farmfresh.R;
-import com.farmfresh.farmfresh.fragments.TestFragment;
-import com.farmfresh.farmfresh.utils.Constants;
-import com.google.android.gms.auth.api.Auth;
-import com.google.android.gms.auth.api.signin.GoogleSignInAccount;
-import com.google.android.gms.auth.api.signin.GoogleSignInOptions;
-import com.google.android.gms.auth.api.signin.GoogleSignInResult;
+import com.farmfresh.farmfresh.auth.FireBaseAuthentication;
+import com.farmfresh.farmfresh.auth.GoogleAuthentication;
+import com.farmfresh.farmfresh.fragments.HomeFragment;
+import com.farmfresh.farmfresh.fragments.LoginFragment;
+import com.farmfresh.farmfresh.fragments.ProfileFragment;
+import com.farmfresh.farmfresh.fragments.SellingFragment;
 import com.google.android.gms.common.ConnectionResult;
 import com.google.android.gms.common.api.GoogleApiClient;
-import com.google.android.gms.tasks.OnCompleteListener;
-import com.google.android.gms.tasks.Task;
-import com.google.firebase.auth.AuthCredential;
-import com.google.firebase.auth.AuthResult;
-import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
-import com.google.firebase.auth.GoogleAuthProvider;
+import com.squareup.picasso.Picasso;
 
-public class MainActivity extends AppCompatActivity implements
-        GoogleApiClient.OnConnectionFailedListener {
+public class MainActivity extends AppCompatActivity implements FireBaseAuthentication.LoginListener,
+        GoogleApiClient.OnConnectionFailedListener{
 
     private final static String TAG = MainActivity.class.getSimpleName();
     private DrawerLayout mDrawer;
     private NavigationView mNvView;
     private ActionBarDrawerToggle mDrawerToggle;
     private Toolbar mToolbar;
-    private GoogleApiClient mGoogleApiClient;
-    private FirebaseAuth mAuth;
-    private FirebaseAuth.AuthStateListener mAuthListener;
     private FirebaseUser mCurrentUser;
+    private FireBaseAuthentication mFireBaseAuthentication;
+    private GoogleAuthentication mGoogleAuthentication;
+    private de.hdodenhof.circleimageview.CircleImageView mProfileImage;
+    private TextView mUserDisplayName;
+    private TextView mUserEmail;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
 
-
         mToolbar = (Toolbar) findViewById(R.id.toolbar);
         mDrawer = (DrawerLayout) findViewById(R.id.layout_main);
         mNvView = (NavigationView) findViewById(R.id.nvView);
         mNvView.setItemIconTintList(null);
+        updateNavigationMenuItems();
 
+        View headerLayout = mNvView.getHeaderView(0);
+        mProfileImage = (de.hdodenhof.circleimageview.CircleImageView)headerLayout
+                        .findViewById(R.id.ivProfileImage);
+        mUserDisplayName = (TextView)headerLayout.findViewById(R.id.tvDisplayName);
+        mUserEmail = (TextView)headerLayout.findViewById(R.id.tvEmail);
         //setup toolbar as action bar
         setSupportActionBar(mToolbar);
 
@@ -64,51 +70,16 @@ public class MainActivity extends AppCompatActivity implements
         mDrawerToggle = setupDrawerToggle();
         mDrawer.addDrawerListener(mDrawerToggle);
 
-        mAuth = FirebaseAuth.getInstance();
-        mAuthListener = new FirebaseAuth.AuthStateListener() {
-            @Override
-            public void onAuthStateChanged(@NonNull FirebaseAuth firebaseAuth) {
-                mCurrentUser = firebaseAuth.getCurrentUser();
-                if(mCurrentUser != null) {
-                    Log.d(TAG, "onAuthStateChanged:signed_in:" + mCurrentUser.getDisplayName());
-                    TestFragment testFragment = (TestFragment)getSupportFragmentManager()
-                            .findFragmentByTag(TestFragment.TAG);
-                    final String text = "Signed User:" + mCurrentUser.getDisplayName();
-                    if(testFragment == null){
-                        mNvView.getMenu().findItem(R.id.googleLogin).setChecked(true);
-                        testFragment = TestFragment.newInstance(text);
-                        getSupportFragmentManager().beginTransaction()
-                                .replace(R.id.flContent,
-                                        testFragment,
-                                        TestFragment.TAG)
-                                .commit();
-                        getSupportFragmentManager().executePendingTransactions();
-                    }
-                    testFragment = (TestFragment)getSupportFragmentManager().findFragmentByTag(TestFragment.TAG);
-                    testFragment.setMTvTest("onAuthStateChanged:Current User:" + mCurrentUser.getDisplayName());
-                }else {
-                    Log.d(TAG, "onAuthStateChanged:signed_out");
-                }
-            }
-        };
+        //facebook SDK initialization
+        FacebookSdk.sdkInitialize(getApplicationContext());
+        //Facebook app event registration
+        AppEventsLogger.activateApp(getApplication());
 
-        //setup google sign in
-        setupGoogleSignIn();
+        //load the home fragment as default
+        selectDrawerItem(mNvView.getMenu().findItem(R.id.menuHome));
 
-    }
-
-    @Override
-    protected void onStart() {
-        super.onStart();
-        mAuth.addAuthStateListener(mAuthListener);
-    }
-
-    @Override
-    protected void onStop() {
-        super.onStop();
-        if(mAuthListener != null){
-            mAuth.removeAuthStateListener(mAuthListener);
-        }
+        mFireBaseAuthentication = new FireBaseAuthentication(this);
+        mGoogleAuthentication = new GoogleAuthentication(mFireBaseAuthentication, this, this);
     }
 
     @Override
@@ -133,41 +104,30 @@ public class MainActivity extends AppCompatActivity implements
     }
 
     @Override
-    public void onConnectionFailed(@NonNull ConnectionResult connectionResult) {
-
+    public void onLoginSuccess(FirebaseUser user) {
+        mCurrentUser = user;
+        Log.d(TAG, String.format("onLoginSuccess:fire base login successful:[id:%s, display name:%s]",
+                mCurrentUser.getUid(),
+                mCurrentUser.getDisplayName()));
+        updateNavigationHeader();
+        updateNavigationMenuItems();
+        //goto home page after successful login
+        selectDrawerItem(mNvView.getMenu().findItem(R.id.menuHome));
+        //TODO: go to state before login
     }
 
     @Override
-    protected void onActivityResult(int requestCode, int resultCode, Intent data) {
-        super.onActivityResult(requestCode, resultCode, data);
-        if(requestCode == Constants.RC_GOOGLE_SIGN_IN) {
-            GoogleSignInResult googleSignInResult = Auth.GoogleSignInApi
-                    .getSignInResultFromIntent(data);
-            if(googleSignInResult.isSuccess()) {
-                final GoogleSignInAccount googleSignInAccount = googleSignInResult.getSignInAccount();
-                firebaseAuthWithGoogle(googleSignInAccount);
-            }
-        }
+    public void onConnectionFailed(@NonNull ConnectionResult connectionResult) {
+        Log.d(TAG, "google api client connection failed.....");
     }
 
-    private void setupGoogleSignIn() {
-        // Configure Google Sign In
-        GoogleSignInOptions gso = new GoogleSignInOptions.Builder(GoogleSignInOptions.DEFAULT_SIGN_IN)
-                .requestIdToken(getString(R.string.default_web_client_id))
-                .requestEmail()
-                .build();
-
-        mGoogleApiClient = new GoogleApiClient.Builder(this)
-                .enableAutoManage(this, this)
-                .addApi(Auth.GOOGLE_SIGN_IN_API, gso)
-                .build();
+    public void logout() {
+        mFireBaseAuthentication.signOut();
+        mCurrentUser = null;
+        updateNavigationHeader();
+        updateNavigationMenuItems();
+        selectDrawerItem(mNvView.getMenu().findItem(R.id.menuHome));
     }
-
-    private void googleSignIn() {
-        Intent signInIntent = Auth.GoogleSignInApi.getSignInIntent(mGoogleApiClient);
-        startActivityForResult(signInIntent, Constants.RC_GOOGLE_SIGN_IN);
-    }
-
 
     private void setupDrawerContent() {
         mNvView.setNavigationItemSelectedListener(new NavigationView.OnNavigationItemSelectedListener() {
@@ -180,26 +140,38 @@ public class MainActivity extends AppCompatActivity implements
     }
 
     private void selectDrawerItem(MenuItem item) {
-        String title;
-        TestFragment testFragment;
+        String title = null;
+        Fragment fragment = null;
+        String tag = null;
         switch (item.getItemId()) {
-            case R.id.googleLogin:
-                title = "Google Login";
+            case R.id.menuLogin:
+                title = "Login into your account";
+                fragment = LoginFragment.newInstance(mGoogleAuthentication);
+                tag = LoginFragment.TAG;
                 break;
-            case R.id.other_1:
-                title = "Other-1";
+            case R.id.menuHome:
+                title = "Home";
+                fragment = new HomeFragment();
+                tag = HomeFragment.class.getSimpleName();
                 break;
-            case R.id.other_2:
-                title = "Other-2";
+            case R.id.menuProfile:
+                title = "Profile";
+                fragment = new ProfileFragment();
+                tag = ProfileFragment.class.getSimpleName();
                 break;
-            default:
-                title = "invalid";
+            case R.id.menuSelling:
+                title = "Selling";
+                fragment = new SellingFragment();
+                tag = SellingFragment.class.getSimpleName();
+                break;
+            case R.id.menuLogout:
+                logout();
+                return;
         }
 
-        testFragment = TestFragment.newInstance(title);
         final FragmentTransaction fragmentTransaction = getSupportFragmentManager().beginTransaction();
         fragmentTransaction
-                .replace(R.id.flContent, testFragment, TestFragment.TAG);
+                .replace(R.id.flContent, fragment,tag);
         fragmentTransaction.commit();
         getSupportFragmentManager().executePendingTransactions();
         //Highlight the selected item
@@ -208,41 +180,38 @@ public class MainActivity extends AppCompatActivity implements
         setTitle(title);
         //close the navigation drawer
         mDrawer.closeDrawers();
-
-        if(item.getItemId() == R.id.googleLogin){
-            if(mCurrentUser == null){
-                googleSignIn();
-            }else{
-                testFragment = (TestFragment)getSupportFragmentManager()
-                        .findFragmentByTag(TestFragment.TAG);
-                testFragment.setMTvTest("selectDrawerItem:Current User:" + mCurrentUser.getDisplayName());
-            }
-        }
     }
 
     private ActionBarDrawerToggle setupDrawerToggle() {
         return new ActionBarDrawerToggle(this, mDrawer, mToolbar, R.string.drawer_open, R.string.drawer_close);
     }
 
-    private void firebaseAuthWithGoogle(GoogleSignInAccount acct){
-        Log.d(TAG, "firebaseAuthWithGoogle:" + acct.getId());
-        AuthCredential credential = GoogleAuthProvider.getCredential(acct.getIdToken(), null);
-        mAuth.signInWithCredential(credential).addOnCompleteListener(this, new OnCompleteListener<AuthResult>() {
-            @Override
-            public void onComplete(@NonNull Task<AuthResult> task) {
-                if(!task.isSuccessful()){
-                    Log.w(TAG, "signInWithCredential", task.getException());
-                    //if login fails with firebase, show a toast message
-                    Toast.makeText(MainActivity.this,
-                            "Firebase authentication failed",
-                            Toast.LENGTH_SHORT).show();
-                }
-            }
-        });
+    private void updateNavigationMenuItems() {
+        if(mCurrentUser != null) {
+            mNvView.getMenu().clear();
+            mNvView.inflateMenu(R.menu.drawer_logged_in_view);
+        }else {
+            mNvView.getMenu().clear();
+            mNvView.inflateMenu(R.menu.drawer_logout_view);
+        }
     }
 
-    private void firebaseLogout() {
-        mAuth.signOut();
-    }
+    private void updateNavigationHeader() {
+        if(mCurrentUser != null) {
+            this.mProfileImage.setVisibility(View.VISIBLE);
+            Picasso.with(this)
+                    .load(mCurrentUser.getPhotoUrl())
+                    .placeholder(R.drawable.user_profile_placeholder)
+                    .into(mProfileImage);
+            this.mUserDisplayName.setVisibility(View.VISIBLE);
+            this.mUserEmail.setVisibility(View.VISIBLE);
+            this.mUserDisplayName.setText(mCurrentUser.getDisplayName());
+            this.mUserEmail.setText(mCurrentUser.getEmail());
 
+        }else {
+            this.mUserDisplayName.setVisibility(View.INVISIBLE);
+            this.mUserEmail.setVisibility(View.INVISIBLE);
+            this.mProfileImage.setVisibility(View.INVISIBLE);
+        }
+    }
 }

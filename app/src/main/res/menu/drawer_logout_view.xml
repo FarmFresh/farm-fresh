@@ -1,19 +1,17 @@
 <?xml version="1.0" encoding="utf-8"?>
 <menu xmlns:android="http://schemas.android.com/apk/res/android">
-    <item android:title="Login">
-        <menu>
-            <group android:checkableBehavior="single">
-                <item
-                    android:id="@+id/menuLogin"
-                    android:icon="@drawable/ic_family_guy"
-                    android:title="@string/sign_in" />
-                <item
-                    android:id="@+id/other"
-                    android:icon="@drawable/ic_family_guy"
-                    android:title="Other-2" />
-            </group>
-        </menu>
-    </item>
-
-
+    <group android:checkableBehavior="single">
+        <item
+            android:id="@+id/menuHome"
+            android:icon="@drawable/ic_south_park"
+            android:title="@string/menu_home" />
+        <item
+            android:id="@+id/menuSelling"
+            android:icon="@drawable/ic_futurama"
+            android:title="@string/menu_selling" />
+        <item
+            android:id="@+id/menuLogin"
+            android:icon="@drawable/ic_simpsons"
+            android:title="@string/menu_sign_in" />
+    </group>
 </menu>

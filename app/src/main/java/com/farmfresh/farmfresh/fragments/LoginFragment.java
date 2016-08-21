@@ -33,9 +33,18 @@ public class LoginFragment extends Fragment implements GoogleApiClient.OnConnect
     private GoogleAuthentication mGoogleAuthentication;
     //private FacebookAuthentication mFacebookAuthentication;
     private FirebaseUser mCurrentUser;
-    private FireBaseAuthentication mFireBaseAuthentication = new FireBaseAuthentication(this);
+    private FireBaseAuthentication mFireBaseAuthentication;
     //private LoginButton mLoginButton;
-    private FireBaseLoginListener mFireBaseLoginListener;
+    private FireBaseAuthentication.LoginListener mFireBaseLoginListener;
+
+
+    public static LoginFragment newInstance(FireBaseAuthentication fireBaseAuthentication) {
+        Bundle args = new Bundle();
+        LoginFragment fragment = new LoginFragment();
+        fragment.mFireBaseAuthentication = fireBaseAuthentication;
+        fragment.setArguments(args);
+        return fragment;
+    }
 
     @Override
     public void onCreate(@Nullable Bundle savedInstanceState) {
@@ -75,11 +84,11 @@ public class LoginFragment extends Fragment implements GoogleApiClient.OnConnect
     @Override
     public void onAttach(Context context) {
         super.onAttach(context);
-        if (context instanceof FireBaseLoginListener) {
-            mFireBaseLoginListener = (FireBaseLoginListener) context;
+        if (context instanceof FireBaseAuthentication.LoginListener) {
+            mFireBaseLoginListener = (FireBaseAuthentication.LoginListener) context;
         } else {
             throw new ClassCastException(context.toString()
-                    + " must implement LoginFragment.FireBaseLoginListener");
+                    + " must implement FireBaseAuthentication.LoginListener");
         }
     }
 
@@ -105,12 +114,6 @@ public class LoginFragment extends Fragment implements GoogleApiClient.OnConnect
         super.onPause();
         mGoogleAuthentication.getmGoogleApiClient().stopAutoManage(getActivity());
         mGoogleAuthentication.getmGoogleApiClient().disconnect();
-    }
-
-    @Override
-    public void onDestroy() {
-        super.onDestroy();
-        mFireBaseAuthentication.signOut();
     }
 
     @Override
@@ -143,7 +146,6 @@ public class LoginFragment extends Fragment implements GoogleApiClient.OnConnect
             //Login into facebook to get access token
             LoginManager.getInstance().logInWithReadPermissions(this, Arrays.asList("public_profile"));
         }
-
     }
 
     public interface FireBaseLoginListener {

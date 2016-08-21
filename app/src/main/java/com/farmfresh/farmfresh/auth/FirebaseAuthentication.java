@@ -73,7 +73,6 @@ public class FireBaseAuthentication {
     }
 
     private void signIntoFireBase(AuthCredential credential, final Activity activity) {
-        signOut(); //for testing
         mAuth.signInWithCredential(credential).addOnCompleteListener(activity, new OnCompleteListener<AuthResult>() {
             @Override
             public void onComplete(@NonNull Task<AuthResult> task) {

@@ -3,6 +3,7 @@ package com.farmfresh.farmfresh.auth;
 import android.app.Activity;
 import android.support.annotation.NonNull;
 import android.util.Log;
+import android.widget.Toast;
 
 import com.facebook.AccessToken;
 import com.google.android.gms.auth.api.signin.GoogleSignInAccount;
@@ -51,11 +52,15 @@ public class FireBaseAuthentication {
     }
 
     public void addAuthListener(){
-        mAuth.addAuthStateListener(this.mAuthListener);
+        if(this.mAuthListener != null){
+            mAuth.addAuthStateListener(this.mAuthListener);
+        }
     }
 
     public void removeAuthListener() {
-        mAuth.removeAuthStateListener(this.mAuthListener);
+        if(this.mAuthListener != null) {
+            mAuth.removeAuthStateListener(this.mAuthListener);
+        }
     }
 
     public void fireBaseAuthWithGoogle(GoogleSignInAccount acct, final Activity activity){
@@ -78,9 +83,9 @@ public class FireBaseAuthentication {
                     Log.w(TAG, "signInWithCredential", task.getException());
                     //if login fails with firebase, show a toast message
                     //TODO: handle firebase login failure
-                    /*Toast.makeText(MainActivity.this,
+                    Toast.makeText(activity,
                             "Firebase authentication failed",
-                            Toast.LENGTH_SHORT).show();*/
+                            Toast.LENGTH_SHORT).show();
                 }
             }
         });

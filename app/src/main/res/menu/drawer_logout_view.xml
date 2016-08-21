@@ -4,15 +4,11 @@
         <menu>
             <group android:checkableBehavior="single">
                 <item
-                    android:id="@+id/googleLogin"
-                    android:icon="@drawable/common_google_signin_btn_icon_light_normal"
-                    android:title="@string/google_sign_in" />
-                <item
-                    android:id="@+id/other_1"
+                    android:id="@+id/menuLogin"
                     android:icon="@drawable/ic_family_guy"
-                    android:title="@string/facebook_sign_in" />
+                    android:title="@string/sign_in" />
                 <item
-                    android:id="@+id/other_2"
+                    android:id="@+id/other"
                     android:icon="@drawable/ic_family_guy"
                     android:title="Other-2" />
             </group>

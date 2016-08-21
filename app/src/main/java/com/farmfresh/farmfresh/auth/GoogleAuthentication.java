@@ -56,4 +56,8 @@ public class GoogleAuthentication extends AppAuthentication{
                 .addApi(Auth.GOOGLE_SIGN_IN_API, gso)
                 .build();
     }
+
+    public GoogleApiClient getmGoogleApiClient() {
+        return mGoogleApiClient;
+    }
 }

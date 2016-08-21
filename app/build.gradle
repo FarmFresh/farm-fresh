@@ -38,6 +38,12 @@ dependencies {
     compile 'com.synnapps:carouselview:0.0.9'
     //facebook android sdk
     compile 'com.facebook.android:facebook-android-sdk:[4,5)'
+    //circular image view
+    compile 'de.hdodenhof:circleimageview:2.1.0'
+    // Picasso for remote image loading
+    compile 'com.squareup.picasso:picasso:2.5.2'
+    //custom google progress bar
+    compile 'com.jpardogo.googleprogressbar:library:1.2.0'
 }
 
 install {

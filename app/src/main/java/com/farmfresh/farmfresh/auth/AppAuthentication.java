@@ -18,4 +18,8 @@ public abstract class AppAuthentication {
     public abstract void onActivityResult(int requestCode, int resultCode, Intent data);
 
     public abstract Intent getLoginIntent();
+
+    public FireBaseAuthentication getMFireBaseAuthentication() {
+        return mFireBaseAuthentication;
+    }
 }

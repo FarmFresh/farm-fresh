@@ -12,8 +12,9 @@
     <color name="colorPrimaryDark">#C2185B</color>
     <color name="colorTextIcons">#F8BBD0</color>
     <color name="colorDivider">#BDBDBD</color>
+    <color name="headerBackgroundColor">#293542</color>
     <color name="colorAccent">#8BC34A</color>
     <color name="colorPrimaryText">#212121</color>
     <color name="colorSecondaryText">#757575</color>
-
+    <color name="silver">#C0C0C0</color>
 </resources>

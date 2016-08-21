@@ -2,6 +2,7 @@ package com.farmfresh.farmfresh.activities;
 
 import android.content.res.Configuration;
 import android.os.Bundle;
+import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.support.design.widget.NavigationView;
 import android.support.v4.app.Fragment;
@@ -12,18 +13,25 @@ import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
 import android.util.Log;
 import android.view.MenuItem;
+import android.view.View;
+import android.widget.TextView;
 
 import com.facebook.FacebookSdk;
 import com.facebook.appevents.AppEventsLogger;
 import com.farmfresh.farmfresh.R;
 import com.farmfresh.farmfresh.auth.FireBaseAuthentication;
+import com.farmfresh.farmfresh.auth.GoogleAuthentication;
 import com.farmfresh.farmfresh.fragments.HomeFragment;
 import com.farmfresh.farmfresh.fragments.LoginFragment;
 import com.farmfresh.farmfresh.fragments.ProfileFragment;
 import com.farmfresh.farmfresh.fragments.SellingFragment;
+import com.google.android.gms.common.ConnectionResult;
+import com.google.android.gms.common.api.GoogleApiClient;
 import com.google.firebase.auth.FirebaseUser;
+import com.squareup.picasso.Picasso;
 
-public class MainActivity extends AppCompatActivity implements FireBaseAuthentication.LoginListener{
+public class MainActivity extends AppCompatActivity implements FireBaseAuthentication.LoginListener,
+        GoogleApiClient.OnConnectionFailedListener{
 
     private final static String TAG = MainActivity.class.getSimpleName();
     private DrawerLayout mDrawer;
@@ -31,7 +39,12 @@ public class MainActivity extends AppCompatActivity implements FireBaseAuthentic
     private ActionBarDrawerToggle mDrawerToggle;
     private Toolbar mToolbar;
     private FirebaseUser mCurrentUser;
-    private FireBaseAuthentication mFireBaseAuthentication = new FireBaseAuthentication(this);
+    private FireBaseAuthentication mFireBaseAuthentication;
+    private GoogleAuthentication mGoogleAuthentication;
+    private de.hdodenhof.circleimageview.CircleImageView mProfileImage;
+    private TextView mUserDisplayName;
+    private TextView mUserEmail;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -43,6 +56,11 @@ public class MainActivity extends AppCompatActivity implements FireBaseAuthentic
         mNvView.setItemIconTintList(null);
         updateNavigationMenuItems();
 
+        View headerLayout = mNvView.getHeaderView(0);
+        mProfileImage = (de.hdodenhof.circleimageview.CircleImageView)headerLayout
+                        .findViewById(R.id.ivProfileImage);
+        mUserDisplayName = (TextView)headerLayout.findViewById(R.id.tvDisplayName);
+        mUserEmail = (TextView)headerLayout.findViewById(R.id.tvEmail);
         //setup toolbar as action bar
         setSupportActionBar(mToolbar);
 
@@ -59,6 +77,9 @@ public class MainActivity extends AppCompatActivity implements FireBaseAuthentic
 
         //load the home fragment as default
         selectDrawerItem(mNvView.getMenu().findItem(R.id.menuHome));
+
+        mFireBaseAuthentication = new FireBaseAuthentication(this);
+        mGoogleAuthentication = new GoogleAuthentication(mFireBaseAuthentication, this, this);
     }
 
     @Override
@@ -88,18 +109,22 @@ public class MainActivity extends AppCompatActivity implements FireBaseAuthentic
         Log.d(TAG, String.format("onLoginSuccess:fire base login successful:[id:%s, display name:%s]",
                 mCurrentUser.getUid(),
                 mCurrentUser.getDisplayName()));
-        //TODO: update navigation header
+        updateNavigationHeader();
         updateNavigationMenuItems();
         //goto home page after successful login
         selectDrawerItem(mNvView.getMenu().findItem(R.id.menuHome));
         //TODO: go to state before login
     }
 
+    @Override
+    public void onConnectionFailed(@NonNull ConnectionResult connectionResult) {
+        Log.d(TAG, "google api client connection failed.....");
+    }
+
     public void logout() {
         mFireBaseAuthentication.signOut();
         mCurrentUser = null;
-        //TODO: update navigation header
-        //TODO: update navigation menu items
+        updateNavigationHeader();
         updateNavigationMenuItems();
         selectDrawerItem(mNvView.getMenu().findItem(R.id.menuHome));
     }
@@ -121,7 +146,7 @@ public class MainActivity extends AppCompatActivity implements FireBaseAuthentic
         switch (item.getItemId()) {
             case R.id.menuLogin:
                 title = "Login into your account";
-                fragment = LoginFragment.newInstance(mFireBaseAuthentication);
+                fragment = LoginFragment.newInstance(mGoogleAuthentication);
                 tag = LoginFragment.TAG;
                 break;
             case R.id.menuHome:
@@ -168,6 +193,25 @@ public class MainActivity extends AppCompatActivity implements FireBaseAuthentic
         }else {
             mNvView.getMenu().clear();
             mNvView.inflateMenu(R.menu.drawer_logout_view);
+        }
+    }
+
+    private void updateNavigationHeader() {
+        if(mCurrentUser != null) {
+            this.mProfileImage.setVisibility(View.VISIBLE);
+            Picasso.with(this)
+                    .load(mCurrentUser.getPhotoUrl())
+                    .placeholder(R.drawable.user_profile_placeholder)
+                    .into(mProfileImage);
+            this.mUserDisplayName.setVisibility(View.VISIBLE);
+            this.mUserEmail.setVisibility(View.VISIBLE);
+            this.mUserDisplayName.setText(mCurrentUser.getDisplayName());
+            this.mUserEmail.setText(mCurrentUser.getEmail());
+
+        }else {
+            this.mUserDisplayName.setVisibility(View.INVISIBLE);
+            this.mUserEmail.setVisibility(View.INVISIBLE);
+            this.mProfileImage.setVisibility(View.INVISIBLE);
         }
     }
 }

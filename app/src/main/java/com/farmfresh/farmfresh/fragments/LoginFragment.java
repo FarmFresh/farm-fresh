@@ -3,7 +3,6 @@ package com.farmfresh.farmfresh.fragments;
 import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
-import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
 import android.view.LayoutInflater;
@@ -16,18 +15,16 @@ import com.farmfresh.farmfresh.R;
 import com.farmfresh.farmfresh.auth.FireBaseAuthentication;
 import com.farmfresh.farmfresh.auth.GoogleAuthentication;
 import com.farmfresh.farmfresh.utils.Constants;
-import com.google.android.gms.common.ConnectionResult;
 import com.google.android.gms.common.SignInButton;
-import com.google.android.gms.common.api.GoogleApiClient;
 import com.google.firebase.auth.FirebaseUser;
+import com.jpardogo.android.googleprogressbar.library.GoogleProgressBar;
 
 import java.util.Arrays;
 
 /**
  * Created by pbabu on 8/20/16.
  */
-public class LoginFragment extends Fragment implements GoogleApiClient.OnConnectionFailedListener,
-        FireBaseAuthentication.LoginListener {
+public class LoginFragment extends Fragment {
 
     public static final String TAG = LoginFragment.class.getSimpleName();
     private GoogleAuthentication mGoogleAuthentication;
@@ -36,12 +33,13 @@ public class LoginFragment extends Fragment implements GoogleApiClient.OnConnect
     private FireBaseAuthentication mFireBaseAuthentication;
     //private LoginButton mLoginButton;
     private FireBaseAuthentication.LoginListener mFireBaseLoginListener;
-
-
-    public static LoginFragment newInstance(FireBaseAuthentication fireBaseAuthentication) {
+    private GoogleProgressBar mProgressBar;
+    private SignInButton mGoogleSignInButton;
+    public static LoginFragment newInstance(GoogleAuthentication googleAuthentication) {
         Bundle args = new Bundle();
         LoginFragment fragment = new LoginFragment();
-        fragment.mFireBaseAuthentication = fireBaseAuthentication;
+        fragment.mGoogleAuthentication = googleAuthentication;
+        fragment.mFireBaseAuthentication = googleAuthentication.getMFireBaseAuthentication();
         fragment.setArguments(args);
         return fragment;
     }
@@ -49,8 +47,6 @@ public class LoginFragment extends Fragment implements GoogleApiClient.OnConnect
     @Override
     public void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        mGoogleAuthentication = new GoogleAuthentication(mFireBaseAuthentication,
-                getActivity(), this);
         //mFacebookAuthentication = new FacebookAuthentication(mFireBaseAuthentication, getActivity());
     }
 
@@ -59,9 +55,9 @@ public class LoginFragment extends Fragment implements GoogleApiClient.OnConnect
     public View onCreateView(LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
         super.onCreateView(inflater, container, savedInstanceState);
         final View view = inflater.inflate(R.layout.fragment_login, container, false);
-        SignInButton signInButton = (SignInButton) view.findViewById(R.id.btnGoogleSignIn);
-        signInButton.setSize(SignInButton.SIZE_WIDE);
-        signInButton.setOnClickListener(new View.OnClickListener() {
+        mGoogleSignInButton = (SignInButton) view.findViewById(R.id.btnGoogleSignIn);
+        mGoogleSignInButton.setSize(SignInButton.SIZE_WIDE);
+        mGoogleSignInButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
                 LoginFragment.this.googleSignIn();
@@ -78,6 +74,8 @@ public class LoginFragment extends Fragment implements GoogleApiClient.OnConnect
                 facebookSignIn();
             }
         });*/
+
+        mProgressBar = (GoogleProgressBar)view.findViewById(R.id.google_progress);
         return view;
     }
 
@@ -90,11 +88,6 @@ public class LoginFragment extends Fragment implements GoogleApiClient.OnConnect
             throw new ClassCastException(context.toString()
                     + " must implement FireBaseAuthentication.LoginListener");
         }
-    }
-
-    @Override
-    public void onConnectionFailed(@NonNull ConnectionResult connectionResult) {
-
     }
 
     @Override
@@ -126,13 +119,8 @@ public class LoginFragment extends Fragment implements GoogleApiClient.OnConnect
         }*/
     }
 
-    @Override
-    public void onLoginSuccess(FirebaseUser currentUser) {
-        mCurrentUser = currentUser;
-        mFireBaseLoginListener.onLoginSuccess(mCurrentUser);
-    }
-
     public void googleSignIn() {
+        showProgressBar();
         Intent signInIntent = mGoogleAuthentication.getLoginIntent();
         startActivityForResult(signInIntent, Constants.RC_GOOGLE_SIGN_IN);
     }
@@ -148,11 +136,8 @@ public class LoginFragment extends Fragment implements GoogleApiClient.OnConnect
         }
     }
 
-    public interface FireBaseLoginListener {
-        void onLoginSuccess(FirebaseUser user);
-
-        void onLoginFailure();
-
-        void onLogout();
+    private void showProgressBar() {
+        mGoogleSignInButton.setVisibility(View.GONE);
+        mProgressBar.setVisibility(View.VISIBLE);
     }
 }

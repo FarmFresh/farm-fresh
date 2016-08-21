@@ -106,6 +106,13 @@ public class LoginFragment extends Fragment implements GoogleApiClient.OnConnect
     }
 
     @Override
+    public void onPause() {
+        super.onPause();
+        mGoogleAuthentication.getmGoogleApiClient().stopAutoManage(getActivity());
+        mGoogleAuthentication.getmGoogleApiClient().disconnect();
+    }
+
+    @Override
     public void onDestroy() {
         super.onDestroy();
         mFireBaseAuthentication.signOut();
@@ -139,7 +146,7 @@ public class LoginFragment extends Fragment implements GoogleApiClient.OnConnect
                     getActivity());
         }else {
             //Login into facebook to get access token
-            LoginManager.getInstance().logInWithReadPermissions(this, Arrays.asList("public_profile", "email"));
+            LoginManager.getInstance().logInWithReadPermissions(this, Arrays.asList("public_profile"));
         }
 
     }

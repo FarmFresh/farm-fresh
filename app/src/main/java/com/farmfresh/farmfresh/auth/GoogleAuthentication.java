@@ -28,9 +28,8 @@ public class GoogleAuthentication extends AppAuthentication{
     }
 
     @Override
-    public void signIn() {
-        Intent signInIntent = Auth.GoogleSignInApi.getSignInIntent(mGoogleApiClient);
-        mActivity.startActivityForResult(signInIntent, Constants.RC_GOOGLE_SIGN_IN);
+    public Intent getLoginIntent() {
+        return Auth.GoogleSignInApi.getSignInIntent(mGoogleApiClient);
     }
 
     @Override

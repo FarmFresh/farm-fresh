@@ -17,17 +17,5 @@ public abstract class AppAuthentication {
 
     public abstract void onActivityResult(int requestCode, int resultCode, Intent data);
 
-    public abstract void signIn();
-
-    public void signOut() {
-        mFireBaseAuthentication.signOut();
-    }
-
-    public void addAuthLisenters(){
-        mFireBaseAuthentication.addAuthListener();
-    }
-
-    public void removeAuthListeners() {
-        mFireBaseAuthentication.removeAuthListener();
-    }
+    public abstract Intent getLoginIntent();
 }

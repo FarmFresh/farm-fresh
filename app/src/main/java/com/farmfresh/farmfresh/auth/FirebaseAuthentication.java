@@ -22,33 +22,30 @@ import com.google.firebase.auth.GoogleAuthProvider;
 public class FireBaseAuthentication {
 
     private static final String TAG = FireBaseAuthentication.class.getSimpleName();
-    private static FireBaseAuthentication INSTANCE = new FireBaseAuthentication();
 
     private FirebaseAuth mAuth;
     private FirebaseAuth.AuthStateListener mAuthListener;
-    private FirebaseUser mCurrentUser;
+    private final LoginListener mLoginSuccessListener;
 
-    private FireBaseAuthentication() {
+    public interface LoginListener {
+        void onLoginSuccess(FirebaseUser currentUser);
+    }
+
+    public FireBaseAuthentication(final LoginListener mLoginSuccessListener) {
+        this.mLoginSuccessListener = mLoginSuccessListener;
         mAuth = FirebaseAuth.getInstance();
         mAuthListener = new FirebaseAuth.AuthStateListener() {
             @Override
             public void onAuthStateChanged(@NonNull FirebaseAuth firebaseAuth) {
-                mCurrentUser = firebaseAuth.getCurrentUser();
-                if(mCurrentUser != null){
+                final FirebaseUser currentUser = firebaseAuth.getCurrentUser();
+                if(currentUser != null){
                     Log.d(TAG, String.format("onAuthStateChanged:user_signed_in:[id:%s, display name:%s]",
-                            mCurrentUser.getUid(),
-                            mCurrentUser.getDisplayName()));
+                            currentUser.getUid(),
+                            currentUser.getDisplayName()));
+                    FireBaseAuthentication.this.mLoginSuccessListener.onLoginSuccess(currentUser);
                 }
             }
         };
-    }
-
-    public static FireBaseAuthentication getInstance() {
-        return INSTANCE;
-    }
-
-    public FirebaseUser getCurrentUser() {
-        return mCurrentUser;
     }
 
     public void addAuthListener(){
@@ -76,6 +73,7 @@ public class FireBaseAuthentication {
     }
 
     private void signIntoFireBase(AuthCredential credential, final Activity activity) {
+        signOut(); //for testing
         mAuth.signInWithCredential(credential).addOnCompleteListener(activity, new OnCompleteListener<AuthResult>() {
             @Override
             public void onComplete(@NonNull Task<AuthResult> task) {
@@ -92,6 +90,7 @@ public class FireBaseAuthentication {
     }
 
     public void signOut() {
+        Log.d(TAG, "FireBase signing out....");
         mAuth.signOut();
     }
 }

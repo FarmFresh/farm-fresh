@@ -1,5 +1,6 @@
 package com.farmfresh.farmfresh.fragments;
 
+import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
@@ -9,8 +10,11 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 
+import com.facebook.AccessToken;
+import com.facebook.login.LoginManager;
+import com.facebook.login.widget.LoginButton;
 import com.farmfresh.farmfresh.R;
-import com.farmfresh.farmfresh.auth.AppAuthentication;
+import com.farmfresh.farmfresh.auth.FacebookAuthentication;
 import com.farmfresh.farmfresh.auth.FireBaseAuthentication;
 import com.farmfresh.farmfresh.auth.GoogleAuthentication;
 import com.farmfresh.farmfresh.utils.Constants;
@@ -19,21 +23,33 @@ import com.google.android.gms.common.SignInButton;
 import com.google.android.gms.common.api.GoogleApiClient;
 import com.google.firebase.auth.FirebaseUser;
 
+import java.util.Arrays;
+
 /**
  * Created by pbabu on 8/20/16.
  */
-public class LoginFragment extends Fragment implements GoogleApiClient.OnConnectionFailedListener {
+public class LoginFragment extends Fragment implements GoogleApiClient.OnConnectionFailedListener,
+        FireBaseAuthentication.LoginListener {
 
-    private AppAuthentication mGoogleAuthentication;
+    private GoogleAuthentication mGoogleAuthentication;
+    private FacebookAuthentication mFacebookAuthentication;
     private FirebaseUser mCurrentUser;
-    private FireBaseAuthentication mFireBaseAuthentication = FireBaseAuthentication.getInstance();
+    private FireBaseAuthentication mFireBaseAuthentication = new FireBaseAuthentication(this);
     public static final String TAG = LoginFragment.class.getSimpleName();
+    private LoginButton mLoginButton;
+    private FireBaseLoginListener mFireBaseLoginListener;
 
+    public interface FireBaseLoginListener {
+        void onLoginSuccess(FirebaseUser user);
+        void onLoginFailure();
+        void onLogout();
+    }
     @Override
     public void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         mGoogleAuthentication = new GoogleAuthentication(mFireBaseAuthentication,
                 getActivity(), this);
+        mFacebookAuthentication = new FacebookAuthentication(mFireBaseAuthentication, getActivity());
     }
 
     @Nullable
@@ -49,7 +65,27 @@ public class LoginFragment extends Fragment implements GoogleApiClient.OnConnect
                 LoginFragment.this.googleSignIn();
             }
         });
+        mLoginButton = (LoginButton) view.findViewById(R.id.btnFacebookSignIn);
+        LoginManager.getInstance().registerCallback(mFacebookAuthentication.getMCallbackManager(),
+                mFacebookAuthentication.getFacebookCallback());
+        mLoginButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                facebookSignIn();
+            }
+        });
         return view;
+    }
+
+    @Override
+    public void onAttach(Context context) {
+        super.onAttach(context);
+        if(context instanceof FireBaseLoginListener) {
+            mFireBaseLoginListener = (FireBaseLoginListener)context;
+        }else {
+            throw new ClassCastException(context.toString()
+                    + " must implement LoginFragment.FireBaseLoginListener");
+        }
     }
 
     @Override
@@ -70,11 +106,25 @@ public class LoginFragment extends Fragment implements GoogleApiClient.OnConnect
     }
 
     @Override
+    public void onDestroy() {
+        super.onDestroy();
+        mFireBaseAuthentication.signOut();
+    }
+
+    @Override
     public void onActivityResult(int requestCode, int resultCode, Intent data) {
         super.onActivityResult(requestCode, resultCode, data);
         if(requestCode == Constants.RC_GOOGLE_SIGN_IN) {
            mGoogleAuthentication.onActivityResult(requestCode, resultCode, data);
+        }else if (requestCode == Constants.RC_FACEBOOK_SIGN_IN) {
+            mFacebookAuthentication.onActivityResult(requestCode, resultCode, data);
         }
+    }
+
+    @Override
+    public void onLoginSuccess(FirebaseUser currentUser) {
+        mCurrentUser = currentUser;
+        mFireBaseLoginListener.onLoginSuccess(mCurrentUser);
     }
 
     public void googleSignIn() {
@@ -82,7 +132,15 @@ public class LoginFragment extends Fragment implements GoogleApiClient.OnConnect
         startActivityForResult(signInIntent, Constants.RC_GOOGLE_SIGN_IN);
     }
 
-    public void signOut() {
-        mFireBaseAuthentication.signOut();
+    public void facebookSignIn() {
+        final AccessToken currentAccessToken = AccessToken.getCurrentAccessToken();
+        if(currentAccessToken != null && !currentAccessToken.isExpired()) {
+            mFireBaseAuthentication.fireBaseAuthWithFacebook(currentAccessToken,
+                    getActivity());
+        }else {
+            //Login into facebook to get access token
+            LoginManager.getInstance().logInWithReadPermissions(this, Arrays.asList("public_profile", "email"));
+        }
+
     }
 }

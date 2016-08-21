@@ -16,11 +16,14 @@ import android.view.MenuItem;
 import com.facebook.FacebookSdk;
 import com.facebook.appevents.AppEventsLogger;
 import com.farmfresh.farmfresh.R;
+import com.farmfresh.farmfresh.auth.FireBaseAuthentication;
+import com.farmfresh.farmfresh.fragments.HomeFragment;
 import com.farmfresh.farmfresh.fragments.LoginFragment;
-import com.farmfresh.farmfresh.fragments.TestFragment;
+import com.farmfresh.farmfresh.fragments.ProfileFragment;
+import com.farmfresh.farmfresh.fragments.SellingFragment;
 import com.google.firebase.auth.FirebaseUser;
 
-public class MainActivity extends AppCompatActivity implements LoginFragment.FireBaseLoginListener {
+public class MainActivity extends AppCompatActivity implements FireBaseAuthentication.LoginListener{
 
     private final static String TAG = MainActivity.class.getSimpleName();
     private DrawerLayout mDrawer;
@@ -28,7 +31,7 @@ public class MainActivity extends AppCompatActivity implements LoginFragment.Fir
     private ActionBarDrawerToggle mDrawerToggle;
     private Toolbar mToolbar;
     private FirebaseUser mCurrentUser;
-
+    private FireBaseAuthentication mFireBaseAuthentication = new FireBaseAuthentication(this);
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -38,6 +41,7 @@ public class MainActivity extends AppCompatActivity implements LoginFragment.Fir
         mDrawer = (DrawerLayout) findViewById(R.id.layout_main);
         mNvView = (NavigationView) findViewById(R.id.nvView);
         mNvView.setItemIconTintList(null);
+        updateNavigationMenuItems();
 
         //setup toolbar as action bar
         setSupportActionBar(mToolbar);
@@ -52,6 +56,9 @@ public class MainActivity extends AppCompatActivity implements LoginFragment.Fir
         FacebookSdk.sdkInitialize(getApplicationContext());
         //Facebook app event registration
         AppEventsLogger.activateApp(getApplication());
+
+        //load the home fragment as default
+        selectDrawerItem(mNvView.getMenu().findItem(R.id.menuHome));
     }
 
     @Override
@@ -76,26 +83,25 @@ public class MainActivity extends AppCompatActivity implements LoginFragment.Fir
     }
 
     @Override
-    public void onLoginFailure() {
-
-    }
-
-    @Override
     public void onLoginSuccess(FirebaseUser user) {
         mCurrentUser = user;
         Log.d(TAG, String.format("onLoginSuccess:fire base login successful:[id:%s, display name:%s]",
                 mCurrentUser.getUid(),
                 mCurrentUser.getDisplayName()));
         //TODO: update navigation header
-        //TODO: update navigation menu items
+        updateNavigationMenuItems();
+        //goto home page after successful login
+        selectDrawerItem(mNvView.getMenu().findItem(R.id.menuHome));
         //TODO: go to state before login
     }
 
-    @Override
-    public void onLogout() {
+    public void logout() {
+        mFireBaseAuthentication.signOut();
+        mCurrentUser = null;
         //TODO: update navigation header
         //TODO: update navigation menu items
-        //TODO: go to landing page
+        updateNavigationMenuItems();
+        selectDrawerItem(mNvView.getMenu().findItem(R.id.menuHome));
     }
 
     private void setupDrawerContent() {
@@ -109,22 +115,33 @@ public class MainActivity extends AppCompatActivity implements LoginFragment.Fir
     }
 
     private void selectDrawerItem(MenuItem item) {
-        String title;
+        String title = null;
         Fragment fragment = null;
         String tag = null;
         switch (item.getItemId()) {
             case R.id.menuLogin:
                 title = "Login into your account";
-                fragment = new LoginFragment();
+                fragment = LoginFragment.newInstance(mFireBaseAuthentication);
                 tag = LoginFragment.TAG;
                 break;
-            case R.id.other:
-                title = "Other";
-                fragment = TestFragment.newInstance(title);
-                tag = TestFragment.TAG;
+            case R.id.menuHome:
+                title = "Home";
+                fragment = new HomeFragment();
+                tag = HomeFragment.class.getSimpleName();
                 break;
-            default:
-                title = "invalid";
+            case R.id.menuProfile:
+                title = "Profile";
+                fragment = new ProfileFragment();
+                tag = ProfileFragment.class.getSimpleName();
+                break;
+            case R.id.menuSelling:
+                title = "Selling";
+                fragment = new SellingFragment();
+                tag = SellingFragment.class.getSimpleName();
+                break;
+            case R.id.menuLogout:
+                logout();
+                return;
         }
 
         final FragmentTransaction fragmentTransaction = getSupportFragmentManager().beginTransaction();
@@ -142,5 +159,15 @@ public class MainActivity extends AppCompatActivity implements LoginFragment.Fir
 
     private ActionBarDrawerToggle setupDrawerToggle() {
         return new ActionBarDrawerToggle(this, mDrawer, mToolbar, R.string.drawer_open, R.string.drawer_close);
+    }
+
+    private void updateNavigationMenuItems() {
+        if(mCurrentUser != null) {
+            mNvView.getMenu().clear();
+            mNvView.inflateMenu(R.menu.drawer_logged_in_view);
+        }else {
+            mNvView.getMenu().clear();
+            mNvView.inflateMenu(R.menu.drawer_logout_view);
+        }
     }
 }

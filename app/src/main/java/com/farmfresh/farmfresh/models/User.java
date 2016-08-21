@@ -6,15 +6,15 @@ import java.util.ArrayList;
  * Created by lucerne on 8/20/16.
  */
 public class User {
-    private Long id;
+    private String id;
     private String firstName;
-    private String profileImageUrl;
-    private ArrayList<Long> inventory;
-    private ArrayList<Long> productBought;
-    private ArrayList<Long> productSold;
     private String email;
+    private String profileImageUrl;
+    private ArrayList<String> inventory;
+    private ArrayList<String> productBought;
+    private ArrayList<String> productSold;
 
-    public void setId(Long id) {
+    public void setId(String id) {
         this.id = id;
     }
 
@@ -22,27 +22,28 @@ public class User {
         this.firstName = firstName;
     }
 
-    public void setProfileImageUrl(String profileImageUrl) {
-        this.profileImageUrl = profileImageUrl;
-    }
-
-    public void setInventory(ArrayList<Long> inventory) {
-        this.inventory = inventory;
-    }
-
-    public void setProductBought(ArrayList<Long> productBought) {
-        this.productBought = productBought;
-    }
-
-    public void setProductSold(ArrayList<Long> productSold) {
-        this.productSold = productSold;
-    }
 
     public void setEmail(String email) {
         this.email = email;
     }
 
-    public Long getId() {
+    public void setProfileImageUrl(String profileImageUrl) {
+        this.profileImageUrl = profileImageUrl;
+    }
+
+    public void setInventory(ArrayList<String> inventory) {
+        this.inventory = inventory;
+    }
+
+    public void setProductBought(ArrayList<String> productBought) {
+        this.productBought = productBought;
+    }
+
+    public void setProductSold(ArrayList<String> productSold) {
+        this.productSold = productSold;
+    }
+
+    public String getId() {
         return id;
     }
 
@@ -54,15 +55,15 @@ public class User {
         return profileImageUrl;
     }
 
-    public ArrayList<Long> getInventory() {
+    public ArrayList<String> getInventory() {
         return inventory;
     }
 
-    public ArrayList<Long> getProductBought() {
+    public ArrayList<String> getProductBought() {
         return productBought;
     }
 
-    public ArrayList<Long> getProductSold() {
+    public ArrayList<String> getProductSold() {
         return productSold;
     }
 
@@ -70,4 +71,3 @@ public class User {
         return email;
     }
 }
-

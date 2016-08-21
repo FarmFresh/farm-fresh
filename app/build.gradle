@@ -30,6 +30,7 @@ dependencies {
     compile 'com.google.android.gms:play-services-auth:9.4.0'
     compile 'com.google.firebase:firebase-core:9.4.0'
     compile 'com.google.firebase:firebase-database:9.4.0'
+    compile 'com.google.firebase:firebase-storage:9.4.0'
 
     //design support library and app compat library dependencies
     compile 'com.android.support:appcompat-v7:24.1.1'
@@ -44,6 +45,8 @@ dependencies {
     compile 'com.squareup.picasso:picasso:2.5.2'
     //custom google progress bar
     compile 'com.jpardogo.googleprogressbar:library:1.2.0'
+
+
 }
 
 install {

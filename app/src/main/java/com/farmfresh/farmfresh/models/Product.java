@@ -6,14 +6,14 @@ import java.util.ArrayList;
  * Created by lucerne on 8/20/16.
  */
 public class Product {
-    private long id;
+    private String id;
     private String name;
     private String description;
     private String price;
     private ArrayList<String> imageUrls;
-    private long sellerId;
+    private String sellerId;
 
-    public void setId(long id) {
+    public void setId(String id) {
         this.id = id;
     }
 
@@ -33,11 +33,11 @@ public class Product {
         this.imageUrls = imageUrls;
     }
 
-    public void setSellerId(long sellerId) {
+    public void setSellerId(String sellerId) {
         this.sellerId = sellerId;
     }
 
-    public long getId() {
+    public String getId() {
         return id;
     }
 
@@ -57,7 +57,7 @@ public class Product {
         return imageUrls;
     }
 
-    public long getSellerId() {
+    public String getSellerId() {
         return sellerId;
     }
 

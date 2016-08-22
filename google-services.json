@@ -1,0 +1,48 @@
+{
+  "project_info": {
+    "project_number": "187992325457",
+    "project_id": "farm-fresh-1a649"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:187992325457:android:752eee0a02fe0eae",
+        "android_client_info": {
+          "package_name": "com.farmfresh.farmfresh"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "187992325457-dq0l6j532e11hho2piajd8utq1822ck7.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "com.farmfresh.farmfresh",
+            "certificate_hash": "288731987852C2AE59022E8EED3AD78BE428BA73"
+          }
+        },
+        {
+          "client_id": "187992325457-812o30sordgtjft88l93me0ot0oou9eg.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyCnnC8I5f61NrLDxOpfxRPaWb0V6S4AHJo"
+        }
+      ],
+      "services": {
+        "analytics_service": {
+          "status": 1
+        },
+        "appinvite_service": {
+          "status": 1,
+          "other_platform_oauth_client": []
+        },
+        "ads_service": {
+          "status": 1
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}

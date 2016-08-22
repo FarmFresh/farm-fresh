@@ -1,5 +1,6 @@
 package com.farmfresh.farmfresh.activities;
 
+import android.content.Intent;
 import android.content.res.Configuration;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
@@ -112,6 +113,9 @@ public class MainActivity extends AppCompatActivity implements FireBaseAuthentic
         updateNavigationHeader();
         updateNavigationMenuItems();
         //goto home page after successful login
+
+        startActivity(new Intent(this, MapsActivity.class));
+
         selectDrawerItem(mNvView.getMenu().findItem(R.id.menuHome));
         //TODO: go to state before login
     }

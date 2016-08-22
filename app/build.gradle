@@ -1,14 +1,16 @@
 apply plugin: 'com.android.application'
 apply plugin: 'com.github.dcendents.android-maven'
+apply plugin: 'android-apt'
+apply plugin: 'com.neenbedankt.android-apt'
 
 android {
-    compileSdkVersion 24
-    buildToolsVersion "24.0.0"
+    compileSdkVersion 23
+    buildToolsVersion "23.0.0"
 
     defaultConfig {
         applicationId "com.farmfresh.farmfresh"
-        minSdkVersion 18
-        targetSdkVersion 24
+        minSdkVersion 21
+        targetSdkVersion 23
         versionCode 1
         versionName "1.0"
     }
@@ -33,9 +35,6 @@ dependencies {
     compile 'com.google.firebase:firebase-storage:9.4.0'
 
     //design support library and app compat library dependencies
-    compile 'com.android.support:appcompat-v7:24.1.1'
-    compile 'com.android.support:design:24.1.1'
-    compile 'com.android.support:recyclerview-v7:24.1.1'
     compile 'com.synnapps:carouselview:0.0.9'
     //facebook android sdk
     compile 'com.facebook.android:facebook-android-sdk:[4,5)'
@@ -45,6 +44,20 @@ dependencies {
     compile 'com.squareup.picasso:picasso:2.5.2'
     //custom google progress bar
     compile 'com.jpardogo.googleprogressbar:library:1.2.0'
+
+    compile 'com.android.support:appcompat-v7:23.1.1'
+    compile 'com.google.android.gms:play-services-maps:9.4.0'
+    compile 'com.google.android.gms:play-services-location:9.4.0'
+    compile 'com.google.android.gms:play-services-places:9.4.0'
+    compile 'com.google.maps.android:android-maps-utils:0.4'
+
+    compile 'com.android.support:design:23.2.0'
+    compile 'com.android.support:support-v4:23.1.1'
+    compile 'com.android.support:recyclerview-v7:23.2.1'
+    compile 'com.jakewharton:butterknife:8.2.1'
+    compile 'org.parceler:parceler-api:1.1.1'
+    apt 'org.parceler:parceler:1.1.1'
+    apt 'com.jakewharton:butterknife-compiler:8.2.1'
 
 
 }

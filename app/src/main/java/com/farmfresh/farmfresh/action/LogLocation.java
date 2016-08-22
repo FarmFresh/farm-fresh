@@ -2,7 +2,7 @@ package com.farmfresh.farmfresh.action;
 
 import android.util.Log;
 
-import com.farmfresh.farmfresh.activities.MapsActivity;
+import com.farmfresh.farmfresh.activities.MainActivity;
 import com.google.android.gms.maps.GoogleMap;
 import com.google.android.gms.maps.model.Circle;
 import com.google.android.gms.maps.model.LatLng;
@@ -15,7 +15,7 @@ public class LogLocation implements TrackLocation.Listener {
     private Circle mCircle;
 
     // TODO E4 Log location updates
-    // Use MapsActivity.TAG
+    // Use MainActivity.TAG
     // Use the map too and get creative.
     // See CircleLocation for an example.
     @Override
@@ -28,6 +28,6 @@ public class LogLocation implements TrackLocation.Listener {
                 .radius(radiusInMeters)
                 .center(location);
         mCircle = map.addCircle(opts);*/
-        Log.d(MapsActivity.TAG,"Location update "+location);
+        Log.d(MainActivity.TAG,"Location update "+location);
     }
 }

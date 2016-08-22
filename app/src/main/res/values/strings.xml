@@ -1,5 +1,5 @@
 <resources>
-    <string name="app_name">FarmFresh</string>
+    <string name="app_name">Farm-Fresh</string>
     <string name="drawer_open">Open navigation drawer</string>
     <string name="drawer_close">Close navigation drawer</string>
     <string name="google_sign_in">Google</string>
@@ -14,4 +14,5 @@
     <string name="user_profile_image">Profile Image</string>
     <string name="header_background">header background</string>
     <string name="marker_title">Marker title</string>
+    <string name="google_map_key">AIzaSyBcrLMQs5daMyULDcz0KrsGGwSei4JHqIA</string>
 </resources>

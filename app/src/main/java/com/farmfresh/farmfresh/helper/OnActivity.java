@@ -7,7 +7,7 @@ import android.support.v4.app.FragmentActivity;
 import android.support.v4.app.FragmentManager;
 import android.util.Log;
 
-import com.farmfresh.farmfresh.activities.MapsActivity;
+import com.farmfresh.farmfresh.activities.MainActivity;
 
 public class OnActivity extends Fragment {
 
@@ -73,7 +73,7 @@ public class OnActivity extends Fragment {
     }
 
     private void notifyOnStatus(Status status) {
-        Log.d(MapsActivity.TAG, "Activity status is " + status);
+        Log.d(MainActivity.TAG, "Activity status is " + status);
         for (Listener listener : mListeners) {
             listener.onStatus(status);
         }

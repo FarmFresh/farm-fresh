@@ -5,7 +5,7 @@ import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.util.Log;
 
-import com.farmfresh.farmfresh.activities.MapsActivity;
+import com.farmfresh.farmfresh.activities.MainActivity;
 import com.farmfresh.farmfresh.helper.OnActivity;
 import com.farmfresh.farmfresh.helper.OnClient;
 import com.farmfresh.farmfresh.helper.OnMap;
@@ -40,12 +40,12 @@ public class TrackLocation implements
 
     @SuppressWarnings("MissingPermission")
     private void startLocationUpdates() {
-        Log.d(MapsActivity.TAG, "Requested location updates");
+        Log.d(MainActivity.TAG, "Requested location updates");
         LocationServices.FusedLocationApi.requestLocationUpdates(mClient,mLocationRequest,this);
     }
 
     private void stopLocationUpdates() {
-        Log.d(MapsActivity.TAG, "Removed location updates");
+        Log.d(MainActivity.TAG, "Removed location updates");
         LocationServices.FusedLocationApi.removeLocationUpdates(mClient,this);
     }
 

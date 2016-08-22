@@ -69,6 +69,7 @@ public class ListItemsBottomSheetFragment extends BottomSheetDialogFragment {
         productsAdapter.setOnOnProductClickListener(new ProductsAdapter.OnProductClickListener(){
             @Override
             public void onProductClick(View itemView, int position) {
+//                Toast.makeText(getActivity(),productList.get(position).getDescription()+"",Toast.LENGTH_LONG).show();
                 startActivity(new Intent(getActivity(), ProductDetailActivity.class));
             }
         });

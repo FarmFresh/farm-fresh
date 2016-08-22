@@ -11,7 +11,7 @@ import android.support.v4.content.ContextCompat;
 import android.support.v4.util.ArrayMap;
 import android.util.Log;
 
-import com.farmfresh.farmfresh.activities.MapsActivity;
+import com.farmfresh.farmfresh.activities.MainActivity;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -94,7 +94,7 @@ public class OnPermission extends Fragment {
     }
 
     private void notifyListeners(Request request, Result result) {
-        Log.d(MapsActivity.TAG, "Location permission request " + request.mRequestCode + " " + result);
+        Log.d(MainActivity.TAG, "Location permission request " + request.mRequestCode + " " + result);
         for (Listener listener : request.mListeners) {
             listener.onResult(request.mRequestCode, result);
         }

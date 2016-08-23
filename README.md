@@ -51,3 +51,12 @@ Organic food industry is a hot area of growth. Many home grown or farm grown org
 * Food info 
     *   Static page 
     *   Description about the food, nutrition, whether better to eat organic 
+    
+    
+    ## Video Walkthrough
+    
+    Here's a walkthrough of implemented user stories:
+    
+    <img src='https://github.com/urspralini/codepath-twitter-with-fragments/blob/master/twitter_redux.gif' title='Video Walkthrough' width='' alt='Video Walkthrough' />
+    
+    GIF created with [LiceCap](http://www.cockos.com/licecap/).

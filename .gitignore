@@ -66,5 +66,3 @@ import-summary.txt
 
 # Secret API keys
 *keys.xml
-
-/app/google-services.json

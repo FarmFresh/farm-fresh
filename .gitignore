@@ -31,7 +31,6 @@ proguard/
 .idea/
 
 *.pydevproject
-.project
 .metadata
 bin/**
 tmp/**
@@ -40,8 +39,6 @@ tmp/**/*
 *.bak
 *.swp
 *~.nib
-local.properties
-.classpath
 .settings/
 .loadpath
 
@@ -58,7 +55,6 @@ local.properties
 .buildpath
 
 # Android Studio project files
-*.iml
 .gradle
 .idea
 build
@@ -66,5 +62,3 @@ import-summary.txt
 
 # Secret API keys
 *keys.xml
-
-/app/google-services.json

@@ -26,8 +26,6 @@ import com.google.firebase.storage.StorageReference;
 import com.synnapps.carouselview.CarouselView;
 import com.synnapps.carouselview.ImageListener;
 
-import com.farmfresh.farmfresh.utils.GetFirebase;
-
 import java.util.ArrayList;
 
 public class ProductDetailActivity extends AppCompatActivity {
@@ -39,7 +37,7 @@ public class ProductDetailActivity extends AppCompatActivity {
         @Override
         protected void onCreate(Bundle savedInstanceState) {
             super.onCreate(savedInstanceState);
-            setContentView(R.layout.activity_main);
+            setContentView(R.layout.activity_product_detail);
 
             firebase = new GetFirebase();
 

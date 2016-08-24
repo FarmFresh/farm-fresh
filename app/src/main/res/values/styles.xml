@@ -8,5 +8,7 @@
         <item name="colorAccent">@color/colorAccent</item>
     </style>
     <style name="MarkerFont" parent="@android:style/TextAppearance.Medium.Inverse" />
-
+    <style name="ToolBar.TitleText" parent="TextAppearance.Widget.AppCompat.Toolbar.Title">
+        <item name="android:textSize">21sp</item>
+    </style>
 </resources>

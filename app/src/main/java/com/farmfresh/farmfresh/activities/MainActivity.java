@@ -1,6 +1,7 @@
 package com.farmfresh.farmfresh.activities;
 
 import android.Manifest;
+import android.content.Intent;
 import android.content.res.Configuration;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
@@ -34,7 +35,6 @@ import com.farmfresh.farmfresh.auth.GoogleAuthentication;
 import com.farmfresh.farmfresh.fragments.ListItemsBottomSheetFragment;
 import com.farmfresh.farmfresh.fragments.LoginFragment;
 import com.farmfresh.farmfresh.fragments.ProfileFragment;
-import com.farmfresh.farmfresh.fragments.SellingFragment;
 import com.farmfresh.farmfresh.helper.OnActivity;
 import com.farmfresh.farmfresh.helper.OnClient;
 import com.farmfresh.farmfresh.helper.OnMap;
@@ -299,10 +299,9 @@ public class MainActivity extends AppCompatActivity implements FireBaseAuthentic
                 tag = ProfileFragment.class.getSimpleName();
                 break;
             case R.id.menuSelling:
-                title = "Selling";
-                fragment = new SellingFragment();
-                tag = SellingFragment.class.getSimpleName();
-                break;
+                Intent newProductIntent = new Intent(this,NewProductActivity.class);
+                startActivity(newProductIntent);
+                return;
             case R.id.menuLogout:
                 logout();
                 return;

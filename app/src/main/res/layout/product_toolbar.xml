@@ -14,7 +14,7 @@
         app:contentInsetStart="0dp"
         android:layout_width="match_parent"
         app:layout_scrollFlags="scroll"
-        android:id="@+id/toolbar"
+        android:id="@+id/productToolbar"
         android:layout_height="?attr/actionBarSize">
 
         <TextView

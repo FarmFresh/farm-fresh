@@ -7,10 +7,12 @@ import android.view.View;
 import android.widget.Button;
 
 import com.farmfresh.farmfresh.R;
+import com.farmfresh.farmfresh.fragments.ProductImagesFragment;
 import com.farmfresh.farmfresh.fragments.ProductInfoFragment;
 import com.farmfresh.farmfresh.models.Product;
 
-public class NewProductActivity extends AppCompatActivity {
+public class NewProductActivity extends AppCompatActivity implements
+        ProductInfoFragment.OnSubmitProductInfoListener, ProductImagesFragment.OnSubmitProductImagesListener{
 
     private Product product;
 
@@ -23,18 +25,34 @@ public class NewProductActivity extends AppCompatActivity {
         //Display icon in the toolbar
         getSupportActionBar().setDisplayHomeAsUpEnabled(true);
         getSupportActionBar().setTitle("New Product");
-        ProductInfoFragment profileHeaderFragment = new ProductInfoFragment();
+        this.product = new Product();
+        ProductInfoFragment profileHeaderFragment = ProductInfoFragment.newInstance(product);
         getSupportFragmentManager()
                 .beginTransaction()
                 .add(R.id.flNewProduct, profileHeaderFragment)
                 .commit();
-
-        Button mBtnCancel = (Button)findViewById(R.id.btnCancel);
-        mBtnCancel.setOnClickListener(new View.OnClickListener() {
+        Button mBtnToolbar = (Button)findViewById(R.id.btnToolBar);
+        mBtnToolbar.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
                 NewProductActivity.this.finish();
             }
         });
+    }
+
+    @Override
+    public void withInfo(Product product) {
+        this.product = product;
+        //load product images fragment
+        ProductImagesFragment productImagesFragment = ProductImagesFragment.newInstance(product);
+        getSupportFragmentManager()
+                .beginTransaction()
+                .replace(R.id.flNewProduct, productImagesFragment)
+                .commit();
+    }
+
+    @Override
+    public void withImages(Product product) {
+        this.product = product;
     }
 }

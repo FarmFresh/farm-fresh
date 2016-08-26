@@ -34,13 +34,13 @@ public class ProductImagesFragment extends Fragment {
     private ImageView[] imageViews = new ImageView[4];
     private List<Uri> mArrayUri;
     private List<Bitmap> mBitmapsSelected;
+    private OnSubmitProductImagesListener listener;
 
     public interface OnSubmitProductImagesListener {
         void withImages(Product product);
     }
 
     public static ProductImagesFragment newInstance(Product product) {
-
         Bundle args = new Bundle();
         args.putParcelable(Constants.PRODUCT_KEY, product);
         ProductImagesFragment fragment = new ProductImagesFragment();
@@ -64,19 +64,13 @@ public class ProductImagesFragment extends Fragment {
         imageViews[1] = (ImageView) view.findViewById(R.id.ivProductImage2);
         imageViews[2] = (ImageView) view.findViewById(R.id.ivProductImage3);
         imageViews[3] = (ImageView) view.findViewById(R.id.ivProductImage4);
-
         btnDone.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-
+                listener.withImages(product);
             }
         });
-        return view;
-    }
 
-    @Override
-    public void onAttach(final Context context) {
-        super.onAttach(context);
         Button cameraButton = (Button) getActivity().findViewById(R.id.btnToolBar);
         cameraButton.setText("Camera");
         cameraButton.setOnClickListener(new View.OnClickListener() {
@@ -85,6 +79,25 @@ public class ProductImagesFragment extends Fragment {
                 onCameraLaunch();
             }
         });
+
+        return view;
+    }
+
+    @Override
+    public void onAttach(final Context context) {
+        super.onAttach(context);
+        if(context instanceof OnSubmitProductImagesListener) {
+            this.listener = (OnSubmitProductImagesListener)context;
+        }else {
+            throw new ClassCastException(context.toString()
+                    + " must implement ProductImagesFragment.OnSubmitProductImagesListener");
+        }
+    }
+
+    @Override
+    public void onDetach() {
+        super.onDetach();
+        this.listener = null;
     }
 
     private void onCameraLaunch() {

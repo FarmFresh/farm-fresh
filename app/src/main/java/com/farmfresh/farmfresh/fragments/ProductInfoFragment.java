@@ -79,4 +79,10 @@ public class ProductInfoFragment extends Fragment {
                     + " must implement ProductInfoFragment.OnSubmitProductInfoListener");
         }
     }
+
+    @Override
+    public void onDetach() {
+        super.onDetach();
+        this.listener = null;
+    }
 }

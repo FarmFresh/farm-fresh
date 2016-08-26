@@ -9,6 +9,7 @@ import android.widget.Button;
 import com.farmfresh.farmfresh.R;
 import com.farmfresh.farmfresh.fragments.ProductImagesFragment;
 import com.farmfresh.farmfresh.fragments.ProductInfoFragment;
+import com.farmfresh.farmfresh.fragments.UploadProductFragment;
 import com.farmfresh.farmfresh.models.Product;
 
 public class NewProductActivity extends AppCompatActivity implements
@@ -54,5 +55,11 @@ public class NewProductActivity extends AppCompatActivity implements
     @Override
     public void withImages(Product product) {
         this.product = product;
+        //load product images fragment
+        UploadProductFragment uploadFragment = UploadProductFragment.newInstance(product);
+        getSupportFragmentManager()
+                .beginTransaction()
+                .replace(R.id.flNewProduct, uploadFragment)
+                .commit();
     }
 }

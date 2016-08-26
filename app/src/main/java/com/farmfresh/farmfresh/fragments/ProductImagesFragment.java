@@ -31,7 +31,7 @@ import java.util.List;
  */
 public class ProductImagesFragment extends Fragment {
     private Product product;
-    private ImageView[] imageViews = new ImageView[4];
+    private ImageView[] imageViews = new ImageView[Constants.MAX_PRODUCT_IMAGES];
     private List<Uri> mArrayUri;
     private List<Bitmap> mBitmapsSelected;
     private OnSubmitProductImagesListener listener;

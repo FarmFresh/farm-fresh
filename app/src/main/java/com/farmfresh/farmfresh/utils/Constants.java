@@ -16,4 +16,7 @@ public class Constants {
     public final static int PRODUCT_IMAGE_HEIGHT = 300; //300 pixels
     public final static  int MAX_PRODUCT_IMAGES = 4;
 
+    //firebase nodes
+    public static final String NODE_PRODUCTS = "products_dummy";
+
 }

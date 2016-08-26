@@ -42,8 +42,8 @@ public class ProductDetailActivity extends AppCompatActivity {
             firebase = new GetFirebase();
 
             // write product
-            firebase.writeNewProduct();
-            firebase.generateNewSeller();
+//            firebase.writeNewProduct();
+//            firebase.generateNewSeller();
 
             list_images = new ArrayList<>();
 

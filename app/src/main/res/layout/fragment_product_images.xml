@@ -2,8 +2,8 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
+    android:background="@drawable/product_info_shape"
     tools:context=".fragments.ProductInfoFragment">
-
     <LinearLayout
         android:paddingTop="20dp"
         android:id="@+id/llImagesRow1"
@@ -11,20 +11,20 @@
         android:layout_height="wrap_content"
         android:orientation="horizontal">
         <ImageView
+            android:layout_margin="5dp"
             android:id="@+id/ivProductImage1"
-            android:layout_width="150dp"
-            android:layout_height="150dp"
+            android:layout_width="175dp"
+            android:layout_height="175dp"
             android:scaleType="fitXY"
             android:src="@mipmap/ic_launcher"/>
         <ImageView
+            android:layout_margin="5dp"
             android:id="@+id/ivProductImage2"
-            android:layout_width="150dp"
-            android:layout_height="150dp"
+            android:layout_width="175dp"
+            android:layout_height="175dp"
             android:scaleType="fitXY"
             android:src="@mipmap/ic_launcher"/>
     </LinearLayout>
-
-
     <LinearLayout
         android:paddingTop="20dp"
         android:layout_below="@+id/llImagesRow1"
@@ -33,28 +33,30 @@
         android:layout_height="wrap_content"
         android:orientation="horizontal">
         <ImageView
+            android:layout_margin="5dp"
             android:id="@+id/ivProductImage3"
-            android:layout_width="150dp"
-            android:layout_height="150dp"
+            android:layout_width="175dp"
+            android:layout_height="175dp"
             android:scaleType="fitXY"
             android:src="@mipmap/ic_launcher"/>
         <ImageView
+            android:layout_margin="5dp"
             android:id="@+id/ivProductImage4"
-            android:layout_width="150dp"
-            android:layout_height="150dp"
+            android:layout_width="175dp"
+            android:layout_height="175dp"
             android:scaleType="fitXY"
             android:src="@mipmap/ic_launcher"/>
     </LinearLayout>
-
     <Button
         android:paddingTop="20dp"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_below="@+id/llImagesRow2"
         android:text="I'm Done"
         android:id="@+id/btnDone"
+        android:layout_below="@+id/llImagesRow2"
         android:layout_centerHorizontal="true"
-        />
+        android:layout_marginTop="38dp" />
 
 
 </RelativeLayout>
+

@@ -21,8 +21,10 @@ import com.farmfresh.farmfresh.databinding.FragmentUploadProductBinding;
 import com.farmfresh.farmfresh.models.Product;
 import com.farmfresh.farmfresh.utils.Constants;
 import com.farmfresh.farmfresh.utils.Helper;
+import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.OnFailureListener;
 import com.google.android.gms.tasks.OnSuccessListener;
+import com.google.android.gms.tasks.Task;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.database.DatabaseReference;
@@ -31,8 +33,8 @@ import com.google.firebase.storage.FirebaseStorage;
 import com.google.firebase.storage.StorageReference;
 import com.google.firebase.storage.UploadTask;
 
-import java.io.ByteArrayOutputStream;
 import java.io.FileNotFoundException;
+import java.io.InputStream;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -49,6 +51,7 @@ public class UploadProductFragment extends Fragment {
     private TextView tvDescription;
     private TextView tvPrice;
     List<ImageView> imageViews = new ArrayList<>(Constants.MAX_PRODUCT_IMAGES);
+    List<String> imageUrls = new ArrayList<>();
 
     public static UploadProductFragment newInstance(Product product) {
         UploadProductFragment fragment = new UploadProductFragment();
@@ -67,6 +70,9 @@ public class UploadProductFragment extends Fragment {
         productsRef = database.getReference().child(Constants.NODE_PRODUCTS);
         this.currentUser = auth.getCurrentUser();
         this.product = getArguments().getParcelable(Constants.PRODUCT_KEY);
+        for(int i = 0; i < product.getImageUrls().size(); i++) {
+            imageUrls.add(product.getImageUrls().get(i));
+        }
     }
 
     @Override
@@ -140,14 +146,23 @@ public class UploadProductFragment extends Fragment {
         productsRef.child(newProductKey);
         //clear product dummy urls
         product.getImageUrls().clear();
-        productsRef.setValue(product);
+        productsRef.child(newProductKey)
+                .setValue(product)
+                .addOnCompleteListener(new OnCompleteListener<Void>() {
+                    @Override
+                    public void onComplete(@NonNull Task<Void> task) {
+
+                    }
+                });
         return newProductKey;
     }
 
     private void saveProductImages(String productKey) {
-        final StorageReference imagesRef = storage.getReference().child(productKey).child("images");
-        for(int i = 0; i < imageViews.size(); i++) {
-            uploadImage(imageViews.get(i), imagesRef, productKey, i+1);
+        final StorageReference imagesRef = storage.getReference()
+                .child("products")
+                .child(productKey).child("images");
+        for(int i = 0; i < imageUrls.size(); i++) {
+            uploadImage(imageUrls.get(i), imagesRef, productKey, i+1);
         }
     }
 
@@ -156,28 +171,29 @@ public class UploadProductFragment extends Fragment {
         saveProductImages(productId);
     }
 
-    private void uploadImage(ImageView imageView, StorageReference imagesRef, final String productKey, int count){
+    private void uploadImage(String imageUrl, StorageReference imagesRef, final String productKey, int count){
         final StorageReference imageRef = imagesRef.child("image-" + count);
-        imageView.setDrawingCacheEnabled(true);
-        imageView.buildDrawingCache();
-        Bitmap bitmap = imageView.getDrawingCache();
-        ByteArrayOutputStream baos = new ByteArrayOutputStream();
-        bitmap.compress(Bitmap.CompressFormat.JPEG, 100, baos);
-        byte[] data = baos.toByteArray();
+        final Uri uri = Uri.parse(imageUrl);
+        try {
+            final InputStream imageStream = getActivity().getContentResolver().openInputStream(uri);
+            final UploadTask uploadTask = imageRef.putStream(imageStream);
+            uploadTask.addOnSuccessListener(new OnSuccessListener<UploadTask.TaskSnapshot>() {
+                @Override
+                public void onSuccess(UploadTask.TaskSnapshot taskSnapshot) {
+                    final Uri downloadUrl = taskSnapshot.getDownloadUrl();
+                    final DatabaseReference imageUrlsRef = productsRef.child(productKey).child("imageUrls");
+                    final String imageUrlKey = imageUrlsRef.push().getKey();
+                    imageUrlsRef.child(imageUrlKey).setValue(downloadUrl.toString());
+                }
+            }).addOnFailureListener(new OnFailureListener() {
+                @Override
+                public void onFailure(@NonNull Exception e) {
 
-        UploadTask uploadTask = imageRef.putBytes(data);
-        uploadTask.addOnFailureListener(new OnFailureListener() {
-            @Override
-            public void onFailure(@NonNull Exception exception) {
-                // Handle unsuccessful uploads
-            }
-        }).addOnSuccessListener(new OnSuccessListener<UploadTask.TaskSnapshot>() {
-            @Override
-            public void onSuccess(UploadTask.TaskSnapshot taskSnapshot) {
-                // taskSnapshot.getMetadata() contains file metadata such as size, content-type, and download URL.
-                Uri downloadUrl = taskSnapshot.getDownloadUrl();
-                productsRef.child(productKey).child("imageUrls").push().setValue(downloadUrl);
-            }
-        });
+                }
+            });
+
+        } catch (FileNotFoundException e) {
+            e.printStackTrace();
+        }
     }
 }

@@ -12,8 +12,8 @@ public class Constants {
     public static final String PRODUCT_KEY = "product";
 
     public final static int PICK_PHOTO_CODE = 1046;
-    public final static int PRODUCT_IMAGE_WIDTH = 300; //300 pixels
-    public final static int PRODUCT_IMAGE_HEIGHT = 300; //300 pixels
+    public final static int PRODUCT_IMAGE_WIDTH = 350; //pixels
+    public final static int PRODUCT_IMAGE_HEIGHT = 350; //pixels
     public final static  int MAX_PRODUCT_IMAGES = 4;
 
     //firebase nodes

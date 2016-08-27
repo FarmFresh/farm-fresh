@@ -68,7 +68,7 @@ public class ProductInfoFragment extends Fragment {
         });
 
         //adding mock data for testing
-        addMockData();
+        //addMockData();
         return view;
     }
 

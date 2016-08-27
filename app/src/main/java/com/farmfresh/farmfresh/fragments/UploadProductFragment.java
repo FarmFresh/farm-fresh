@@ -201,8 +201,8 @@ public class UploadProductFragment extends Fragment {
                 @Override
                 public void onSuccess(UploadTask.TaskSnapshot taskSnapshot) {
                     final Uri downloadUrl = taskSnapshot.getDownloadUrl();
-                    imageViewWithProgressBar.getProgressBar().setVisibility(View.GONE);
-                    imageViewWithProgressBar.getImageView().setBorderWidth(10);
+                    imageViewWithProgressBar.getProgressBar().setVisibility(View.INVISIBLE);
+                    imageViewWithProgressBar.getImageView().setBorderWidth(50);
                     imageViewWithProgressBar.getImageView().setBorderColor(ContextCompat.getColor(getContext(),
                             R.color.green));
                     addImageUrlToProduct(downloadUrl.toString());

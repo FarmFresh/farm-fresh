@@ -8,6 +8,7 @@ import android.os.Bundle;
 import android.os.ParcelFileDescriptor;
 import android.support.annotation.NonNull;
 import android.support.v4.app.Fragment;
+import android.support.v4.content.ContextCompat;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -18,6 +19,7 @@ import android.widget.TextView;
 import com.farmfresh.farmfresh.R;
 import com.farmfresh.farmfresh.activities.MainActivity;
 import com.farmfresh.farmfresh.databinding.FragmentUploadProductBinding;
+import com.farmfresh.farmfresh.fragments.ui.models.ImageViewWithProgressBar;
 import com.farmfresh.farmfresh.models.Product;
 import com.farmfresh.farmfresh.utils.Constants;
 import com.farmfresh.farmfresh.utils.Helper;
@@ -45,6 +47,8 @@ public class UploadProductFragment extends Fragment {
     FirebaseAuth auth;
     FirebaseDatabase database;
     FirebaseUser currentUser;
+    List<ImageViewWithProgressBar> imageViewWithProgressBars = new ArrayList<>();
+    List<String> imageUrls = new ArrayList<>();
     private FragmentUploadProductBinding binding;
     private DatabaseReference productsRef;
     private TextView tvName;
@@ -70,7 +74,7 @@ public class UploadProductFragment extends Fragment {
         productsRef = database.getReference().child(Constants.NODE_PRODUCTS);
         this.currentUser = auth.getCurrentUser();
         this.product = getArguments().getParcelable(Constants.PRODUCT_KEY);
-        for(int i = 0; i < product.getImageUrls().size(); i++) {
+        for (int i = 0; i < product.getImageUrls().size(); i++) {
             imageUrls.add(product.getImageUrls().get(i));
         }
     }
@@ -103,12 +107,12 @@ public class UploadProductFragment extends Fragment {
     }
 
     private void productImagesSetup() {
-        imageViews.add(binding.ivProductImage1);
-        imageViews.add(binding.ivProductImage2);
-        imageViews.add(binding.ivProductImage3);
-        imageViews.add(binding.ivProductImage4);
+        imageViewWithProgressBars.add(new ImageViewWithProgressBar(binding.ivProductImage1, binding.pbImage1));
+        imageViewWithProgressBars.add(new ImageViewWithProgressBar(binding.ivProductImage2, binding.pbImage2));
+        imageViewWithProgressBars.add(new ImageViewWithProgressBar(binding.ivProductImage3, binding.pbImage3));
+        imageViewWithProgressBars.add(new ImageViewWithProgressBar(binding.ivProductImage4, binding.pbImage4));
         final ArrayList<String> imageUrls = product.getImageUrls();
-        for(int i = 0; i < imageUrls.size(); i++) {
+        for (int i = 0; i < imageUrls.size(); i++) {
             String imageUrl = imageUrls.get(i);
             final Uri uri = Uri.parse(imageUrl);
             try {
@@ -117,7 +121,8 @@ public class UploadProductFragment extends Fragment {
                         .decodeSampledBitmapFromFileDescriptor(input.getFileDescriptor(),
                                 Constants.PRODUCT_IMAGE_WIDTH,
                                 Constants.PRODUCT_IMAGE_HEIGHT);
-                imageViews.get(i).setImageBitmap(bitmap);
+                imageViewWithProgressBars.get(i).getImageView().setImageBitmap(bitmap);
+                imageViewWithProgressBars.get(i).getProgressBar().setVisibility(View.VISIBLE);
             } catch (FileNotFoundException e) {
                 e.printStackTrace();
             }
@@ -125,7 +130,7 @@ public class UploadProductFragment extends Fragment {
     }
 
     private void toolBarSetup() {
-        Button cancelButton = (Button)getActivity().findViewById(R.id.btnToolBar);
+        Button cancelButton = (Button) getActivity().findViewById(R.id.btnToolBar);
         cancelButton.setText("Cancel");
         cancelButton.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -139,6 +144,7 @@ public class UploadProductFragment extends Fragment {
 
     /**
      * Save product info in the products node
+     *
      * @return product id
      */
     private String saveProductInfo() {
@@ -161,8 +167,9 @@ public class UploadProductFragment extends Fragment {
         final StorageReference imagesRef = storage.getReference()
                 .child("products")
                 .child(productKey).child("images");
-        for(int i = 0; i < imageUrls.size(); i++) {
-            uploadImage(imageUrls.get(i), imagesRef, productKey, i+1);
+        for (int i = 0; i < imageUrls.size(); i++) {
+            uploadImage(imageUrls.get(i), imagesRef, productKey, i + 1,
+                    imageViewWithProgressBars.get(i));
         }
     }
 
@@ -171,7 +178,8 @@ public class UploadProductFragment extends Fragment {
         saveProductImages(productId);
     }
 
-    private void uploadImage(String imageUrl, StorageReference imagesRef, final String productKey, int count){
+    private void uploadImage(String imageUrl, StorageReference imagesRef, final String productKey, int count,
+                             final ImageViewWithProgressBar imageViewWithProgressBar) {
         final StorageReference imageRef = imagesRef.child("image-" + count);
         final Uri uri = Uri.parse(imageUrl);
         try {
@@ -188,7 +196,15 @@ public class UploadProductFragment extends Fragment {
             }).addOnFailureListener(new OnFailureListener() {
                 @Override
                 public void onFailure(@NonNull Exception e) {
-
+                    //TODO: handle image upload failure.
+                }
+            }).addOnSuccessListener(new OnSuccessListener<UploadTask.TaskSnapshot>() {
+                @Override
+                public void onSuccess(UploadTask.TaskSnapshot taskSnapshot) {
+                    imageViewWithProgressBar.getProgressBar().setVisibility(View.GONE);
+                    imageViewWithProgressBar.getImageView().setBorderWidth(40);
+                    imageViewWithProgressBar.getImageView().setBorderColor(ContextCompat.getColor(getContext(),
+                            R.color.green));
                 }
             });
 

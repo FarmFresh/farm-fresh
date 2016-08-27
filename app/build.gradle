@@ -62,6 +62,8 @@ dependencies {
 
     //android-shapre-imageview: https://github.com/siyamed/android-shape-imageview
     compile 'com.github.siyamed:android-shape-imageview:0.9.+@aar'
+    //custom progress bars for image uploads
+    compile 'com.github.castorflex.smoothprogressbar:library-circular:1.2.0'
 
 
 }

@@ -3,17 +3,20 @@ package com.farmfresh.farmfresh.fragments;
 import android.content.Intent;
 import android.databinding.DataBindingUtil;
 import android.graphics.Bitmap;
+import android.graphics.Color;
 import android.net.Uri;
 import android.os.Bundle;
+import android.os.Handler;
 import android.os.ParcelFileDescriptor;
 import android.support.annotation.NonNull;
+import android.support.design.widget.Snackbar;
 import android.support.v4.app.Fragment;
 import android.support.v4.content.ContextCompat;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
-import android.widget.ImageView;
+import android.widget.RelativeLayout;
 import android.widget.TextView;
 
 import com.farmfresh.farmfresh.R;
@@ -23,10 +26,8 @@ import com.farmfresh.farmfresh.fragments.ui.models.ImageViewWithProgressBar;
 import com.farmfresh.farmfresh.models.Product;
 import com.farmfresh.farmfresh.utils.Constants;
 import com.farmfresh.farmfresh.utils.Helper;
-import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.OnFailureListener;
 import com.google.android.gms.tasks.OnSuccessListener;
-import com.google.android.gms.tasks.Task;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.database.DatabaseReference;
@@ -48,15 +49,15 @@ public class UploadProductFragment extends Fragment {
     FirebaseDatabase database;
     FirebaseUser currentUser;
     List<ImageViewWithProgressBar> imageViewWithProgressBars = new ArrayList<>();
-    List<String> imageUrls = new ArrayList<>();
     private FragmentUploadProductBinding binding;
     private DatabaseReference productsRef;
     private TextView tvName;
     private TextView tvDescription;
     private TextView tvPrice;
-    List<ImageView> imageViews = new ArrayList<>(Constants.MAX_PRODUCT_IMAGES);
+    private RelativeLayout rlSuccess;
+    private int numberOfImagesSelected = 0;
     List<String> imageUrls = new ArrayList<>();
-
+    private String newProductKey;
     public static UploadProductFragment newInstance(Product product) {
         UploadProductFragment fragment = new UploadProductFragment();
         Bundle args = new Bundle();
@@ -72,11 +73,15 @@ public class UploadProductFragment extends Fragment {
         auth = FirebaseAuth.getInstance();
         database = FirebaseDatabase.getInstance();
         productsRef = database.getReference().child(Constants.NODE_PRODUCTS);
+        newProductKey = productsRef.push().getKey();
         this.currentUser = auth.getCurrentUser();
         this.product = getArguments().getParcelable(Constants.PRODUCT_KEY);
         for (int i = 0; i < product.getImageUrls().size(); i++) {
             imageUrls.add(product.getImageUrls().get(i));
+            numberOfImagesSelected++;
         }
+        //clear product dummy image urls
+        this.product.getImageUrls().clear();
     }
 
     @Override
@@ -111,8 +116,7 @@ public class UploadProductFragment extends Fragment {
         imageViewWithProgressBars.add(new ImageViewWithProgressBar(binding.ivProductImage2, binding.pbImage2));
         imageViewWithProgressBars.add(new ImageViewWithProgressBar(binding.ivProductImage3, binding.pbImage3));
         imageViewWithProgressBars.add(new ImageViewWithProgressBar(binding.ivProductImage4, binding.pbImage4));
-        final ArrayList<String> imageUrls = product.getImageUrls();
-        for (int i = 0; i < imageUrls.size(); i++) {
+        for (int i = 0; i < this.imageUrls.size(); i++) {
             String imageUrl = imageUrls.get(i);
             final Uri uri = Uri.parse(imageUrl);
             try {
@@ -147,38 +151,46 @@ public class UploadProductFragment extends Fragment {
      *
      * @return product id
      */
-    private String saveProductInfo() {
-        final String newProductKey = productsRef.push().getKey();
+    private void saveProduct() {
         productsRef.child(newProductKey);
-        //clear product dummy urls
-        product.getImageUrls().clear();
         productsRef.child(newProductKey)
                 .setValue(product)
-                .addOnCompleteListener(new OnCompleteListener<Void>() {
+                .addOnSuccessListener(new OnSuccessListener<Void>() {
                     @Override
-                    public void onComplete(@NonNull Task<Void> task) {
-
+                    public void onSuccess(Void aVoid) {
+                        Snackbar.make(binding.llImageViews,
+                                UploadProductFragment.this.product.getName() + " is successfully created" ,
+                                Snackbar.LENGTH_INDEFINITE)
+                                .setActionTextColor(Color.YELLOW)
+                                .setDuration(Snackbar.LENGTH_LONG)
+                                .show();
+                        new Handler().postDelayed(new Runnable() {
+                            @Override
+                            public void run() {
+                                Intent intent = new Intent(getActivity(), MainActivity.class);
+                                startActivity(intent);
+                            }
+                        }, 2000);
                     }
                 });
-        return newProductKey;
     }
 
-    private void saveProductImages(String productKey) {
+    private void saveProductImages() {
         final StorageReference imagesRef = storage.getReference()
                 .child("products")
-                .child(productKey).child("images");
+                .child(newProductKey).child("images");
         for (int i = 0; i < imageUrls.size(); i++) {
-            uploadImage(imageUrls.get(i), imagesRef, productKey, i + 1,
+            uploadImage(imageUrls.get(i), imagesRef, i + 1,
                     imageViewWithProgressBars.get(i));
         }
     }
 
     private void saveProductInFireBase() {
-        String productId = saveProductInfo();
-        saveProductImages(productId);
+        //save images and then save the product at the end of them
+        saveProductImages();
     }
 
-    private void uploadImage(String imageUrl, StorageReference imagesRef, final String productKey, int count,
+    private void uploadImage(String imageUrl, StorageReference imagesRef, int count,
                              final ImageViewWithProgressBar imageViewWithProgressBar) {
         final StorageReference imageRef = imagesRef.child("image-" + count);
         final Uri uri = Uri.parse(imageUrl);
@@ -189,27 +201,31 @@ public class UploadProductFragment extends Fragment {
                 @Override
                 public void onSuccess(UploadTask.TaskSnapshot taskSnapshot) {
                     final Uri downloadUrl = taskSnapshot.getDownloadUrl();
-                    final DatabaseReference imageUrlsRef = productsRef.child(productKey).child("imageUrls");
-                    final String imageUrlKey = imageUrlsRef.push().getKey();
-                    imageUrlsRef.child(imageUrlKey).setValue(downloadUrl.toString());
+                    imageViewWithProgressBar.getProgressBar().setVisibility(View.GONE);
+                    imageViewWithProgressBar.getImageView().setBorderWidth(10);
+                    imageViewWithProgressBar.getImageView().setBorderColor(ContextCompat.getColor(getContext(),
+                            R.color.green));
+                    addImageUrlToProduct(downloadUrl.toString());
                 }
             }).addOnFailureListener(new OnFailureListener() {
                 @Override
                 public void onFailure(@NonNull Exception e) {
                     //TODO: handle image upload failure.
                 }
-            }).addOnSuccessListener(new OnSuccessListener<UploadTask.TaskSnapshot>() {
-                @Override
-                public void onSuccess(UploadTask.TaskSnapshot taskSnapshot) {
-                    imageViewWithProgressBar.getProgressBar().setVisibility(View.GONE);
-                    imageViewWithProgressBar.getImageView().setBorderWidth(40);
-                    imageViewWithProgressBar.getImageView().setBorderColor(ContextCompat.getColor(getContext(),
-                            R.color.green));
-                }
             });
 
         } catch (FileNotFoundException e) {
             e.printStackTrace();
         }
+    }
+
+    private void addImageUrlToProduct(String imageUrl) {
+        synchronized(this.product){
+            this.product.getImageUrls().add(imageUrl);
+            if(product.getImageUrls().size() == numberOfImagesSelected) {
+                saveProduct();
+            }
+        }
+
     }
 }

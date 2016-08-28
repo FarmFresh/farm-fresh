@@ -6,6 +6,8 @@ import android.util.Log;
 import android.widget.Toast;
 
 import com.facebook.AccessToken;
+import com.farmfresh.farmfresh.models.User;
+import com.farmfresh.farmfresh.utils.Constants;
 import com.google.android.gms.auth.api.signin.GoogleSignInAccount;
 import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.Task;
@@ -15,6 +17,9 @@ import com.google.firebase.auth.FacebookAuthProvider;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.auth.GoogleAuthProvider;
+import com.google.firebase.auth.UserInfo;
+import com.google.firebase.database.DatabaseReference;
+import com.google.firebase.database.FirebaseDatabase;
 
 /**
  * Created by pbabu on 8/20/16.
@@ -26,7 +31,6 @@ public class FireBaseAuthentication {
     private FirebaseAuth mAuth;
     private FirebaseAuth.AuthStateListener mAuthListener;
     private final LoginListener mLoginSuccessListener;
-
     public interface LoginListener {
         void onLoginSuccess(FirebaseUser currentUser);
     }
@@ -42,6 +46,12 @@ public class FireBaseAuthentication {
                     Log.d(TAG, String.format("onAuthStateChanged:user_signed_in:[id:%s, display name:%s]",
                             currentUser.getUid(),
                             currentUser.getDisplayName()));
+                    final UserInfo userInfo = currentUser.getProviderData().get(0);
+                    final User user = FireBaseAuthentication.this.buildUserFrom(userInfo);
+                    DatabaseReference usersRef = FirebaseDatabase.getInstance()
+                            .getReference()
+                            .child(Constants.NODE_USERS);
+                    usersRef.child(currentUser.getUid()).setValue(user);
                     FireBaseAuthentication.this.mLoginSuccessListener.onLoginSuccess(currentUser);
                 }
             }
@@ -92,5 +102,13 @@ public class FireBaseAuthentication {
     public void signOut() {
         Log.d(TAG, "FireBase signing out....");
         mAuth.signOut();
+    }
+
+    private User buildUserFrom(UserInfo userInfo) {
+        User user = new User();
+        user.setEmail(userInfo.getEmail());
+        user.setDisplayName(userInfo.getDisplayName());
+        user.setProfileImageUrl(userInfo.getPhotoUrl().toString());
+        return user;
     }
 }

@@ -21,6 +21,7 @@ import android.widget.TextView;
 
 import com.farmfresh.farmfresh.R;
 import com.farmfresh.farmfresh.activities.MainActivity;
+import com.farmfresh.farmfresh.activities.ProductDetailActivity;
 import com.farmfresh.farmfresh.databinding.FragmentUploadProductBinding;
 import com.farmfresh.farmfresh.fragments.ui.models.ImageViewWithProgressBar;
 import com.farmfresh.farmfresh.models.Product;
@@ -167,7 +168,10 @@ public class UploadProductFragment extends Fragment {
                         new Handler().postDelayed(new Runnable() {
                             @Override
                             public void run() {
-                                Intent intent = new Intent(getActivity(), MainActivity.class);
+                                Intent intent = new Intent(getActivity(),
+                                        ProductDetailActivity.class);
+                                intent.putExtra(Constants.PRODUCT_KEY,
+                                        UploadProductFragment.this.newProductKey);
                                 startActivity(intent);
                             }
                         }, 2000);

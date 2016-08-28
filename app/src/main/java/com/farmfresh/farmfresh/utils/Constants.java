@@ -18,5 +18,6 @@ public class Constants {
 
     //firebase nodes
     public static final String NODE_PRODUCTS = "products_dummy";
+    public static final String NODE_USERS = "users";
 
 }

@@ -82,7 +82,7 @@ public class SellerProfileActivity extends AppCompatActivity {
 
     void displaySellerInfo(User user){
         TextView tvUserName = (TextView) findViewById(R.id.tvUserName);
-        tvUserName.setText(user.getFirstName());
+        tvUserName.setText(user.getDisplayName());
 
         // get image from facebook profile
         //        ImageView ivProfileImage = (ImageView) findViewById(R.id.ivProfileImage);

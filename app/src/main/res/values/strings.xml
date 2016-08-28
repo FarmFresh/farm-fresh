@@ -15,7 +15,7 @@
     <string name="header_background">header background</string>
     <string name="marker_title">Marker title</string>
     <string name="search_hint">"Find Fruits And Veggies Near You..."</string>
-    <string name="google_map_key">AIzaSyAuYqNPzkSWAZorLggosYj4OFh1OHcTTwE</string>
+    <string name="google_map_key">AIzaSyCkmV63LtrA1HeGxmyr0QyXin7ia7U38wA</string>
     <string name="product_name">Name</string>
     <string name="placeholder_product_name">Product Name</string>
     <string name="product_description">Description</string>

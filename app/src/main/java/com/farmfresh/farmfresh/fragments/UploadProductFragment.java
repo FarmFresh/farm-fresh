@@ -55,6 +55,7 @@ public class UploadProductFragment extends Fragment {
     private TextView tvName;
     private TextView tvDescription;
     private TextView tvPrice;
+    private TextView tvAddress;
     private RelativeLayout rlSuccess;
     private int numberOfImagesSelected = 0;
     List<String> imageUrls = new ArrayList<>();
@@ -110,6 +111,8 @@ public class UploadProductFragment extends Fragment {
         tvDescription.setText(this.product.getDescription());
         tvPrice = binding.tvPriceValue;
         tvPrice.setText(this.product.getPrice());
+        tvAddress = binding.tvAddressValue;
+        tvAddress.setText(this.product.getAddress());
     }
 
     private void productImagesSetup() {

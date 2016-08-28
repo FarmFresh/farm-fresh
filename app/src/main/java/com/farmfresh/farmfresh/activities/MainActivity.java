@@ -2,6 +2,7 @@ package com.farmfresh.farmfresh.activities;
 
 import android.Manifest;
 import android.content.res.Configuration;
+import android.graphics.Color;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
@@ -11,13 +12,19 @@ import android.support.design.widget.NavigationView;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
 import android.support.v4.app.FragmentTransaction;
+import android.support.v4.view.MenuItemCompat;
 import android.support.v4.widget.DrawerLayout;
 import android.support.v7.app.ActionBarDrawerToggle;
 import android.support.v7.app.AppCompatActivity;
+import android.support.v7.widget.SearchView;
 import android.support.v7.widget.Toolbar;
 import android.util.Log;
+import android.view.Menu;
+import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.view.View;
+import android.widget.EditText;
+import android.widget.ImageView;
 import android.widget.TextView;
 
 import com.facebook.FacebookSdk;
@@ -41,27 +48,38 @@ import com.farmfresh.farmfresh.helper.OnMap;
 import com.farmfresh.farmfresh.helper.OnPermission;
 import com.farmfresh.farmfresh.helper.PlaceManager;
 import com.farmfresh.farmfresh.models.Product;
+import com.firebase.geofire.GeoFire;
+import com.firebase.geofire.GeoLocation;
+import com.firebase.geofire.GeoQuery;
+import com.firebase.geofire.GeoQueryEventListener;
 import com.google.android.gms.common.ConnectionResult;
 import com.google.android.gms.common.api.GoogleApiClient;
 import com.google.android.gms.location.LocationRequest;
 import com.google.android.gms.location.LocationServices;
+import com.google.android.gms.maps.GoogleMap;
 import com.google.android.gms.maps.OnMapReadyCallback;
 import com.google.android.gms.maps.SupportMapFragment;
 import com.google.android.gms.maps.model.LatLng;
+import com.google.android.gms.maps.model.Marker;
 import com.google.firebase.auth.FirebaseUser;
+import com.google.firebase.database.DataSnapshot;
+import com.google.firebase.database.DatabaseError;
+import com.google.firebase.database.DatabaseReference;
+import com.google.firebase.database.FirebaseDatabase;
+import com.google.firebase.database.ValueEventListener;
 import com.google.maps.android.ui.IconGenerator;
 import com.squareup.picasso.Picasso;
 
 import org.parceler.Parcels;
 
 import java.util.ArrayList;
-import java.util.List;
+import java.util.HashMap;
 
 import butterknife.BindView;
 import butterknife.ButterKnife;
 
 public class MainActivity extends AppCompatActivity implements FireBaseAuthentication.LoginListener,
-        GoogleApiClient.OnConnectionFailedListener{
+        GoogleApiClient.OnConnectionFailedListener {
 
     public final static String TAG = MainActivity.class.getSimpleName();
     private DrawerLayout mDrawer;
@@ -80,7 +98,17 @@ public class MainActivity extends AppCompatActivity implements FireBaseAuthentic
     private AddLocationLayer layer;
     private MoveToLocationFirstTime move;
     private TrackLocation track;
+    private ReadyDisplayProduct displayProduct;
+    private AddToMap adder;
     private SupportMapFragment supportMapFragment;
+
+    private GoogleApiClient mGoogleClient;
+    private DatabaseReference mFirebaseDatabaseReference;
+
+    final ArrayList<Product> productList = new ArrayList<Product>();
+    HashMap<String,Product> productMap = new HashMap<String, Product>();
+    ArrayList<PlaceManager.Place> placeList = new ArrayList<PlaceManager.Place>();
+    HashMap<String, Marker> markers = new HashMap<String, Marker>();
 
     @BindView(R.id.fab)
     FloatingActionButton fab;
@@ -99,10 +127,10 @@ public class MainActivity extends AppCompatActivity implements FireBaseAuthentic
         updateNavigationMenuItems();
 
         View headerLayout = mNvView.getHeaderView(0);
-        mProfileImage = (de.hdodenhof.circleimageview.CircleImageView)headerLayout
-                        .findViewById(R.id.ivProfileImage);
-        mUserDisplayName = (TextView)headerLayout.findViewById(R.id.tvDisplayName);
-        mUserEmail = (TextView)headerLayout.findViewById(R.id.tvEmail);
+        mProfileImage = (de.hdodenhof.circleimageview.CircleImageView) headerLayout
+                .findViewById(R.id.ivProfileImage);
+        mUserDisplayName = (TextView) headerLayout.findViewById(R.id.tvDisplayName);
+        mUserEmail = (TextView) headerLayout.findViewById(R.id.tvEmail);
         //setup toolbar as action bar
         setSupportActionBar(mToolbar);
 
@@ -123,22 +151,112 @@ public class MainActivity extends AppCompatActivity implements FireBaseAuthentic
         mFireBaseAuthentication = new FireBaseAuthentication(this);
         mGoogleAuthentication = new GoogleAuthentication(mFireBaseAuthentication, this, this);
 
-        AddToMap adder = new AddToMap(getIconGenerator());
+        mFirebaseDatabaseReference = FirebaseDatabase.getInstance().getReference();
 
-        ArrayList<PlaceManager.Place> placeList = new ArrayList<PlaceManager.Place>();
+//        GeoFire geoFire = new GeoFire(mFirebaseDatabaseReference.child("products").child("Product0"));
+        GeoFire geoFire = new GeoFire(mFirebaseDatabaseReference.child("products"));
+//        geoFire.setLocation("Product4", new GeoLocation(65.9657, -18.5323));
+//        geoFire.setLocation("location",new GeoLocation(65.9657, -18.5323));
 
-        placeList.add(new PlaceManager.Place("Orange",new LatLng(65.9677,-18.5343)));
-        placeList.add(new PlaceManager.Place("Mango",new LatLng(65.9657,-18.5323)));
-        placeList.add(new PlaceManager.Place("Apple",new LatLng(65.9647,-18.5313)));
-        placeList.add(new PlaceManager.Place("Banana",new LatLng(65.9637,-18.5303)));
-        placeList.add(new PlaceManager.Place("Kiwi",new LatLng(65.9627,-18.5293)));
+        /*mFirebaseDatabaseReference.child("products").addValueEventListener(new ValueEventListener() {
+            @Override
+            public void onDataChange(DataSnapshot dataSnapshot) {
+                productList.clear();
+                for (DataSnapshot snapshot : dataSnapshot.getChildren()) {
+                    Product product = (Product) snapshot.getValue(Product.class);
+                    productList.add(product);
+                }
+                addProductsToMap();
+                displayProduct.populateMap(true);
+            }
 
-        manager = new PlaceManager(adder,placeList);
+            @Override
+            public void onCancelled(DatabaseError databaseError) {
+                Log.d("error", databaseError.getDetails());
+            }
+        });*/
+
+        GeoQuery geoQuery = geoFire.queryAtLocation(new GeoLocation(65.9677, -18.5343), 2);
+        geoQuery.addGeoQueryEventListener(new GeoQueryEventListener() {
+            @Override
+            public void onKeyEntered(final String key, GeoLocation location) {
+                Log.d("entered", key + " " + location.latitude + " " + location.longitude);
+//                productMap
+                mFirebaseDatabaseReference.child("products").child(key).addListenerForSingleValueEvent(new ValueEventListener() {
+                    @Override
+                    public void onDataChange(DataSnapshot dataSnapshot) {
+                        Product product = (Product) dataSnapshot.getValue(Product.class);
+                        productMap.put(key,product);
+                        Marker marker = adder.addTo(displayProduct.map, product.getName(), new LatLng(product.getL().get(0),product.getL().get(1)), true);
+                        markers.put(key, marker);
+                        Log.d("key: "+key,product.getG()+" "+product.getName());
+                    }
+
+                    @Override
+                    public void onCancelled(DatabaseError databaseError) {
+
+                    }
+                });
+            }
+
+            @Override
+            public void onKeyExited(String key) {
+                Log.d("exited", key);
+                productMap.remove(key);
+                Marker marker = markers.get(key);
+                if(marker != null){
+                    marker.remove();
+                    markers.remove(key);
+                }
+            }
+
+            @Override
+            public void onKeyMoved(final String key, GeoLocation location) {
+                Log.d("keyMoved", key + " " + location.latitude + " " + location.longitude);
+                mFirebaseDatabaseReference.child("products").child(key).addValueEventListener(new ValueEventListener() {
+                    @Override
+                    public void onDataChange(DataSnapshot dataSnapshot) {
+                        Product product = (Product) dataSnapshot.getValue(Product.class);
+                        productMap.put(key,product);
+                        Marker marker = markers.get(key);
+                        if(marker != null){
+                            marker.remove();
+                            markers.remove(key);
+                        }
+                        marker = adder.addTo(displayProduct.map, product.getName(), new LatLng(product.getL().get(0),product.getL().get(1)), true);
+                        markers.put(key, marker);
+                    }
+
+                    @Override
+                    public void onCancelled(DatabaseError databaseError) {
+
+                    }
+                });
+            }
+
+            @Override
+            public void onGeoQueryReady() {
+                Log.d("data has been", "loaded");
+                Log.d("productMap.size=",productMap.size()+"");
+//                addProductsToMap();
+//                displayProduct.populateMap(true);
+            }
+
+            @Override
+            public void onGeoQueryError(DatabaseError error) {
+                Log.d("GeoQueryError", error.toString());
+            }
+        });
+
+        adder = new AddToMap(getIconGenerator());
+
+        manager = new PlaceManager(adder);
         click = new AddMarkerOnLongClick(this, manager);
 
         layer = new AddLocationLayer();
         move = new MoveToLocationFirstTime(savedInstanceState);
         track = new TrackLocation(getLocationRequest(), new LogLocation());
+        displayProduct = new ReadyDisplayProduct();
 
         new OnActivity.Builder(this, manager, track).build();
 
@@ -152,12 +270,12 @@ public class MainActivity extends AppCompatActivity implements FireBaseAuthentic
         FragmentManager fragmentManager = getSupportFragmentManager();
         supportMapFragment = new SupportMapFragment();
         if (supportMapFragment != null) {
-            getMapAsync(supportMapFragment, new OnMap(manager, click, layer, move, track));
+            getMapAsync(supportMapFragment, new OnMap(manager, click, layer, move, track, displayProduct));
         }
         fragmentManager.beginTransaction().replace(R.id.flContent, supportMapFragment).commit();
         setTitle("Home");
 
-        GoogleApiClient mGoogleClient = getGoogleApiClient();
+        mGoogleClient = getGoogleApiClient();
         addConnectionCallbacks(mGoogleClient, new OnClient(mGoogleClient, move, track));
 
         int requestCode = 1001;
@@ -171,53 +289,31 @@ public class MainActivity extends AppCompatActivity implements FireBaseAuthentic
             public void onClick(View view) {
                 BottomSheetDialogFragment bottomSheetDialogFragment = new ListItemsBottomSheetFragment();
 
-                Product product = new Product();
-                List<Product> list = new ArrayList<Product>();
-
-                product.setName("Home Grown Orange");
-                product.setDescription("In Europe and America, surveys show that orange is the colour most associated with amusement, the unconventional, extroverts, warmth, fire, energy, activity, danger, taste and aroma, the autumn season, and Protestantism, as well as having long been the national colour of the Netherlands and the House of Orange.");
-                product.setPrice("$5 per dozen");
-                list.add(product);
-
-                product = new Product();
-                product.setName("Farm Grown Orange");
-                product.setDescription("In ancient Egypt artists used an orange mineral pigment called realgar for tomb paintings");
-                product.setPrice("$50 per dozen");
-                list.add(product);
-
-                product = new Product();
-                product.setName("Orange");
-                product.setDescription("Home grown california oranges");
-                product.setPrice("$40 per dozen");
-                list.add(product);
-
-                product = new Product();
-                product.setName("Mango");
-                product.setDescription("The mango is a juicy stone fruit (drupe) belonging to the genus Mangifera, consisting of numerous tropical fruiting trees, cultivated mostly for edible fruit. The majority of these species are found in nature as wild mangoes");
-                product.setPrice("$30 per dozen");
-                list.add(product);
-
-                product = new Product();
-                product.setName("Banana");
-                product.setDescription("The banana is an edible fruit, botanically a berry,[1][2] produced by several kinds of large herbaceous flowering plants in the genus Musa.[3] In some countries, bananas used for cooking may be called plantains.");
-                product.setPrice("$20 per dozen");
-                list.add(product);
-
-                product = new Product();
-                product.setName("Apple");
-                product.setDescription("Apple Inc. is an American multinational technology company headquartered in Cupertino, California, that designs, develops, and sells consumer electronics, computer software, and online services.");
-                product.setPrice("$10 per dozen");
-                list.add(product);
-
                 Bundle bundle = new Bundle();
-                bundle.putParcelable("productList", Parcels.wrap(list));
+                bundle.putParcelable("productList", Parcels.wrap(productList));
 
                 bottomSheetDialogFragment.setArguments(bundle);
                 bottomSheetDialogFragment.show(getSupportFragmentManager(), bottomSheetDialogFragment.getTag());
 
             }
         });
+    }
 
+    private void addProductsToMap() {
+        placeList.clear();
+        /*for (int i = 0; i < productList.size(); i++) {
+            Product product = productList.get(i);
+            if (product.getLatitude() != null && product.getLongitude() != null) {
+                placeList.add(new PlaceManager.Place(product.getName(), new LatLng(product.getLatitude(), product.getLongitude())));
+            }
+        }*/
+        for(String key : productMap.keySet()){
+            Product product = productMap.get(key);
+            if (product.getG()!=null) {
+                placeList.add(new PlaceManager.Place(product.getName(), new LatLng(product.getLatitude(), product.getLongitude())));
+            }
+        }
+        Log.d("placelist size:",placeList.size()+" "+productMap.size());
     }
 
     @Override
@@ -231,6 +327,59 @@ public class MainActivity extends AppCompatActivity implements FireBaseAuthentic
         super.onConfigurationChanged(newConfig);
         // Pass any configuration change to the drawer toggles
         mDrawerToggle.onConfigurationChanged(newConfig);
+    }
+
+    @Override
+    public boolean onCreateOptionsMenu(Menu menu) {
+        MenuInflater menuInflater = getMenuInflater();
+        menuInflater.inflate(R.menu.menu_search, menu);
+
+        MenuItem searchItem = menu.findItem(R.id.action_search);
+
+        final SearchView searchView = (SearchView) MenuItemCompat.getActionView(searchItem);
+
+        int searchImgId = android.support.v7.appcompat.R.id.search_button;
+        ImageView v = (ImageView) searchView.findViewById(searchImgId);
+//        v.setImageResource(searchImgId);
+
+        final int searchEditId = android.support.v7.appcompat.R.id.search_src_text;
+        EditText et = (EditText) searchView.findViewById(searchEditId);
+        et.setTextColor(Color.BLACK);
+        et.setHintTextColor(Color.BLACK);
+
+        searchView.setOnQueryTextListener(new SearchView.OnQueryTextListener() {
+            @Override
+            public boolean onQueryTextSubmit(String query) {
+                searchView.clearFocus();
+                placeList.clear();
+                /*for (int i = 0; i < productList.size(); i++) {
+                    Product product = productList.get(i);
+                    if (query.equalsIgnoreCase(product.getName()) && product.getLatitude() != null && product.getLongitude() != null) {
+                        placeList.add(new PlaceManager.Place(product.getName(), new LatLng(product.getLatitude(), product.getLongitude())));
+                    }
+                }*/
+
+                for(String key : productMap.keySet()){
+                    Product product = productMap.get(key);
+                    Log.d("product_null",(product==null)+"");
+                    if (product.getG()!=null && query.equalsIgnoreCase(product.getName()) ) {
+                        placeList.add(new PlaceManager.Place(product.getName(), new LatLng(product.getL().get(0),product.getL().get(1))));
+                    }
+                }
+
+                displayProduct.populateMap(true);
+                return true;
+            }
+
+            @Override
+            public boolean onQueryTextChange(String newText) {
+                return false;
+            }
+        });
+
+//        searchItem.expandActionView();
+        searchView.requestFocus();
+        return super.onCreateOptionsMenu(menu);
     }
 
     @Override
@@ -309,9 +458,9 @@ public class MainActivity extends AppCompatActivity implements FireBaseAuthentic
         }
 
         final FragmentTransaction fragmentTransaction = getSupportFragmentManager().beginTransaction();
-        if (fragment != null ){
+        if (fragment != null) {
             fragmentTransaction
-                    .replace(R.id.flContent, fragment,tag);
+                    .replace(R.id.flContent, fragment, tag);
             fragmentTransaction.commit();
             getSupportFragmentManager().executePendingTransactions();
             //Highlight the selected item
@@ -328,17 +477,17 @@ public class MainActivity extends AppCompatActivity implements FireBaseAuthentic
     }
 
     private void updateNavigationMenuItems() {
-        if(mCurrentUser != null) {
+        if (mCurrentUser != null) {
             mNvView.getMenu().clear();
             mNvView.inflateMenu(R.menu.drawer_logged_in_view);
-        }else {
+        } else {
             mNvView.getMenu().clear();
             mNvView.inflateMenu(R.menu.drawer_logout_view);
         }
     }
 
     private void updateNavigationHeader() {
-        if(mCurrentUser != null) {
+        if (mCurrentUser != null) {
             this.mProfileImage.setVisibility(View.VISIBLE);
             Picasso.with(this)
                     .load(mCurrentUser.getPhotoUrl())
@@ -349,7 +498,7 @@ public class MainActivity extends AppCompatActivity implements FireBaseAuthentic
             this.mUserDisplayName.setText(mCurrentUser.getDisplayName());
             this.mUserEmail.setText(mCurrentUser.getEmail());
 
-        }else {
+        } else {
             this.mUserDisplayName.setVisibility(View.INVISIBLE);
             this.mUserEmail.setVisibility(View.INVISIBLE);
             this.mProfileImage.setVisibility(View.INVISIBLE);
@@ -372,7 +521,7 @@ public class MainActivity extends AppCompatActivity implements FireBaseAuthentic
     }
 
     private GoogleApiClient getGoogleApiClient() {
-        return new GoogleApiClient.Builder(this).addApi(LocationServices.API).build();
+        return new GoogleApiClient.Builder(this).enableAutoManage(MainActivity.this, 1, null).addApi(LocationServices.API).build();
     }
 
     private void getMapAsync(SupportMapFragment fragment, OnMapReadyCallback callback) {
@@ -381,5 +530,26 @@ public class MainActivity extends AppCompatActivity implements FireBaseAuthentic
 
     private void addConnectionCallbacks(GoogleApiClient client, GoogleApiClient.ConnectionCallbacks callbacks) {
         client.registerConnectionCallbacks(callbacks);
+    }
+
+    class ReadyDisplayProduct implements OnMap.Listener {
+        private GoogleMap map;
+
+        @Override
+        public void onMap(GoogleMap map) {
+            this.map = map;
+        }
+
+        public void populateMap(boolean clearMap) {
+            if (map != null) {
+                if (clearMap) {
+                    map.clear();
+                }
+
+                for (PlaceManager.Place place : placeList) {
+                    adder.addTo(map, place.getmTitle(), place.getmLatLng(), true); // try to animate by setting to true.
+                }
+            }
+        }
     }
 }

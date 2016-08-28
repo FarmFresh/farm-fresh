@@ -3,7 +3,6 @@ package com.farmfresh.farmfresh.helper;
 import android.os.Bundle;
 import android.os.Parcel;
 import android.os.Parcelable;
-import android.util.Log;
 
 import com.farmfresh.farmfresh.action.AddToMap;
 import com.google.android.gms.maps.GoogleMap;
@@ -21,10 +20,9 @@ public class PlaceManager implements
 
     private ArrayList<Place> mPlaces;
 
-    public PlaceManager(AddToMap adder, ArrayList<Place> placeArrayList) {
+    public PlaceManager(AddToMap adder) {
         mAdder = adder;
-//        mPlaces = new ArrayList<>();
-        mPlaces = placeArrayList;
+        mPlaces = new ArrayList<>();
     }
 
     public void addPlace(GoogleMap map, String title, LatLng latLng) {
@@ -53,7 +51,6 @@ public class PlaceManager implements
     @Override
     public void onMap(GoogleMap map) {
         for (Place place : mPlaces) {
-            Log.d("adding places",place.mTitle);
             mAdder.addTo(map, place.mTitle, place.mLatLng, false);
         }
     }
@@ -97,6 +94,12 @@ public class PlaceManager implements
             }
         };
 
-    }
+        public String getmTitle() {
+            return mTitle;
+        }
 
+        public LatLng getmLatLng() {
+            return mLatLng;
+        }
+    }
 }

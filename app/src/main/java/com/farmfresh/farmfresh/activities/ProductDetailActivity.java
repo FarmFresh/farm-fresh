@@ -26,8 +26,6 @@ import com.google.firebase.storage.StorageReference;
 import com.synnapps.carouselview.CarouselView;
 import com.synnapps.carouselview.ImageListener;
 
-import com.farmfresh.farmfresh.utils.GetFirebase;
-
 import java.util.ArrayList;
 
 public class ProductDetailActivity extends AppCompatActivity {
@@ -44,8 +42,8 @@ public class ProductDetailActivity extends AppCompatActivity {
             firebase = new GetFirebase();
 
             // write product
-            firebase.writeNewProduct();
-            firebase.generateNewSeller();
+//            firebase.writeNewProduct();
+//            firebase.generateNewSeller();
 
             list_images = new ArrayList<>();
 
@@ -120,7 +118,7 @@ public class ProductDetailActivity extends AppCompatActivity {
             ivSellerEmail.setTag(user);
 
             TextView tvSellerName = (TextView) findViewById(R.id.tvSellerName);
-            tvSellerName.setText(user.getFirstName());
+            tvSellerName.setText(user.getName());
 
             ImageView ivProfileImage = (ImageView) findViewById(R.id.ivProfileImage);
             // Get and display seller image
@@ -206,9 +204,9 @@ public class ProductDetailActivity extends AppCompatActivity {
                     // Do something here
                     String uriText =
                             "mailto:" + user.getEmail() +
-                                    "?subject=" + Uri.encode(user.getFirstName() +
+                                    "?subject=" + Uri.encode(user.getName() +
                                     " is interested in your " + product.getName()) +
-                                    "&body=" + Uri.encode("I'm " + user.getFirstName() + " ." +
+                                    "&body=" + Uri.encode("I'm " + user.getName() + " ." +
                                     "I saw your ad in FarmFresh app. " +
                                     "I'm interested in your " + product.getName() + " ." +
                                     "I would like to know how I can buy from you.");

@@ -22,7 +22,7 @@ public class AddToMap {
         mIconGenerator = generator;
     }
 
-    public void addTo(GoogleMap map, String title, LatLng latLng, boolean animate) {
+    public Marker addTo(GoogleMap map, String title, LatLng latLng, boolean animate) {
         Bitmap bitmap = mIconGenerator.makeIcon(title);
         MarkerOptions opts = new MarkerOptions()
                 .position(latLng)
@@ -31,6 +31,7 @@ public class AddToMap {
         if (animate) {
             animate(map, marker);
         }
+        return marker;
     }
 
     private void animate(GoogleMap map, final Marker marker) {

@@ -7,7 +7,7 @@ import java.util.ArrayList;
  */
 public class User {
     private String id;
-    private String firstName;
+    private String displayName;
     private String email;
     private String profileImageUrl;
     private ArrayList<String> inventory;
@@ -18,8 +18,8 @@ public class User {
         this.id = id;
     }
 
-    public void setFirstName(String firstName) {
-        this.firstName = firstName;
+    public void setDisplayName(String displayName) {
+        this.displayName = displayName;
     }
 
 
@@ -47,8 +47,8 @@ public class User {
         return id;
     }
 
-    public String getFirstName() {
-        return firstName;
+    public String getDisplayName() {
+        return displayName;
     }
 
     public String getProfileImageUrl() {

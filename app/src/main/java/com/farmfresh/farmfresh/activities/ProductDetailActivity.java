@@ -15,14 +15,18 @@ import android.widget.TextView;
 import com.farmfresh.farmfresh.R;
 import com.farmfresh.farmfresh.models.Product;
 import com.farmfresh.farmfresh.models.User;
+import com.farmfresh.farmfresh.utils.Constants;
 import com.farmfresh.farmfresh.utils.GetFirebase;
 import com.google.android.gms.tasks.OnFailureListener;
 import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
+import com.google.firebase.database.DatabaseReference;
+import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.ValueEventListener;
 import com.google.firebase.storage.FirebaseStorage;
 import com.google.firebase.storage.StorageReference;
+import com.squareup.picasso.Picasso;
 import com.synnapps.carouselview.CarouselView;
 import com.synnapps.carouselview.ImageListener;
 
@@ -33,23 +37,41 @@ public class ProductDetailActivity extends AppCompatActivity {
         GetFirebase firebase;
         Product product;
         ArrayList<Bitmap> list_images;
-
+        private String productKey;
+        private FirebaseDatabase database;
+        private DatabaseReference productsRef;
         @Override
         protected void onCreate(Bundle savedInstanceState) {
             super.onCreate(savedInstanceState);
             setContentView(R.layout.activity_product_detail);
+            this.productKey = getIntent().getStringExtra(Constants.PRODUCT_KEY);
+            database = FirebaseDatabase.getInstance();
+            productsRef = database.getReference().child(Constants.NODE_PRODUCTS);
+            productsRef.child(this.productKey).addValueEventListener(new ValueEventListener() {
+                @Override
+                public void onDataChange(DataSnapshot dataSnapshot) {
+                    ProductDetailActivity.this.product = dataSnapshot.getValue(Product.class);
+                    final ArrayList<String> imageUrls = ProductDetailActivity.this.product.getImageUrls();
+                    carouselView.setPageCount(imageUrls.size());
+                    displayProductInfo(product);
+                    getSellerInfo(product.getSellerId());
+                }
 
-            firebase = new GetFirebase();
+                @Override
+                public void onCancelled(DatabaseError databaseError) {
+
+                }
+            });
+            /*firebase = new GetFirebase();
 
             // write product
-//            firebase.writeNewProduct();
-//            firebase.generateNewSeller();
-
+            firebase.writeNewProduct();
+            firebase.generateNewSeller();*/
             list_images = new ArrayList<>();
 
             carouselView = (CarouselView) findViewById(R.id.carouselView);
             carouselView.setImageListener(imageListener);
-            // get product by product id
+            /*// get product by product id
             final String id = "Product1";
             firebase.rootRef.child("products").child(id).addListenerForSingleValueEvent(
                     new ValueEventListener() {
@@ -68,13 +90,17 @@ public class ProductDetailActivity extends AppCompatActivity {
                         public void onCancelled(DatabaseError databaseError) {
                             Log.d("error", id.toString());
                         }
-                    });
+                    });*/
         }
 
         ImageListener imageListener = new ImageListener() {
             @Override
             public void setImageForPosition(int position, ImageView imageView) {
-                imageView.setImageBitmap(list_images.get(position));
+                final ArrayList<String> imageUrls = ProductDetailActivity.this.product.getImageUrls();
+                Picasso.with(ProductDetailActivity.this)
+                        .load(imageUrls.get(position))
+                        .into(imageView);
+                //imageView.setImageBitmap(list_images.get(position));
             }
         };
 
@@ -94,7 +120,7 @@ public class ProductDetailActivity extends AppCompatActivity {
 
             id.toString();
 
-            firebase.rootRef.child("users").child(id).addListenerForSingleValueEvent(
+            database.getReference().child("users").child(id).addListenerForSingleValueEvent(
                     new ValueEventListener() {
                         @Override
                         public void onDataChange(DataSnapshot dataSnapshot) {
@@ -118,7 +144,7 @@ public class ProductDetailActivity extends AppCompatActivity {
             ivSellerEmail.setTag(user);
 
             TextView tvSellerName = (TextView) findViewById(R.id.tvSellerName);
-            tvSellerName.setText(user.getFirstName());
+            tvSellerName.setText(user.getDisplayName());
 
             ImageView ivProfileImage = (ImageView) findViewById(R.id.ivProfileImage);
             // Get and display seller image
@@ -204,9 +230,9 @@ public class ProductDetailActivity extends AppCompatActivity {
                     // Do something here
                     String uriText =
                             "mailto:" + user.getEmail() +
-                                    "?subject=" + Uri.encode(user.getFirstName() +
+                                    "?subject=" + Uri.encode(user.getDisplayName() +
                                     " is interested in your " + product.getName()) +
-                                    "&body=" + Uri.encode("I'm " + user.getFirstName() + " ." +
+                                    "&body=" + Uri.encode("I'm " + user.getDisplayName() + " ." +
                                     "I saw your ad in FarmFresh app. " +
                                     "I'm interested in your " + product.getName() + " ." +
                                     "I would like to know how I can buy from you.");

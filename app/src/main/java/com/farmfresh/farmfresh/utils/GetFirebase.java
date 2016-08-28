@@ -40,7 +40,7 @@ public class GetFirebase {
 
     public void generateNewSeller(){
         User user = new User();
-        user.setFirstName("Joan Dylan");
+        user.setDisplayName("Joan Dylan");
         user.setEmail("joan@gmail.com");
         user.setProfileImageUrl("gs://farm-fresh-76e2e.appspot.com/users/user-1/images/joandylan.jpeg");
 

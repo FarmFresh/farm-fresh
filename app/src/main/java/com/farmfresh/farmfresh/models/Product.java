@@ -1,5 +1,6 @@
 package com.farmfresh.farmfresh.models;
 
+import android.graphics.Bitmap;
 import android.os.Parcel;
 import android.os.Parcelable;
 
@@ -15,6 +16,7 @@ public class Product implements Parcelable {
     private String price;
     private ArrayList<String> imageUrls;
     private String sellerId;
+    private Bitmap icon;
 
     public void setId(String id) {
         this.id = id;
@@ -40,6 +42,10 @@ public class Product implements Parcelable {
         this.sellerId = sellerId;
     }
 
+    public void setIcon(Bitmap icon) {
+        this.icon = icon;
+    }
+
     public String getId() {
         return id;
     }
@@ -62,6 +68,10 @@ public class Product implements Parcelable {
 
     public String getSellerId() {
         return sellerId;
+    }
+
+    public Bitmap getIcon() {
+        return icon;
     }
 
     @Override

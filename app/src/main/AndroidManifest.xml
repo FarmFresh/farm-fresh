@@ -47,8 +47,10 @@
             </intent-filter>
         </activity>
         <activity android:name=".activities.ProductDetailActivity" />
-        <activity android:name=".activities.NewProductActivity"
-            android:parentActivityName=".activities.MainActivity"></activity>
+        <activity
+            android:name=".activities.NewProductActivity"
+            android:parentActivityName=".activities.MainActivity" />
+        <activity android:name=".activities.SellerProfileActivity"></activity>
     </application>
 
 </manifest>

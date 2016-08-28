@@ -177,6 +177,7 @@ public class MainActivity extends AppCompatActivity implements FireBaseAuthentic
         });*/
 
         GeoQuery geoQuery = geoFire.queryAtLocation(new GeoLocation(65.9677, -18.5343), 2);
+//        displayProduct.map.getMyLocation();
         geoQuery.addGeoQueryEventListener(new GeoQueryEventListener() {
             @Override
             public void onKeyEntered(final String key, GeoLocation location) {
@@ -290,6 +291,10 @@ public class MainActivity extends AppCompatActivity implements FireBaseAuthentic
                 BottomSheetDialogFragment bottomSheetDialogFragment = new ListItemsBottomSheetFragment();
 
                 Bundle bundle = new Bundle();
+                productList.clear();
+                for(String key : productMap.keySet()){
+                    productList.add(productMap.get(key));
+                }
                 bundle.putParcelable("productList", Parcels.wrap(productList));
 
                 bottomSheetDialogFragment.setArguments(bundle);

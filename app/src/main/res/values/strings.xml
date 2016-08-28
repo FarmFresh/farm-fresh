@@ -14,8 +14,8 @@
     <string name="user_profile_image">Profile Image</string>
     <string name="header_background">header background</string>
     <string name="marker_title">Marker title</string>
-    <string name="google_map_key">AIzaSyBcrLMQs5daMyULDcz0KrsGGwSei4JHqIA</string>
     <string name="search_hint">"Find Fruits And Veggies Near You..."</string>
+    <string name="google_map_key">AIzaSyAuYqNPzkSWAZorLggosYj4OFh1OHcTTwE</string>
     <string name="product_name">Name</string>
     <string name="placeholder_product_name">Product Name</string>
     <string name="product_description">Description</string>
@@ -27,4 +27,5 @@
 
     <!-- TODO: Remove or change this placeholder text -->
     <string name="hello_blank_fragment">Hello blank fragment</string>
+    <string name="placeholder_address_price">Product Address</string>
 </resources>

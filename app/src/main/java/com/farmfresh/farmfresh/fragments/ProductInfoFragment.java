@@ -68,7 +68,6 @@ public class ProductInfoFragment extends Fragment {
         });
 
         //adding mock data for testing
-        //addMockData();
         return view;
     }
 
@@ -87,11 +86,5 @@ public class ProductInfoFragment extends Fragment {
     public void onDetach() {
         super.onDetach();
         this.listener = null;
-    }
-
-    private void addMockData() {
-        etName.setText("Tasty home grown oranges");
-        etDescription.setText("Tasty home grown oranges. We have dozens of oranges");
-        etPrice.setText("$123");
     }
 }

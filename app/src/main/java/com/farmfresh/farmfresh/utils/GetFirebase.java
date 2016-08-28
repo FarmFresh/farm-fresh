@@ -1,7 +1,6 @@
 package com.farmfresh.farmfresh.utils;
 
 import com.farmfresh.farmfresh.models.Product;
-import com.farmfresh.farmfresh.models.User;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 
@@ -35,11 +34,11 @@ public class GetFirebase {
 
         product.setImageUrls(images);
 
-        rootRef.child("products").child("Product1").setValue(product);
+//        rootRef.child("products").child("Product1").setValue(product);
     }
 
     public void generateNewSeller(){
-        User user = new User();
+        /*User user = new User();
         user.setDisplayName("Joan Dylan");
         user.setEmail("joan@gmail.com");
         user.setProfileImageUrl("gs://farm-fresh-76e2e.appspot.com/users/user-1/images/joandylan.jpeg");
@@ -50,7 +49,7 @@ public class GetFirebase {
         user.setProductBought(products);
         user.setProductBought(products);
 
-        rootRef.child("users").child("User1").setValue(user);
+        rootRef.child("users").child("User1").setValue(user);*/
     }
 
 }

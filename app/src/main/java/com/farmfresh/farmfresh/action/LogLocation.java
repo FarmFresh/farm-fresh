@@ -3,6 +3,7 @@ package com.farmfresh.farmfresh.action;
 import android.util.Log;
 
 import com.farmfresh.farmfresh.activities.MainActivity;
+import com.farmfresh.farmfresh.models.User;
 import com.google.android.gms.maps.GoogleMap;
 import com.google.android.gms.maps.model.Circle;
 import com.google.android.gms.maps.model.LatLng;
@@ -29,5 +30,6 @@ public class LogLocation implements TrackLocation.Listener {
                 .center(location);
         mCircle = map.addCircle(opts);*/
         Log.d(MainActivity.TAG,"Location update "+location);
+        User.latLng = location;
     }
 }

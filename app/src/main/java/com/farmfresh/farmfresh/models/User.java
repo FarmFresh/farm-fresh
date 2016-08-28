@@ -1,5 +1,7 @@
 package com.farmfresh.farmfresh.models;
 
+import com.google.android.gms.maps.model.LatLng;
+
 import java.util.ArrayList;
 
 /**
@@ -13,6 +15,7 @@ public class User {
     private ArrayList<String> inventory;
     private ArrayList<String> productBought;
     private ArrayList<String> productSold;
+    public static LatLng latLng;
 
     public void setId(String id) {
         this.id = id;

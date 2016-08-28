@@ -17,6 +17,7 @@ public class Product implements Parcelable {
     private ArrayList<String> imageUrls;
     private String sellerId;
     private Bitmap icon;
+    private String address;
 
     public void setId(String id) {
         this.id = id;
@@ -74,6 +75,15 @@ public class Product implements Parcelable {
         return icon;
     }
 
+    public String getAddress() {
+        return address;
+    }
+
+    public void setAddress(String address) {
+        this.address = address;
+    }
+
+
     @Override
     public int describeContents() {
         return 0;
@@ -87,6 +97,8 @@ public class Product implements Parcelable {
         dest.writeString(this.price);
         dest.writeStringList(this.imageUrls);
         dest.writeString(this.sellerId);
+        dest.writeParcelable(this.icon, flags);
+        dest.writeString(this.address);
     }
 
     public Product() {
@@ -99,6 +111,8 @@ public class Product implements Parcelable {
         this.price = in.readString();
         this.imageUrls = in.createStringArrayList();
         this.sellerId = in.readString();
+        this.icon = in.readParcelable(Bitmap.class.getClassLoader());
+        this.address = in.readString();
     }
 
     public static final Parcelable.Creator<Product> CREATOR = new Parcelable.Creator<Product>() {

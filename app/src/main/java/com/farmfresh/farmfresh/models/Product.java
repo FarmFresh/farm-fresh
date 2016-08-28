@@ -1,11 +1,15 @@
 package com.farmfresh.farmfresh.models;
 
+import android.graphics.Bitmap;
+import android.os.Parcel;
+import android.os.Parcelable;
+
 import java.util.ArrayList;
 
 /**
  * Created by lucerne on 8/20/16.
  */
-public class Product {
+public class Product implements Parcelable {
     private String id;
     private String name;
     private String description;
@@ -16,6 +20,7 @@ public class Product {
     private Double longitude;
     private String g;
     private ArrayList<Double> l;
+    private Bitmap icon;
 
     public void setId(String id) {
         this.id = id;
@@ -47,6 +52,9 @@ public class Product {
 
     public void setLongitude(Double longitude) {
         this.longitude = longitude;
+    }
+    public void setIcon(Bitmap icon) {
+        this.icon = icon;
     }
 
     public String getId() {
@@ -96,4 +104,46 @@ public class Product {
     public void setL(ArrayList<Double> l) {
         this.l = l;
     }
+    public Bitmap getIcon() {
+        return icon;
+    }
+
+    @Override
+    public int describeContents() {
+        return 0;
+    }
+
+    @Override
+    public void writeToParcel(Parcel dest, int flags) {
+        dest.writeString(this.id);
+        dest.writeString(this.name);
+        dest.writeString(this.description);
+        dest.writeString(this.price);
+        dest.writeStringList(this.imageUrls);
+        dest.writeString(this.sellerId);
+    }
+
+    public Product() {
+    }
+
+    protected Product(Parcel in) {
+        this.id = in.readString();
+        this.name = in.readString();
+        this.description = in.readString();
+        this.price = in.readString();
+        this.imageUrls = in.createStringArrayList();
+        this.sellerId = in.readString();
+    }
+
+    public static final Parcelable.Creator<Product> CREATOR = new Parcelable.Creator<Product>() {
+        @Override
+        public Product createFromParcel(Parcel source) {
+            return new Product(source);
+        }
+
+        @Override
+        public Product[] newArray(int size) {
+            return new Product[size];
+        }
+    };
 }

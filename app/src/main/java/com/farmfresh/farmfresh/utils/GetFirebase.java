@@ -18,6 +18,7 @@ public class GetFirebase {
 
     public String databaseUrl = "gs://farm-fresh-76e2e.appspot.com/";
 
+
     public void writeNewProduct() {
         Product product = new Product();
         product.setId("Product1");
@@ -39,15 +40,15 @@ public class GetFirebase {
 
     public void generateNewSeller(){
         User user = new User();
-        user.setName("Joan Dylan");
+        user.setDisplayName("Joan Dylan");
         user.setEmail("joan@gmail.com");
         user.setProfileImageUrl("gs://farm-fresh-76e2e.appspot.com/users/user-1/images/joandylan.jpeg");
 
         ArrayList<String> products = new ArrayList<String>();
         products.add("Product1");
-//        user.setInventory(products);
-//        user.setProductBought(products);
-//        user.setProductBought(products);
+        user.setInventory(products);
+        user.setProductBought(products);
+        user.setProductBought(products);
 
         rootRef.child("users").child("User1").setValue(user);
     }

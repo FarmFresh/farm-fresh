@@ -1,6 +1,7 @@
 package com.farmfresh.farmfresh.activities;
 
 import android.Manifest;
+import android.content.Intent;
 import android.content.res.Configuration;
 import android.graphics.Color;
 import android.os.Bundle;
@@ -41,7 +42,6 @@ import com.farmfresh.farmfresh.auth.GoogleAuthentication;
 import com.farmfresh.farmfresh.fragments.ListItemsBottomSheetFragment;
 import com.farmfresh.farmfresh.fragments.LoginFragment;
 import com.farmfresh.farmfresh.fragments.ProfileFragment;
-import com.farmfresh.farmfresh.fragments.SellingFragment;
 import com.farmfresh.farmfresh.helper.OnActivity;
 import com.farmfresh.farmfresh.helper.OnClient;
 import com.farmfresh.farmfresh.helper.OnMap;
@@ -299,14 +299,14 @@ public class MainActivity extends AppCompatActivity implements FireBaseAuthentic
         });
     }
 
-    private void addProductsToMap() {
+    /*private void addProductsToMap() {
         placeList.clear();
-        /*for (int i = 0; i < productList.size(); i++) {
+        *//*for (int i = 0; i < productList.size(); i++) {
             Product product = productList.get(i);
             if (product.getLatitude() != null && product.getLongitude() != null) {
                 placeList.add(new PlaceManager.Place(product.getName(), new LatLng(product.getLatitude(), product.getLongitude())));
             }
-        }*/
+        }*//*
         for(String key : productMap.keySet()){
             Product product = productMap.get(key);
             if (product.getG()!=null) {
@@ -314,7 +314,7 @@ public class MainActivity extends AppCompatActivity implements FireBaseAuthentic
             }
         }
         Log.d("placelist size:",placeList.size()+" "+productMap.size());
-    }
+    }*/
 
     @Override
     protected void onPostCreate(@Nullable Bundle savedInstanceState) {
@@ -361,7 +361,6 @@ public class MainActivity extends AppCompatActivity implements FireBaseAuthentic
 
                 for(String key : productMap.keySet()){
                     Product product = productMap.get(key);
-                    Log.d("product_null",(product==null)+"");
                     if (product.getG()!=null && query.equalsIgnoreCase(product.getName()) ) {
                         placeList.add(new PlaceManager.Place(product.getName(), new LatLng(product.getL().get(0),product.getL().get(1))));
                     }
@@ -448,10 +447,9 @@ public class MainActivity extends AppCompatActivity implements FireBaseAuthentic
                 tag = ProfileFragment.class.getSimpleName();
                 break;
             case R.id.menuSelling:
-                title = "Selling";
-                fragment = new SellingFragment();
-                tag = SellingFragment.class.getSimpleName();
-                break;
+                Intent newProductIntent = new Intent(this,NewProductActivity.class);
+                startActivity(newProductIntent);
+                return;
             case R.id.menuLogout:
                 logout();
                 return;

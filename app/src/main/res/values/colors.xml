@@ -17,4 +17,5 @@
     <color name="colorPrimaryText">#212121</color>
     <color name="colorSecondaryText">#757575</color>
     <color name="silver">#C0C0C0</color>
+    <color name="field_label_color">#1976D2</color>
 </resources>

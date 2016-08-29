@@ -14,6 +14,7 @@ import com.farmfresh.farmfresh.R;
 import com.farmfresh.farmfresh.activities.ProductDetailActivity;
 import com.farmfresh.farmfresh.adapter.ProductsAdapter;
 import com.farmfresh.farmfresh.models.Product;
+import com.farmfresh.farmfresh.utils.Constants;
 
 import org.parceler.Parcels;
 
@@ -70,7 +71,9 @@ public class ListItemsBottomSheetFragment extends BottomSheetDialogFragment {
             @Override
             public void onProductClick(View itemView, int position) {
 //                Toast.makeText(getActivity(),productList.get(position).getDescription()+"",Toast.LENGTH_LONG).show();
-                startActivity(new Intent(getActivity(), ProductDetailActivity.class));
+                Intent intent = new Intent(getActivity(),ProductDetailActivity.class);
+                intent.putExtra(Constants.PRODUCT_KEY,productList.get(position).getId());
+                startActivity(intent);
             }
         });
 

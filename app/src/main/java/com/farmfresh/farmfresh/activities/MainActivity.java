@@ -120,6 +120,8 @@ public class MainActivity extends AppCompatActivity implements FireBaseAuthentic
 
         ButterKnife.bind(this);
 
+//        new CreateSchema();
+
         mToolbar = (Toolbar) findViewById(R.id.toolbar);
         mDrawer = (DrawerLayout) findViewById(R.id.layout_main);
         mNvView = (NavigationView) findViewById(R.id.nvView);
@@ -155,7 +157,22 @@ public class MainActivity extends AppCompatActivity implements FireBaseAuthentic
 
 //        GeoFire geoFire = new GeoFire(mFirebaseDatabaseReference.child("products").child("Product0"));
         GeoFire geoFire = new GeoFire(mFirebaseDatabaseReference.child("products"));
-//        geoFire.setLocation("Product4", new GeoLocation(65.9657, -18.5323));
+//        String key = mFirebaseDatabaseReference.child("products").push().getKey();
+//        geoFire.setLocation(key, new GeoLocation(37.401025, -121.924067));
+
+        /*Map<String,Object> map = new HashMap<String,Object>();
+        ArrayList<String> list = new ArrayList<String>();
+        list.add("https://firebasestorage.googleapis.com/v0/b/farm-fresh-76e2e.appspot.com/o/products%2F-KQMBQORLsrd7dBEtOgI%2Fimages%2Fimage-1?alt=media&token=5ad40018-96d6-4f84-be4f-5fbf9fac7ed3");
+        list.add("https://firebasestorage.googleapis.com/v0/b/farm-fresh-76e2e.appspot.com/o/products%2F-KQMBQORLsrd7dBEtOgI%2Fimages%2Fimage-2?alt=media&token=dd65a9f1-af22-404c-bfad-81d4b346dac5");
+        list.add("https://firebasestorage.googleapis.com/v0/b/farm-fresh-76e2e.appspot.com/o/products%2F-KQMBQORLsrd7dBEtOgI%2Fimages%2Fimage-3?alt=media&token=07de8250-cec5-465f-8cfd-07e0e403fa16");
+        list.add("https://firebasestorage.googleapis.com/v0/b/farm-fresh-76e2e.appspot.com/o/products%2F-KQMBQORLsrd7dBEtOgI%2Fimages%2Fimage-4?alt=media&token=fc5b30bd-de9d-4b31-b116-5a99123becf6");
+
+        map.put("imageUrls",list);
+        mFirebaseDatabaseReference.child("products").child("-KQM4XnsvLyYtwx0niD2").updateChildren(map);*/
+
+
+
+
 //        geoFire.setLocation("location",new GeoLocation(65.9657, -18.5323));
 
         /*mFirebaseDatabaseReference.child("products").addValueEventListener(new ValueEventListener() {
@@ -176,8 +193,8 @@ public class MainActivity extends AppCompatActivity implements FireBaseAuthentic
             }
         });*/
 
-        GeoQuery geoQuery = geoFire.queryAtLocation(new GeoLocation(65.9677, -18.5343), 2);
-//        displayProduct.map.getMyLocation();
+//        GeoQuery geoQuery = geoFire.queryAtLocation(new GeoLocation(65.9677, -18.5343), 2);
+        GeoQuery geoQuery = geoFire.queryAtLocation(new GeoLocation(37.401025,-121.924067), 25);
         geoQuery.addGeoQueryEventListener(new GeoQueryEventListener() {
             @Override
             public void onKeyEntered(final String key, GeoLocation location) {
@@ -187,10 +204,11 @@ public class MainActivity extends AppCompatActivity implements FireBaseAuthentic
                     @Override
                     public void onDataChange(DataSnapshot dataSnapshot) {
                         Product product = (Product) dataSnapshot.getValue(Product.class);
+                        product.setId(key);
                         productMap.put(key,product);
                         Marker marker = adder.addTo(displayProduct.map, product.getName(), new LatLng(product.getL().get(0),product.getL().get(1)), true);
                         markers.put(key, marker);
-                        Log.d("key: "+key,product.getG()+" "+product.getName());
+                        Log.d("key ",key+" "+product.getId()+" "+product.getG()+" "+product.getName()+" "+product.getL().get(0)+" "+product.getL().get(1));
                     }
 
                     @Override
@@ -218,11 +236,12 @@ public class MainActivity extends AppCompatActivity implements FireBaseAuthentic
                     @Override
                     public void onDataChange(DataSnapshot dataSnapshot) {
                         Product product = (Product) dataSnapshot.getValue(Product.class);
+                        product.setId(key);
                         productMap.put(key,product);
                         Marker marker = markers.get(key);
                         if(marker != null){
                             marker.remove();
-                            markers.remove(key);
+//                            markers.remove(key);
                         }
                         marker = adder.addTo(displayProduct.map, product.getName(), new LatLng(product.getL().get(0),product.getL().get(1)), true);
                         markers.put(key, marker);

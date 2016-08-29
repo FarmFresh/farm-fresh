@@ -1,5 +1,9 @@
 # Source: https://gist.github.com/nesquena/5617544/raw/53710b374e7df3302df43b552488d876040ada3d/.gitignore
 
+# farm-fresh
+app/src/main/java/com/farmfresh/farmfresh/schema/
+*.json
+
 # built application files
 *.apk
 *.ap_

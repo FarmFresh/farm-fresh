@@ -17,7 +17,7 @@ public class Constants {
     public final static  int MAX_PRODUCT_IMAGES = 4;
 
     //firebase nodes
-    public static final String NODE_PRODUCTS = "products_dummy";
+    public static final String NODE_PRODUCTS = "products";
     public static final String NODE_USERS = "users";
 
 }

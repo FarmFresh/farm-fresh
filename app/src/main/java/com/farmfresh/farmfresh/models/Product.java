@@ -5,6 +5,8 @@ import android.os.Parcel;
 import android.os.Parcelable;
 
 import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.Map;
 
 /**
  * Created by lucerne on 8/20/16.
@@ -160,4 +162,14 @@ public class Product implements Parcelable {
             return new Product[size];
         }
     };
+
+    public Map<String,Object> toMap() {
+        Map<String,Object> map = new HashMap<>();
+        map.put("name", name);
+        map.put("description", description);
+        map.put("imageUrls", imageUrls);
+        map.put("sellerId", sellerId);
+        map.put("price", price);
+        return map;
+    }
 }

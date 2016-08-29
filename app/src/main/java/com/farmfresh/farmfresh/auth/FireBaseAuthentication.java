@@ -1,6 +1,8 @@
 package com.farmfresh.farmfresh.auth;
 
 import android.app.Activity;
+import android.content.Context;
+import android.location.Location;
 import android.support.annotation.NonNull;
 import android.util.Log;
 import android.widget.Toast;
@@ -8,6 +10,9 @@ import android.widget.Toast;
 import com.facebook.AccessToken;
 import com.farmfresh.farmfresh.models.User;
 import com.farmfresh.farmfresh.utils.Constants;
+import com.farmfresh.farmfresh.utils.Helper;
+import com.firebase.geofire.GeoFire;
+import com.firebase.geofire.GeoLocation;
 import com.google.android.gms.auth.api.signin.GoogleSignInAccount;
 import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.Task;
@@ -27,22 +32,20 @@ import com.google.firebase.database.FirebaseDatabase;
 public class FireBaseAuthentication {
 
     private static final String TAG = FireBaseAuthentication.class.getSimpleName();
-
+    private final LoginListener mLoginSuccessListener;
+    private final Context context;
     private FirebaseAuth mAuth;
     private FirebaseAuth.AuthStateListener mAuthListener;
-    private final LoginListener mLoginSuccessListener;
-    public interface LoginListener {
-        void onLoginSuccess(FirebaseUser currentUser);
-    }
 
-    public FireBaseAuthentication(final LoginListener mLoginSuccessListener) {
+    public FireBaseAuthentication(final LoginListener mLoginSuccessListener, Context context) {
         this.mLoginSuccessListener = mLoginSuccessListener;
+        this.context = context;
         mAuth = FirebaseAuth.getInstance();
         mAuthListener = new FirebaseAuth.AuthStateListener() {
             @Override
             public void onAuthStateChanged(@NonNull FirebaseAuth firebaseAuth) {
                 final FirebaseUser currentUser = firebaseAuth.getCurrentUser();
-                if(currentUser != null){
+                if (currentUser != null) {
                     Log.d(TAG, String.format("onAuthStateChanged:user_signed_in:[id:%s, display name:%s]",
                             currentUser.getUid(),
                             currentUser.getDisplayName()));
@@ -51,7 +54,20 @@ public class FireBaseAuthentication {
                     DatabaseReference usersRef = FirebaseDatabase.getInstance()
                             .getReference()
                             .child(Constants.NODE_USERS);
-                    usersRef.child(currentUser.getUid()).setValue(user);
+                    final DatabaseReference currentUserRef = usersRef.child(currentUser.getUid());
+                    //add remaining properties to the user node
+                    currentUserRef.setValue(user);
+                    if (User.latLng != null) {
+                        //set geolocation for that user.
+                        GeoFire geoFire = new GeoFire(currentUserRef);
+                        geoFire.setLocation("location", new GeoLocation(User.latLng.latitude, User.latLng.longitude));
+                        //fetch address for location
+                        Location location = new Location("");
+                        location.setLatitude(User.latLng.latitude);
+                        location.setLongitude(User.latLng.longitude);
+                        AddressResultReceiver resultReceiver = new AddressResultReceiver(FireBaseAuthentication.this.context, null);
+                        Helper.startFetchAddressIntentService(FireBaseAuthentication.this.context,resultReceiver, location);
+                    }
                     FireBaseAuthentication.this.mLoginSuccessListener.onLoginSuccess(currentUser);
                 }
             }
@@ -59,22 +75,22 @@ public class FireBaseAuthentication {
         mAuth.addAuthStateListener(mAuthListener);
     }
 
-    public void addAuthListener(){
-        if(this.mAuthListener != null){
+    public void addAuthListener() {
+        if (this.mAuthListener != null) {
             mAuth.addAuthStateListener(this.mAuthListener);
         }
     }
 
     public void removeAuthListener() {
-        if(this.mAuthListener != null) {
+        if (this.mAuthListener != null) {
             mAuth.removeAuthStateListener(this.mAuthListener);
         }
     }
 
-    public void fireBaseAuthWithGoogle(GoogleSignInAccount acct, final Activity activity){
+    public void fireBaseAuthWithGoogle(GoogleSignInAccount acct, final Activity activity) {
         Log.d(TAG, "fireBaseAuthWithGoogle:" + acct.getId());
         AuthCredential credential = GoogleAuthProvider.getCredential(acct.getIdToken(), null);
-        signIntoFireBase(credential,activity);
+        signIntoFireBase(credential, activity);
     }
 
     public void fireBaseAuthWithFacebook(AccessToken token, Activity activity) {
@@ -87,7 +103,7 @@ public class FireBaseAuthentication {
         mAuth.signInWithCredential(credential).addOnCompleteListener(activity, new OnCompleteListener<AuthResult>() {
             @Override
             public void onComplete(@NonNull Task<AuthResult> task) {
-                if(!task.isSuccessful()){
+                if (!task.isSuccessful()) {
                     Log.w(TAG, "signInWithCredential", task.getException());
                     //if login fails with firebase, show a toast message
                     //TODO: handle firebase login failure
@@ -110,5 +126,12 @@ public class FireBaseAuthentication {
         user.setDisplayName(userInfo.getDisplayName());
         user.setProfileImageUrl(userInfo.getPhotoUrl().toString());
         return user;
+    }
+
+
+
+
+    public interface LoginListener {
+        void onLoginSuccess(FirebaseUser currentUser);
     }
 }

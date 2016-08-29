@@ -52,6 +52,15 @@
             android:name=".activities.NewProductActivity"
             android:parentActivityName=".activities.MainActivity" />
         <activity android:name=".activities.SellerProfileActivity"></activity>
+
+
+        <service
+            android:name=".google.api.FetchAddressFromLocationIntentService"
+            android:exported="false"/>
+
+        <service
+            android:name=".google.api.FetchLocationFromAddressIntentService"
+            android:exported="false"/>
     </application>
 
 </manifest>

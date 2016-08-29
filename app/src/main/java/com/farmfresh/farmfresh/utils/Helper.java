@@ -1,8 +1,17 @@
 package com.farmfresh.farmfresh.utils;
 
+import android.content.Context;
+import android.content.Intent;
 import android.content.res.Resources;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
+import android.location.Location;
+import android.widget.Toast;
+
+import com.farmfresh.farmfresh.auth.AddressResultReceiver;
+import com.farmfresh.farmfresh.auth.LocationResultReceiver;
+import com.farmfresh.farmfresh.google.api.FetchAddressFromLocationIntentService;
+import com.farmfresh.farmfresh.google.api.FetchLocationFromAddressIntentService;
 
 import java.io.FileDescriptor;
 
@@ -81,5 +90,21 @@ public class Helper {
         options.inJustDecodeBounds = false;
         return BitmapFactory.decodeFileDescriptor(fileDescriptor, null, options);
     }
+    public static void showToast(Context context, String message) {
+        Toast.makeText(context,message, Toast.LENGTH_SHORT);
+    }
 
+    public static void startFetchAddressIntentService(Context context, AddressResultReceiver resultReceiver, Location location) {
+        Intent intent = new Intent(context, FetchAddressFromLocationIntentService.class);
+        intent.putExtra(Constants.RECEIVER, resultReceiver);
+        intent.putExtra(Constants.LOCATION_DATA_EXTRA, location);
+        context.startService(intent);
+    }
+
+    public static void startFetchLocationIntentService(Context context, LocationResultReceiver resultReceiver, String address) {
+        Intent intent = new Intent(context, FetchLocationFromAddressIntentService.class);
+        intent.putExtra(Constants.RECEIVER, resultReceiver);
+        intent.putExtra(Constants.ADDRESS_DATA_EXTRA, address);
+        context.startService(intent);
+    }
 }

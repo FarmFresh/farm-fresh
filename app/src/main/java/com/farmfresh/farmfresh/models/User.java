@@ -15,6 +15,7 @@ public class User {
     private ArrayList<String> inventory;
     private ArrayList<String> productBought;
     private ArrayList<String> productSold;
+    private String userCurrentAddress;
     public static LatLng latLng;
 
     public void setId(String id) {
@@ -72,5 +73,13 @@ public class User {
 
     public String getEmail() {
         return email;
+    }
+
+    public String getUserCurrentAddress() {
+        return userCurrentAddress;
+    }
+
+    public void setUserCurrentAddress(String userCurrentAddress) {
+        this.userCurrentAddress = userCurrentAddress;
     }
 }

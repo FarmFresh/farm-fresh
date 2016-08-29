@@ -4,6 +4,7 @@ import android.Manifest;
 import android.content.Intent;
 import android.content.res.Configuration;
 import android.graphics.Color;
+import android.location.Location;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
@@ -34,9 +35,9 @@ import com.farmfresh.farmfresh.R;
 import com.farmfresh.farmfresh.action.AddLocationLayer;
 import com.farmfresh.farmfresh.action.AddMarkerOnLongClick;
 import com.farmfresh.farmfresh.action.AddToMap;
-import com.farmfresh.farmfresh.action.LogLocation;
 import com.farmfresh.farmfresh.action.MoveToLocationFirstTime;
 import com.farmfresh.farmfresh.action.TrackLocation;
+import com.farmfresh.farmfresh.auth.AddressResultReceiver;
 import com.farmfresh.farmfresh.auth.FireBaseAuthentication;
 import com.farmfresh.farmfresh.auth.GoogleAuthentication;
 import com.farmfresh.farmfresh.fragments.ListItemsBottomSheetFragment;
@@ -48,6 +49,8 @@ import com.farmfresh.farmfresh.helper.OnMap;
 import com.farmfresh.farmfresh.helper.OnPermission;
 import com.farmfresh.farmfresh.helper.PlaceManager;
 import com.farmfresh.farmfresh.models.Product;
+import com.farmfresh.farmfresh.models.User;
+import com.farmfresh.farmfresh.utils.Helper;
 import com.firebase.geofire.GeoFire;
 import com.firebase.geofire.GeoLocation;
 import com.firebase.geofire.GeoQuery;
@@ -79,7 +82,7 @@ import butterknife.BindView;
 import butterknife.ButterKnife;
 
 public class MainActivity extends AppCompatActivity implements FireBaseAuthentication.LoginListener,
-        GoogleApiClient.OnConnectionFailedListener {
+        GoogleApiClient.OnConnectionFailedListener,TrackLocation.Listener {
 
     public final static String TAG = MainActivity.class.getSimpleName();
     private DrawerLayout mDrawer;
@@ -150,7 +153,7 @@ public class MainActivity extends AppCompatActivity implements FireBaseAuthentic
         //load the home fragment as default
         selectDrawerItem(mNvView.getMenu().findItem(R.id.menuHome));
 
-        mFireBaseAuthentication = new FireBaseAuthentication(this);
+        mFireBaseAuthentication = new FireBaseAuthentication(this, this);
         mGoogleAuthentication = new GoogleAuthentication(mFireBaseAuthentication, this, this);
 
         mFirebaseDatabaseReference = FirebaseDatabase.getInstance().getReference();
@@ -275,7 +278,7 @@ public class MainActivity extends AppCompatActivity implements FireBaseAuthentic
 
         layer = new AddLocationLayer();
         move = new MoveToLocationFirstTime(savedInstanceState);
-        track = new TrackLocation(getLocationRequest(), new LogLocation());
+        track = new TrackLocation(getLocationRequest(), this);
         displayProduct = new ReadyDisplayProduct();
 
         new OnActivity.Builder(this, manager, track).build();
@@ -573,5 +576,17 @@ public class MainActivity extends AppCompatActivity implements FireBaseAuthentic
                 }
             }
         }
+    }
+
+    @Override
+    public void accept(GoogleMap map, LatLng latlng) {
+        Log.d(MainActivity.TAG,"Location update "+latlng);
+        AddressResultReceiver resultReceiver = new AddressResultReceiver(this, null);
+        User.latLng = latlng;
+        //fetch address for location
+        Location location = new Location("");
+        location.setLatitude(latlng.latitude);
+        location.setLongitude(latlng.longitude);
+        Helper.startFetchAddressIntentService(this,resultReceiver, location);
     }
 }

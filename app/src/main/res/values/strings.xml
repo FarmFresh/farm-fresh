@@ -14,8 +14,8 @@
     <string name="user_profile_image">Profile Image</string>
     <string name="header_background">header background</string>
     <string name="marker_title">Marker title</string>
-    <string name="google_map_key">AIzaSyBcrLMQs5daMyULDcz0KrsGGwSei4JHqIA</string>
     <string name="search_hint">"Find Fruits And Veggies Near You..."</string>
+    <string name="google_map_key">AIzaSyCkmV63LtrA1HeGxmyr0QyXin7ia7U38wA</string>
     <string name="product_name">Name</string>
     <string name="placeholder_product_name">Product Name</string>
     <string name="product_description">Description</string>
@@ -27,4 +27,18 @@
 
     <!-- TODO: Remove or change this placeholder text -->
     <string name="hello_blank_fragment">Hello blank fragment</string>
+    <string name="placeholder_address_price">Product Address</string>
+    <string name="product_address">Address</string>
+
+
+    <string name="no_location_provided">No location data provided</string>
+    <string name="no_address_provided">No address data provided</string>
+    <string name="no_address_found">Sorry, no address found</string>
+    <string name="address_found">Address found</string>
+    <string name="service_not_available">No geocoder available</string>
+    <string name="invalid_lat_long_used">Invalid latitude or longitude used</string>
+    <string name="invalid_address_used">Invalid address used</string>
+
+
+
 </resources>

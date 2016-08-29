@@ -22,6 +22,7 @@ import android.widget.TextView;
 import com.farmfresh.farmfresh.R;
 import com.farmfresh.farmfresh.activities.MainActivity;
 import com.farmfresh.farmfresh.activities.ProductDetailActivity;
+import com.farmfresh.farmfresh.auth.LocationResultReceiver;
 import com.farmfresh.farmfresh.databinding.FragmentUploadProductBinding;
 import com.farmfresh.farmfresh.fragments.ui.models.ImageViewWithProgressBar;
 import com.farmfresh.farmfresh.models.Product;
@@ -55,6 +56,7 @@ public class UploadProductFragment extends Fragment {
     private TextView tvName;
     private TextView tvDescription;
     private TextView tvPrice;
+    private TextView tvAddress;
     private RelativeLayout rlSuccess;
     private int numberOfImagesSelected = 0;
     List<String> imageUrls = new ArrayList<>();
@@ -83,6 +85,7 @@ public class UploadProductFragment extends Fragment {
         }
         //clear product dummy image urls
         this.product.getImageUrls().clear();
+        updateProductLocationFromItsAddress();
     }
 
     @Override
@@ -110,6 +113,8 @@ public class UploadProductFragment extends Fragment {
         tvDescription.setText(this.product.getDescription());
         tvPrice = binding.tvPriceValue;
         tvPrice.setText(this.product.getPrice());
+        tvAddress = binding.tvAddressValue;
+        tvAddress.setText(this.product.getAddress());
     }
 
     private void productImagesSetup() {
@@ -159,24 +164,33 @@ public class UploadProductFragment extends Fragment {
                 .addOnSuccessListener(new OnSuccessListener<Void>() {
                     @Override
                     public void onSuccess(Void aVoid) {
-                        Snackbar.make(binding.llImageViews,
-                                UploadProductFragment.this.product.getName() + " is successfully created" ,
-                                Snackbar.LENGTH_INDEFINITE)
-                                .setActionTextColor(Color.YELLOW)
-                                .setDuration(Snackbar.LENGTH_LONG)
-                                .show();
-                        new Handler().postDelayed(new Runnable() {
-                            @Override
-                            public void run() {
-                                Intent intent = new Intent(getActivity(),
-                                        ProductDetailActivity.class);
-                                intent.putExtra(Constants.PRODUCT_KEY,
-                                        UploadProductFragment.this.newProductKey);
-                                startActivity(intent);
-                            }
-                        }, 2000);
+                        showSnackBar();
+                        openProductDetailActivity();
+                        updateProductLocationFromItsAddress();
                     }
                 });
+    }
+
+    private void openProductDetailActivity() {
+        new Handler().postDelayed(new Runnable() {
+            @Override
+            public void run() {
+                Intent intent = new Intent(getActivity(),
+                        ProductDetailActivity.class);
+                intent.putExtra(Constants.PRODUCT_KEY,
+                        UploadProductFragment.this.newProductKey);
+                startActivity(intent);
+            }
+        }, 2000);
+    }
+
+    private void showSnackBar() {
+        Snackbar.make(binding.llImageViews,
+                UploadProductFragment.this.product.getName() + " is successfully created" ,
+                Snackbar.LENGTH_INDEFINITE)
+                .setActionTextColor(Color.YELLOW)
+                .setDuration(Snackbar.LENGTH_LONG)
+                .show();
     }
 
     private void saveProductImages() {
@@ -231,5 +245,10 @@ public class UploadProductFragment extends Fragment {
             }
         }
 
+    }
+
+    private void updateProductLocationFromItsAddress() {
+        LocationResultReceiver resultReceiver = new LocationResultReceiver(getContext(),newProductKey);
+        Helper.startFetchLocationIntentService(getActivity(), resultReceiver, product.getAddress());
     }
 }

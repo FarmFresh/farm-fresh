@@ -15,6 +15,7 @@ import android.widget.EditText;
 
 import com.farmfresh.farmfresh.R;
 import com.farmfresh.farmfresh.models.Product;
+import com.farmfresh.farmfresh.models.User;
 import com.farmfresh.farmfresh.utils.Constants;
 import com.google.android.gms.common.GooglePlayServicesNotAvailableException;
 import com.google.android.gms.common.GooglePlayServicesRepairableException;
@@ -22,6 +23,12 @@ import com.google.android.gms.common.api.Status;
 import com.google.android.gms.location.places.AutocompleteFilter;
 import com.google.android.gms.location.places.Place;
 import com.google.android.gms.location.places.ui.PlaceAutocomplete;
+import com.google.firebase.auth.FirebaseAuth;
+import com.google.firebase.auth.FirebaseUser;
+import com.google.firebase.database.DataSnapshot;
+import com.google.firebase.database.DatabaseError;
+import com.google.firebase.database.FirebaseDatabase;
+import com.google.firebase.database.ValueEventListener;
 
 /**
  * Created by pbabu on 8/18/16.
@@ -34,7 +41,8 @@ public class ProductInfoFragment extends Fragment {
     private EditText etPrice;
     private EditText etAddress;
     private OnSubmitProductInfoListener listener;
-
+    FirebaseAuth firebaseAuth;
+    User currentUser;
     public static final String TAG = ProductInfoFragment.class.getSimpleName();
     public interface OnSubmitProductInfoListener {
         void withInfo(Product product);
@@ -52,6 +60,11 @@ public class ProductInfoFragment extends Fragment {
     public void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         this.product = getArguments().getParcelable(Constants.PRODUCT_KEY);
+        firebaseAuth = FirebaseAuth.getInstance();
+        final FirebaseUser currentUser = firebaseAuth.getCurrentUser();
+        if(currentUser != null) {
+            loadCurrentUser(currentUser);
+        }
     }
 
     @Nullable
@@ -63,6 +76,9 @@ public class ProductInfoFragment extends Fragment {
         etDescription = (EditText)view.findViewById(R.id.etProductDescription);
         etPrice = (EditText)view.findViewById(R.id.etProductPrice);
         etAddress = (EditText)view.findViewById(R.id.etProductAddress);
+        if(currentUser != null && currentUser.getUserCurrentAddress() != null) {
+            etAddress.setText(currentUser.getUserCurrentAddress());
+        }
         if(this.product != null) {
             etName.setText(this.product.getName());
             etDescription.setText(this.product.getDescription());
@@ -75,6 +91,7 @@ public class ProductInfoFragment extends Fragment {
                 product.setName(etName.getText().toString());
                 product.setDescription(etDescription.getText().toString());
                 product.setPrice(etPrice.getText().toString());
+                product.setAddress(etAddress.getText().toString());
                 listener.withInfo(product);
             }
         });
@@ -163,5 +180,23 @@ public class ProductInfoFragment extends Fragment {
                 //TODO: The user canceled the operation.
             }
         }
+    }
+
+    private void loadCurrentUser(FirebaseUser user) {
+        FirebaseDatabase.getInstance().getReference().child(Constants.NODE_USERS)
+                .child(user.getUid()).addValueEventListener(new ValueEventListener() {
+            @Override
+            public void onDataChange(DataSnapshot dataSnapshot) {
+                ProductInfoFragment.this.currentUser = dataSnapshot.getValue(User.class);
+                if(etAddress != null) {
+                    etAddress.setText(ProductInfoFragment.this.currentUser.getUserCurrentAddress());
+                }
+            }
+
+            @Override
+            public void onCancelled(DatabaseError databaseError) {
+
+            }
+        });
     }
 }

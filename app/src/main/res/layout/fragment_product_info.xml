@@ -102,5 +102,15 @@
         android:layout_alignParentStart="true"
         android:layout_marginTop="40dp" />
 
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:textAppearance="?android:attr/textAppearanceSmall"
+        android:text="Small Text"
+        android:id="@+id/textView"
+        android:layout_above="@+id/price_text_input_layout"
+        android:layout_alignParentStart="true"
+        android:layout_marginStart="926dp" />
+
 
 </RelativeLayout>

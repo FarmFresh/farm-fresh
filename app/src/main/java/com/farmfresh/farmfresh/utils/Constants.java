@@ -21,4 +21,19 @@ public class Constants {
     public static final String NODE_PRODUCTS = "products";
     public static final String NODE_USERS = "users";
 
+
+    public static final String PACKAGE_NAME =
+            "com.google.android.gms.location.sample.locationaddress";
+    public static final String RECEIVER = PACKAGE_NAME + ".RECEIVER";
+    public static final String RESULT_ADDRESS_DATA_KEY = PACKAGE_NAME +
+            ".RESULT_ADDRESS_DATA_KEY";
+    public static final String RESULT_LOCATION_DATA_KEY = PACKAGE_NAME +
+            ".RESULT_LOCATION_DATA_KEY";
+    public static final String LOCATION_DATA_EXTRA = PACKAGE_NAME +
+            ".LOCATION_DATA_EXTRA";
+    public static final String ADDRESS_DATA_EXTRA = PACKAGE_NAME +
+            ".ADDRESS_DATA_EXTRA";
+    public static final int FETCH_ADDRESS_SUCCESS_RESULT = 0;
+    public static final int FETCH_ADDRESS_FAILURE_RESULT = 1;
+
 }

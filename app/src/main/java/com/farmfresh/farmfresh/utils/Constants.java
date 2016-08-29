@@ -18,7 +18,7 @@ public class Constants {
     public final static int PLACE_AUTOCOMPLETE_REQUEST_CODE = 1;
 
     //firebase nodes
-    public static final String NODE_PRODUCTS = "products_dummy";
+    public static final String NODE_PRODUCTS = "products";
     public static final String NODE_USERS = "users";
 
 }

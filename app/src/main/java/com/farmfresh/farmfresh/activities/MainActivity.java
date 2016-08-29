@@ -82,7 +82,7 @@ import butterknife.BindView;
 import butterknife.ButterKnife;
 
 public class MainActivity extends AppCompatActivity implements FireBaseAuthentication.LoginListener,
-        GoogleApiClient.OnConnectionFailedListener,TrackLocation.Listener {
+        GoogleApiClient.OnConnectionFailedListener,TrackLocation.Listener, GeoQueryEventListener {
 
     public final static String TAG = MainActivity.class.getSimpleName();
     private DrawerLayout mDrawer;
@@ -104,6 +104,10 @@ public class MainActivity extends AppCompatActivity implements FireBaseAuthentic
     private ReadyDisplayProduct displayProduct;
     private AddToMap adder;
     private SupportMapFragment supportMapFragment;
+    private GeoFire geoFire;
+    private GeoQuery geoQuery;
+
+    private static final double EPSILON = 0.000000001;
 
     private GoogleApiClient mGoogleClient;
     private DatabaseReference mFirebaseDatabaseReference;
@@ -158,118 +162,7 @@ public class MainActivity extends AppCompatActivity implements FireBaseAuthentic
 
         mFirebaseDatabaseReference = FirebaseDatabase.getInstance().getReference();
 
-//        GeoFire geoFire = new GeoFire(mFirebaseDatabaseReference.child("products").child("Product0"));
-        GeoFire geoFire = new GeoFire(mFirebaseDatabaseReference.child("products"));
-//        String key = mFirebaseDatabaseReference.child("products").push().getKey();
-//        geoFire.setLocation(key, new GeoLocation(37.401025, -121.924067));
-
-        /*Map<String,Object> map = new HashMap<String,Object>();
-        ArrayList<String> list = new ArrayList<String>();
-        list.add("https://firebasestorage.googleapis.com/v0/b/farm-fresh-76e2e.appspot.com/o/products%2F-KQMBQORLsrd7dBEtOgI%2Fimages%2Fimage-1?alt=media&token=5ad40018-96d6-4f84-be4f-5fbf9fac7ed3");
-        list.add("https://firebasestorage.googleapis.com/v0/b/farm-fresh-76e2e.appspot.com/o/products%2F-KQMBQORLsrd7dBEtOgI%2Fimages%2Fimage-2?alt=media&token=dd65a9f1-af22-404c-bfad-81d4b346dac5");
-        list.add("https://firebasestorage.googleapis.com/v0/b/farm-fresh-76e2e.appspot.com/o/products%2F-KQMBQORLsrd7dBEtOgI%2Fimages%2Fimage-3?alt=media&token=07de8250-cec5-465f-8cfd-07e0e403fa16");
-        list.add("https://firebasestorage.googleapis.com/v0/b/farm-fresh-76e2e.appspot.com/o/products%2F-KQMBQORLsrd7dBEtOgI%2Fimages%2Fimage-4?alt=media&token=fc5b30bd-de9d-4b31-b116-5a99123becf6");
-
-        map.put("imageUrls",list);
-        mFirebaseDatabaseReference.child("products").child("-KQM4XnsvLyYtwx0niD2").updateChildren(map);*/
-
-
-
-
-//        geoFire.setLocation("location",new GeoLocation(65.9657, -18.5323));
-
-        /*mFirebaseDatabaseReference.child("products").addValueEventListener(new ValueEventListener() {
-            @Override
-            public void onDataChange(DataSnapshot dataSnapshot) {
-                productList.clear();
-                for (DataSnapshot snapshot : dataSnapshot.getChildren()) {
-                    Product product = (Product) snapshot.getValue(Product.class);
-                    productList.add(product);
-                }
-                addProductsToMap();
-                displayProduct.populateMap(true);
-            }
-
-            @Override
-            public void onCancelled(DatabaseError databaseError) {
-                Log.d("error", databaseError.getDetails());
-            }
-        });*/
-
-//        GeoQuery geoQuery = geoFire.queryAtLocation(new GeoLocation(65.9677, -18.5343), 2);
-        GeoQuery geoQuery = geoFire.queryAtLocation(new GeoLocation(37.401025,-121.924067), 25);
-        geoQuery.addGeoQueryEventListener(new GeoQueryEventListener() {
-            @Override
-            public void onKeyEntered(final String key, GeoLocation location) {
-                Log.d("entered", key + " " + location.latitude + " " + location.longitude);
-//                productMap
-                mFirebaseDatabaseReference.child("products").child(key).addListenerForSingleValueEvent(new ValueEventListener() {
-                    @Override
-                    public void onDataChange(DataSnapshot dataSnapshot) {
-                        Product product = (Product) dataSnapshot.getValue(Product.class);
-                        product.setId(key);
-                        productMap.put(key,product);
-                        Marker marker = adder.addTo(displayProduct.map, product.getName(), new LatLng(product.getL().get(0),product.getL().get(1)), true);
-                        markers.put(key, marker);
-                        Log.d("key ",key+" "+product.getId()+" "+product.getG()+" "+product.getName()+" "+product.getL().get(0)+" "+product.getL().get(1));
-                    }
-
-                    @Override
-                    public void onCancelled(DatabaseError databaseError) {
-
-                    }
-                });
-            }
-
-            @Override
-            public void onKeyExited(String key) {
-                Log.d("exited", key);
-                productMap.remove(key);
-                Marker marker = markers.get(key);
-                if(marker != null){
-                    marker.remove();
-                    markers.remove(key);
-                }
-            }
-
-            @Override
-            public void onKeyMoved(final String key, GeoLocation location) {
-                Log.d("keyMoved", key + " " + location.latitude + " " + location.longitude);
-                mFirebaseDatabaseReference.child("products").child(key).addValueEventListener(new ValueEventListener() {
-                    @Override
-                    public void onDataChange(DataSnapshot dataSnapshot) {
-                        Product product = (Product) dataSnapshot.getValue(Product.class);
-                        product.setId(key);
-                        productMap.put(key,product);
-                        Marker marker = markers.get(key);
-                        if(marker != null){
-                            marker.remove();
-//                            markers.remove(key);
-                        }
-                        marker = adder.addTo(displayProduct.map, product.getName(), new LatLng(product.getL().get(0),product.getL().get(1)), true);
-                        markers.put(key, marker);
-                    }
-
-                    @Override
-                    public void onCancelled(DatabaseError databaseError) {
-
-                    }
-                });
-            }
-
-            @Override
-            public void onGeoQueryReady() {
-                Log.d("data has been", "loaded");
-                Log.d("productMap.size=",productMap.size()+"");
-//                addProductsToMap();
-//                displayProduct.populateMap(true);
-            }
-
-            @Override
-            public void onGeoQueryError(DatabaseError error) {
-                Log.d("GeoQueryError", error.toString());
-            }
-        });
+        geoFire = new GeoFire(mFirebaseDatabaseReference.child("products"));
 
         adder = new AddToMap(getIconGenerator());
 
@@ -282,12 +175,6 @@ public class MainActivity extends AppCompatActivity implements FireBaseAuthentic
         displayProduct = new ReadyDisplayProduct();
 
         new OnActivity.Builder(this, manager, track).build();
-
-        /*FragmentManager fm = getSupportFragmentManager();
-        SupportMapFragment fragment = (SupportMapFragment) fm.findFragmentById(R.id.map);
-        if (fragment != null) {
-            getMapAsync(fragment, new OnMap(manager, click, layer, move, track));
-        }*/
 
         mNvView.getMenu().getItem(0).setChecked(true);
         FragmentManager fragmentManager = getSupportFragmentManager();
@@ -326,23 +213,6 @@ public class MainActivity extends AppCompatActivity implements FireBaseAuthentic
         });
     }
 
-    /*private void addProductsToMap() {
-        placeList.clear();
-        *//*for (int i = 0; i < productList.size(); i++) {
-            Product product = productList.get(i);
-            if (product.getLatitude() != null && product.getLongitude() != null) {
-                placeList.add(new PlaceManager.Place(product.getName(), new LatLng(product.getLatitude(), product.getLongitude())));
-            }
-        }*//*
-        for(String key : productMap.keySet()){
-            Product product = productMap.get(key);
-            if (product.getG()!=null) {
-                placeList.add(new PlaceManager.Place(product.getName(), new LatLng(product.getLatitude(), product.getLongitude())));
-            }
-        }
-        Log.d("placelist size:",placeList.size()+" "+productMap.size());
-    }*/
-
     @Override
     protected void onPostCreate(@Nullable Bundle savedInstanceState) {
         super.onPostCreate(savedInstanceState);
@@ -379,12 +249,6 @@ public class MainActivity extends AppCompatActivity implements FireBaseAuthentic
             public boolean onQueryTextSubmit(String query) {
                 searchView.clearFocus();
                 placeList.clear();
-                /*for (int i = 0; i < productList.size(); i++) {
-                    Product product = productList.get(i);
-                    if (query.equalsIgnoreCase(product.getName()) && product.getLatitude() != null && product.getLongitude() != null) {
-                        placeList.add(new PlaceManager.Place(product.getName(), new LatLng(product.getLatitude(), product.getLongitude())));
-                    }
-                }*/
 
                 for(String key : productMap.keySet()){
                     Product product = productMap.get(key);
@@ -587,6 +451,94 @@ public class MainActivity extends AppCompatActivity implements FireBaseAuthentic
         Location location = new Location("");
         location.setLatitude(latlng.latitude);
         location.setLongitude(latlng.longitude);
+        hasUserLocationChanged(latlng);
         Helper.startFetchAddressIntentService(this,resultReceiver, location);
+    }
+
+    private void hasUserLocationChanged(LatLng latLng){
+        if(geoQuery == null){
+//            geoQuery= geoFire.queryAtLocation(new GeoLocation(37.401025,-121.924067), 25);
+            geoQuery= geoFire.queryAtLocation(new GeoLocation(latLng.latitude, latLng.longitude), 10);
+            geoQuery.addGeoQueryEventListener(this);
+        }
+        float [] results = new float[10];
+        Location.distanceBetween(geoQuery.getCenter().latitude, geoQuery.getCenter().longitude , latLng.latitude, latLng.longitude, results);
+        float distance = -1;
+        if(results.length > 0 && results.length < 3) {
+            distance = results[results.length - 1];
+        }else if (results.length >= 3){
+            distance = results[2];
+        }
+        if(distance > 0.5){
+            Log.d("New User Location ", latLng+"");
+            geoQuery.setCenter(new GeoLocation(latLng.latitude,latLng.longitude));
+            geoQuery.setRadius(10);
+        }
+    }
+
+    @Override
+    public void onKeyEntered(final String key, GeoLocation location) {
+        Log.d("entered", key + " " + location.latitude + " " + location.longitude);
+        mFirebaseDatabaseReference.child("products").child(key).addListenerForSingleValueEvent(new ValueEventListener() {
+            @Override
+            public void onDataChange(DataSnapshot dataSnapshot) {
+                Product product = (Product) dataSnapshot.getValue(Product.class);
+                product.setId(key);
+                productMap.put(key,product);
+                Marker marker = adder.addTo(displayProduct.map, product.getName(), new LatLng(product.getL().get(0),product.getL().get(1)), true);
+                markers.put(key, marker);
+                Log.d("key ",key+" "+product.getId()+" "+product.getG()+" "+product.getName()+" "+product.getL().get(0)+" "+product.getL().get(1));
+            }
+
+            @Override
+            public void onCancelled(DatabaseError databaseError) {
+
+            }
+        });
+    }
+
+    @Override
+    public void onKeyExited(String key) {
+        Log.d("exited", key);
+        productMap.remove(key);
+        Marker marker = markers.get(key);
+        if(marker != null){
+            marker.remove();
+            markers.remove(key);
+        }
+    }
+
+    @Override
+    public void onKeyMoved(final String key, GeoLocation location) {
+        Log.d("keyMoved", key + " " + location.latitude + " " + location.longitude);
+        mFirebaseDatabaseReference.child("products").child(key).addValueEventListener(new ValueEventListener() {
+            @Override
+            public void onDataChange(DataSnapshot dataSnapshot) {
+                Product product = (Product) dataSnapshot.getValue(Product.class);
+                product.setId(key);
+                productMap.put(key,product);
+                Marker marker = markers.get(key);
+                if(marker != null){
+                    marker.remove();
+//                            markers.remove(key);
+                }
+                marker = adder.addTo(displayProduct.map, product.getName(), new LatLng(product.getL().get(0),product.getL().get(1)), true);
+                markers.put(key, marker);
+            }
+
+            @Override
+            public void onCancelled(DatabaseError databaseError) {
+
+            }
+        });
+    }
+
+    @Override
+    public void onGeoQueryReady() {
+    }
+
+    @Override
+    public void onGeoQueryError(DatabaseError error) {
+        Log.d("GeoQueryError", error.toString());
     }
 }

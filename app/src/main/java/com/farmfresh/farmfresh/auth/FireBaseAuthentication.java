@@ -8,6 +8,8 @@ import android.widget.Toast;
 import com.facebook.AccessToken;
 import com.farmfresh.farmfresh.models.User;
 import com.farmfresh.farmfresh.utils.Constants;
+import com.firebase.geofire.GeoFire;
+import com.firebase.geofire.GeoLocation;
 import com.google.android.gms.auth.api.signin.GoogleSignInAccount;
 import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.Task;
@@ -51,7 +53,13 @@ public class FireBaseAuthentication {
                     DatabaseReference usersRef = FirebaseDatabase.getInstance()
                             .getReference()
                             .child(Constants.NODE_USERS);
-                    usersRef.child(currentUser.getUid()).setValue(user);
+                    final DatabaseReference currentUserRef = usersRef.child(currentUser.getUid());
+                    currentUserRef.setValue(user);
+                    if(User.latLng != null) {
+                        //set geolocation for that user.
+                        GeoFire geoFire = new GeoFire(currentUserRef);
+                        geoFire.setLocation("location",new GeoLocation(User.latLng.latitude, User.latLng.longitude));
+                    }
                     FireBaseAuthentication.this.mLoginSuccessListener.onLoginSuccess(currentUser);
                 }
             }

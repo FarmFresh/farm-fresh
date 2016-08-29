@@ -35,7 +35,7 @@ public class LocationResultReceiver extends ResultReceiver {
             DatabaseReference productRef = productsRef.child(this.productKey);
             //update product location
             GeoFire geoFire = new GeoFire(productRef);
-            geoFire.setLocation("location", new GeoLocation(location.getLatitude(), location.getLongitude()));
+            geoFire.setLocation(this.productKey, new GeoLocation(location.getLatitude(), location.getLongitude()));
         }else {
             Helper.showToast(context,
                     resultData.getString(Constants.ADDRESS_DATA_EXTRA));

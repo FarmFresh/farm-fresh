@@ -32,9 +32,8 @@ public class LocationResultReceiver extends ResultReceiver {
             DatabaseReference productsRef = FirebaseDatabase.getInstance()
                     .getReference()
                     .child(Constants.NODE_PRODUCTS);
-            DatabaseReference productRef = productsRef.child(this.productKey);
             //update product location
-            GeoFire geoFire = new GeoFire(productRef);
+            GeoFire geoFire = new GeoFire(productsRef);
             geoFire.setLocation(this.productKey, new GeoLocation(location.getLatitude(), location.getLongitude()));
         }else {
             Helper.showToast(context,

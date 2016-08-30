@@ -1,15 +1,16 @@
 package com.farmfresh.farmfresh.auth;
 
-import android.content.Context;
 import android.location.Location;
 import android.os.Bundle;
 import android.support.v4.os.ResultReceiver;
 
+import com.farmfresh.farmfresh.fragments.UploadProductFragment;
 import com.farmfresh.farmfresh.models.Product;
 import com.farmfresh.farmfresh.utils.Constants;
 import com.farmfresh.farmfresh.utils.Helper;
 import com.firebase.geofire.GeoFire;
 import com.firebase.geofire.GeoLocation;
+import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
@@ -20,12 +21,12 @@ import java.util.Map;
  * Created by pbabu on 8/28/16.
  */
 public class LocationResultReceiver extends ResultReceiver {
-    private final Context context;
+    private final UploadProductFragment uploadProductFragment;
     private final Product product;
     private final String productKey;
-    public LocationResultReceiver(Context context, String prodcutKey, Product product) {
+    public LocationResultReceiver(UploadProductFragment context, String prodcutKey, Product product) {
         super(null);
-        this.context = context;
+        this.uploadProductFragment = context;
         this.product = product;
         this.productKey = prodcutKey;
     }
@@ -46,11 +47,16 @@ public class LocationResultReceiver extends ResultReceiver {
                         @Override
                         public void onComplete(String key, DatabaseError error) {
                             Map<String,Object> productMap = LocationResultReceiver.this.product.toMap();
-                            productsRef.child(productKey).updateChildren(productMap);
+                            productsRef.child(productKey).updateChildren(productMap).addOnSuccessListener(new OnSuccessListener<Void>() {
+                                @Override
+                                public void onSuccess(Void aVoid) {
+                                    uploadProductFragment.showSnackBar();
+                                }
+                            });
                         }
                     });
         }else {
-            Helper.showToast(context,
+            Helper.showToast(uploadProductFragment.getContext(),
                     resultData.getString(Constants.ADDRESS_DATA_EXTRA));
         }
     }

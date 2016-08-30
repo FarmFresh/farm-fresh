@@ -41,9 +41,7 @@ import com.google.firebase.storage.UploadTask;
 import java.io.FileNotFoundException;
 import java.io.InputStream;
 import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
 
 
 public class UploadProductFragment extends Fragment {
@@ -160,19 +158,7 @@ public class UploadProductFragment extends Fragment {
      * @return product id
      */
     private void saveProduct() {
-        final Map<String, Object> productMap = product.toMap();
-        Map<String,Object> childUpdates = new HashMap<>();
-        childUpdates.put("/products/" + newProductKey, productMap);
-        final DatabaseReference databaseRef = FirebaseDatabase.getInstance().getReference();
-        databaseRef.updateChildren(childUpdates)
-                .addOnSuccessListener(new OnSuccessListener<Void>() {
-                    @Override
-                    public void onSuccess(Void aVoid) {
-                        showSnackBar();
-                        openProductDetailActivity();
-                        updateProductLocationFromItsAddress();
-                    }
-                });
+        updateProductLocationFromItsAddress();
     }
 
     private void openProductDetailActivity() {
@@ -252,7 +238,7 @@ public class UploadProductFragment extends Fragment {
     }
 
     private void updateProductLocationFromItsAddress() {
-        LocationResultReceiver resultReceiver = new LocationResultReceiver(getContext(),newProductKey);
+        LocationResultReceiver resultReceiver = new LocationResultReceiver(getContext(),newProductKey, product);
         Helper.startFetchLocationIntentService(getActivity(), resultReceiver, product.getAddress());
     }
 }

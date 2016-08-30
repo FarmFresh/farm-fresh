@@ -5,23 +5,29 @@ import android.location.Location;
 import android.os.Bundle;
 import android.support.v4.os.ResultReceiver;
 
+import com.farmfresh.farmfresh.models.Product;
 import com.farmfresh.farmfresh.utils.Constants;
 import com.farmfresh.farmfresh.utils.Helper;
 import com.firebase.geofire.GeoFire;
 import com.firebase.geofire.GeoLocation;
+import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
+
+import java.util.Map;
 
 /**
  * Created by pbabu on 8/28/16.
  */
 public class LocationResultReceiver extends ResultReceiver {
     private final Context context;
+    private final Product product;
     private final String productKey;
-    public LocationResultReceiver(Context context, String productKey) {
+    public LocationResultReceiver(Context context, String prodcutKey, Product product) {
         super(null);
         this.context = context;
-        this.productKey = productKey;
+        this.product = product;
+        this.productKey = prodcutKey;
     }
 
     @Override
@@ -29,13 +35,20 @@ public class LocationResultReceiver extends ResultReceiver {
         // Show a toast message if an address was found.
         if (resultCode == Constants.FETCH_ADDRESS_SUCCESS_RESULT) {
             Location location = resultData.getParcelable(Constants.RESULT_LOCATION_DATA_KEY);
-            DatabaseReference productsRef = FirebaseDatabase.getInstance()
+            final DatabaseReference productsRef = FirebaseDatabase.getInstance()
                     .getReference()
                     .child(Constants.NODE_PRODUCTS);
-            DatabaseReference productRef = productsRef.child(this.productKey);
             //update product location
-            GeoFire geoFire = new GeoFire(productRef);
-            geoFire.setLocation("location", new GeoLocation(location.getLatitude(), location.getLongitude()));
+            GeoFire geoFire = new GeoFire(productsRef);
+            geoFire.setLocation(this.productKey,
+                    new GeoLocation(location.getLatitude(), location.getLongitude()),
+                    new GeoFire.CompletionListener() {
+                        @Override
+                        public void onComplete(String key, DatabaseError error) {
+                            Map<String,Object> productMap = LocationResultReceiver.this.product.toMap();
+                            productsRef.child(productKey).updateChildren(productMap);
+                        }
+                    });
         }else {
             Helper.showToast(context,
                     resultData.getString(Constants.ADDRESS_DATA_EXTRA));

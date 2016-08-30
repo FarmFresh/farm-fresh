@@ -158,17 +158,7 @@ public class UploadProductFragment extends Fragment {
      * @return product id
      */
     private void saveProduct() {
-        productsRef.child(newProductKey);
-        productsRef.child(newProductKey)
-                .setValue(product)
-                .addOnSuccessListener(new OnSuccessListener<Void>() {
-                    @Override
-                    public void onSuccess(Void aVoid) {
-                        showSnackBar();
-                        openProductDetailActivity();
-                        updateProductLocationFromItsAddress();
-                    }
-                });
+        updateProductLocationFromItsAddress();
     }
 
     private void openProductDetailActivity() {
@@ -248,7 +238,7 @@ public class UploadProductFragment extends Fragment {
     }
 
     private void updateProductLocationFromItsAddress() {
-        LocationResultReceiver resultReceiver = new LocationResultReceiver(getContext(),newProductKey);
+        LocationResultReceiver resultReceiver = new LocationResultReceiver(getContext(),newProductKey, product);
         Helper.startFetchLocationIntentService(getActivity(), resultReceiver, product.getAddress());
     }
 }

@@ -5,13 +5,13 @@ import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
+import android.support.design.widget.TextInputEditText;
 import android.support.v4.app.Fragment;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
-import android.widget.EditText;
 
 import com.farmfresh.farmfresh.R;
 import com.farmfresh.farmfresh.models.Product;
@@ -36,10 +36,10 @@ import com.google.firebase.database.ValueEventListener;
 public class ProductInfoFragment extends Fragment {
 
     private Product product;
-    private EditText etName;
-    private EditText etDescription;
-    private EditText etPrice;
-    private EditText etAddress;
+    private TextInputEditText etName;
+    private TextInputEditText etDescription;
+    private TextInputEditText etPrice;
+    private TextInputEditText etAddress;
     private OnSubmitProductInfoListener listener;
     FirebaseAuth firebaseAuth;
     User currentUser;
@@ -72,10 +72,10 @@ public class ProductInfoFragment extends Fragment {
     public View onCreateView(LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
         super.onCreateView(inflater, container, savedInstanceState);
         final View view = inflater.inflate(R.layout.fragment_product_info, container, false);
-        etName = (EditText)view.findViewById(R.id.etProductName);
-        etDescription = (EditText)view.findViewById(R.id.etProductDescription);
-        etPrice = (EditText)view.findViewById(R.id.etProductPrice);
-        etAddress = (EditText)view.findViewById(R.id.etProductAddress);
+        etName = (TextInputEditText)view.findViewById(R.id.etProductName);
+        etDescription = (TextInputEditText)view.findViewById(R.id.etProductDescription);
+        etPrice = (TextInputEditText)view.findViewById(R.id.etProductPrice);
+        etAddress = (TextInputEditText)view.findViewById(R.id.etProductAddress);
         if(currentUser != null && currentUser.getUserCurrentAddress() != null) {
             etAddress.setText(currentUser.getUserCurrentAddress());
         }

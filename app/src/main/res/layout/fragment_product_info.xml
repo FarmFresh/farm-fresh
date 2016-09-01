@@ -12,6 +12,7 @@
         android:layout_below="@+id/productToolBar"
         app:counterEnabled="true"
         app:counterMaxLength="40"
+        app:hintTextAppearance="@style/TextInputEditTextAppearance"
         android:layout_height="wrap_content">
         <android.support.design.widget.TextInputEditText
             android:id="@+id/etProductName"
@@ -32,6 +33,7 @@
         android:layout_below="@+id/name_text_input_layout"
         app:counterEnabled="true"
         app:counterMaxLength="250"
+        app:hintTextAppearance="@style/TextInputEditTextAppearance"
         android:layout_height="wrap_content">
         <android.support.design.widget.TextInputEditText
             android:id="@+id/etProductDescription"
@@ -51,6 +53,7 @@
         android:id="@+id/price_text_input_layout"
         android:layout_width="match_parent"
         android:padding="@dimen/product_info_margin"
+        app:hintTextAppearance="@style/TextInputEditTextAppearance"
         android:layout_below="@+id/description_text_input_layout"
         android:layout_height="wrap_content">
         <android.support.design.widget.TextInputEditText
@@ -71,6 +74,7 @@
         android:id="@+id/address_text_input_layout"
         android:layout_width="match_parent"
         android:padding="@dimen/product_info_margin"
+        app:hintTextAppearance="@style/TextInputEditTextAppearance"
         android:layout_height="wrap_content"
         android:layout_below="@+id/price_text_input_layout"
         android:layout_alignParentStart="true">

@@ -17,6 +17,7 @@ import com.farmfresh.farmfresh.R;
 import com.farmfresh.farmfresh.models.Product;
 import com.farmfresh.farmfresh.models.User;
 import com.farmfresh.farmfresh.utils.Constants;
+import com.farmfresh.farmfresh.utils.Helper;
 import com.google.android.gms.common.GooglePlayServicesNotAvailableException;
 import com.google.android.gms.common.GooglePlayServicesRepairableException;
 import com.google.android.gms.common.api.Status;
@@ -73,6 +74,8 @@ public class ProductInfoFragment extends Fragment {
         super.onCreateView(inflater, container, savedInstanceState);
         final View view = inflater.inflate(R.layout.fragment_product_info, container, false);
         etName = (TextInputEditText)view.findViewById(R.id.etProductName);
+        etName.requestFocus();
+        Helper.showSoftKeyboard(etName, getContext());
         etDescription = (TextInputEditText)view.findViewById(R.id.etProductDescription);
         etPrice = (TextInputEditText)view.findViewById(R.id.etProductPrice);
         etAddress = (TextInputEditText)view.findViewById(R.id.etProductAddress);

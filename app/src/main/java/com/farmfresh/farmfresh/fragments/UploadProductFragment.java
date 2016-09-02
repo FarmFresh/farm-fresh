@@ -158,20 +158,10 @@ public class UploadProductFragment extends Fragment {
      * @return product id
      */
     private void saveProduct() {
-        productsRef.child(newProductKey);
-        productsRef.child(newProductKey)
-                .setValue(product)
-                .addOnSuccessListener(new OnSuccessListener<Void>() {
-                    @Override
-                    public void onSuccess(Void aVoid) {
-                        showSnackBar();
-                        openProductDetailActivity();
-                        updateProductLocationFromItsAddress();
-                    }
-                });
+        updateProductLocationFromItsAddress();
     }
 
-    private void openProductDetailActivity() {
+    public void openProductDetailActivity() {
         new Handler().postDelayed(new Runnable() {
             @Override
             public void run() {
@@ -184,7 +174,7 @@ public class UploadProductFragment extends Fragment {
         }, 2000);
     }
 
-    private void showSnackBar() {
+    public void showSnackBar() {
         Snackbar.make(binding.llImageViews,
                 UploadProductFragment.this.product.getName() + " is successfully created" ,
                 Snackbar.LENGTH_INDEFINITE)
@@ -248,7 +238,7 @@ public class UploadProductFragment extends Fragment {
     }
 
     private void updateProductLocationFromItsAddress() {
-        LocationResultReceiver resultReceiver = new LocationResultReceiver(getContext(),newProductKey);
+        LocationResultReceiver resultReceiver = new LocationResultReceiver(this,newProductKey, product);
         Helper.startFetchLocationIntentService(getActivity(), resultReceiver, product.getAddress());
     }
 }

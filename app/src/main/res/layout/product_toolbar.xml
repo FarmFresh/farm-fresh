@@ -8,14 +8,16 @@
     android:layout_height="wrap_content">
 
     <android.support.v7.widget.Toolbar
-        android:background="@color/colorPrimaryDark"
-        android:titleTextAppearance="@style/ToolBar.TitleText"
+        android:background="?attr/colorPrimaryDark"
+        android:fitsSystemWindows="true"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
         app:contentInsetLeft="0dp"
         app:contentInsetStart="0dp"
-        android:layout_width="match_parent"
         app:layout_scrollFlags="scroll"
         android:id="@+id/productToolbar"
-        android:layout_height="?attr/actionBarSize">
+        android:minHeight="?attr/actionBarSize"
+        android:theme="@style/ThemeOverlay.AppCompat.Dark.ActionBar">
 
         <TextView
             android:layout_width="wrap_content"

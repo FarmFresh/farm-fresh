@@ -524,8 +524,12 @@ public class MainActivity extends AppCompatActivity implements FireBaseAuthentic
                 Product product = (Product) dataSnapshot.getValue(Product.class);
                 product.setId(key);
                 productMap.put(key, product);
-                Marker marker = adder.addTo(displayProduct.map, product.getName(), new LatLng(product.getL().get(0), product.getL().get(1)), true);
-                markers.put(key, marker);
+                if(!markers.containsKey(key)){
+                    Marker marker = adder.addTo(displayProduct.map, product.getName(), new LatLng(product.getL().get(0), product.getL().get(1)), true);
+                    markers.put(key, marker);
+                }else{
+                    markers.get(key).setVisible(true);
+                }
                 Log.d("key ", key + " " + product.getId() + " " + product.getG() + " " + product.getName() + " " + product.getL().get(0) + " " + product.getL().get(1));
             }
 
@@ -542,8 +546,9 @@ public class MainActivity extends AppCompatActivity implements FireBaseAuthentic
         productMap.remove(key);
         Marker marker = markers.get(key);
         if (marker != null) {
-            marker.remove();
-            markers.remove(key);
+            marker.setVisible(false);
+//            marker.remove();
+//            markers.remove(key);
         }
     }
 
@@ -559,7 +564,7 @@ public class MainActivity extends AppCompatActivity implements FireBaseAuthentic
                 Marker marker = markers.get(key);
                 if (marker != null) {
                     marker.remove();
-//                            markers.remove(key);
+                    markers.remove(key);
                 }
                 marker = adder.addTo(displayProduct.map, product.getName(), new LatLng(product.getL().get(0), product.getL().get(1)), true);
                 markers.put(key, marker);

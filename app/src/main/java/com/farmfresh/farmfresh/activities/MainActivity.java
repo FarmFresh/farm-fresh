@@ -445,13 +445,14 @@ public class MainActivity extends AppCompatActivity implements FireBaseAuthentic
                 }
             }
         }
+
         @Override
         public void onCameraChange(CameraPosition cameraPosition) {
 //            Log.d("camerachange ", cameraPosition.toString());
             // Update the search criteria for this geoQuery and the circle on the map
             LatLng center = cameraPosition.target;
             double radius = zoomLevelToRadius(cameraPosition.zoom);
-            if(geoQuery != null && searchCircle != null){
+            if (geoQuery != null && searchCircle != null) {
                 searchCircle.setCenter(center);
                 searchCircle.setRadius(radius);
                 geoQuery.setCenter(new GeoLocation(center.latitude, center.longitude));
@@ -462,7 +463,7 @@ public class MainActivity extends AppCompatActivity implements FireBaseAuthentic
 
     @Override
     public void accept(GoogleMap map, LatLng latlng) {
-        Log.d(MainActivity.TAG, "Location update " + latlng+" mylocation "+map.getMyLocation()+"");
+        Log.d(MainActivity.TAG, "Location update " + latlng + " mylocation " + map.getMyLocation() + "");
         AddressResultReceiver resultReceiver = new AddressResultReceiver(this, null);
         User.latLng = latlng;
         //fetch address for location
@@ -474,14 +475,14 @@ public class MainActivity extends AppCompatActivity implements FireBaseAuthentic
     }
 
     private void hasUserLocationChanged(LatLng latLng) {
-        Log.d("isnull", (displayProduct.map.getMyLocation()==null)+"");
-        Double latitude=null;
+        Log.d("isnull", (displayProduct.map.getMyLocation() == null) + "");
+        Double latitude = null;
         Double longitude = null;
 
-        if(displayProduct.map.getMyLocation() != null){
+        if (displayProduct.map.getMyLocation() != null) {
             latitude = displayProduct.map.getMyLocation().getLatitude();
             longitude = displayProduct.map.getMyLocation().getLongitude();
-            Log.d("location_ll",latitude+" "+longitude);
+            Log.d("location_ll", latitude + " " + longitude);
         }
 
         if (geoQuery == null) {
@@ -518,32 +519,34 @@ public class MainActivity extends AppCompatActivity implements FireBaseAuthentic
     @Override
     public void onKeyEntered(final String key, GeoLocation location) {
         Log.d("entered", key + " " + location.latitude + " " + location.longitude);
-        mFirebaseDatabaseReference.child("products").child(key).addListenerForSingleValueEvent(new ValueEventListener() {
-            @Override
-            public void onDataChange(DataSnapshot dataSnapshot) {
-                Product product = (Product) dataSnapshot.getValue(Product.class);
-                product.setId(key);
-                productMap.put(key, product);
-                if(!markers.containsKey(key)){
+        if (!productMap.containsKey(key)) {
+            mFirebaseDatabaseReference.child("products").child(key).addListenerForSingleValueEvent(new ValueEventListener() {
+                @Override
+                public void onDataChange(DataSnapshot dataSnapshot) {
+                    Product product = (Product) dataSnapshot.getValue(Product.class);
+                    product.setId(key);
+                    productMap.put(key, product);
                     Marker marker = adder.addTo(displayProduct.map, product.getName(), new LatLng(product.getL().get(0), product.getL().get(1)), true);
                     markers.put(key, marker);
-                }else{
-                    markers.get(key).setVisible(true);
+                    marker.setVisible(true);
+
+                    Log.d("key ", key + " " + product.getId() + " " + product.getG() + " " + product.getName() + " " + product.getL().get(0) + " " + product.getL().get(1));
                 }
-                Log.d("key ", key + " " + product.getId() + " " + product.getG() + " " + product.getName() + " " + product.getL().get(0) + " " + product.getL().get(1));
-            }
 
-            @Override
-            public void onCancelled(DatabaseError databaseError) {
+                @Override
+                public void onCancelled(DatabaseError databaseError) {
 
-            }
-        });
+                }
+            });
+        } else {
+            markers.get(key).setVisible(true);
+        }
     }
 
     @Override
     public void onKeyExited(String key) {
         Log.d("exited", key);
-        productMap.remove(key);
+//        productMap.remove(key);
         Marker marker = markers.get(key);
         if (marker != null) {
             marker.setVisible(false);

@@ -53,7 +53,7 @@ public class MoveToLocationFirstTime implements
     // Set target, zoom, and tilt
     // Play around with zoom and tilt values for 3d effect.
     private CameraPosition getCameraPosition(LatLng latLng) {
-        return new CameraPosition.Builder().target(latLng).zoom(15).build();
+        return new CameraPosition.Builder().target(latLng).zoom(14).build();
     }
 
     private void check() {

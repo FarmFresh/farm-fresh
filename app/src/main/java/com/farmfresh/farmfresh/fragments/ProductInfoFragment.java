@@ -99,29 +99,6 @@ public class ProductInfoFragment extends Fragment {
             }
         });
 
-        etAddress.setOnFocusChangeListener(new View.OnFocusChangeListener() {
-            @Override
-            public void onFocusChange(View v, boolean hasFocus) {
-                if(hasFocus) {
-                    //start the PlaceAutocomplete Activity
-                    try {
-                        AutocompleteFilter typeFilter = new AutocompleteFilter.Builder()
-                                .setTypeFilter(AutocompleteFilter.TYPE_FILTER_ADDRESS)
-                                .build();
-                        Intent intent =
-                                new PlaceAutocomplete.IntentBuilder(PlaceAutocomplete.MODE_FULLSCREEN)
-                                        .setFilter(typeFilter)
-                                        .build(getActivity());
-                        startActivityForResult(intent, Constants.PLACE_AUTOCOMPLETE_REQUEST_CODE);
-                    } catch (GooglePlayServicesRepairableException e) {
-                        // TODO: Handle the error.
-                    } catch (GooglePlayServicesNotAvailableException e) {
-                        // TODO: Handle the error.
-                    }
-                }
-            }
-        });
-
         etAddress.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {

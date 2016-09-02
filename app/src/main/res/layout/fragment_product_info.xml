@@ -1,10 +1,10 @@
-<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<RelativeLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     tools:context=".fragments.ProductInfoFragment">
-
     <android.support.design.widget.TextInputLayout
         android:id="@+id/name_text_input_layout"
         android:layout_width="match_parent"
@@ -12,14 +12,16 @@
         android:layout_below="@+id/productToolBar"
         app:counterEnabled="true"
         app:counterMaxLength="40"
+        app:hintTextAppearance="@style/TextInputEditTextAppearance"
         android:layout_height="wrap_content">
-        <EditText
+        <android.support.design.widget.TextInputEditText
             android:id="@+id/etProductName"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_centerHorizontal="true"
             android:layout_centerVertical="true"
             android:ems="10"
+            android:imeOptions="actionNext"
             android:background="@drawable/product_info_shape"
             android:hint="@string/placeholder_product_name" />
 
@@ -32,8 +34,9 @@
         android:layout_below="@+id/name_text_input_layout"
         app:counterEnabled="true"
         app:counterMaxLength="250"
+        app:hintTextAppearance="@style/TextInputEditTextAppearance"
         android:layout_height="wrap_content">
-        <EditText
+        <android.support.design.widget.TextInputEditText
             android:id="@+id/etProductDescription"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
@@ -42,27 +45,9 @@
             android:lines="4"
             android:maxLines="4"
             android:ems="10"
+            android:imeOptions="actionNext"
             android:background="@drawable/product_info_shape"
             android:hint="@string/placeholder_product_description" />
-
-    </android.support.design.widget.TextInputLayout>
-
-    <android.support.design.widget.TextInputLayout
-        android:id="@+id/price_text_input_layout"
-        android:layout_width="match_parent"
-        android:padding="@dimen/product_info_margin"
-        android:layout_below="@+id/description_text_input_layout"
-        android:layout_height="wrap_content">
-        <EditText
-            android:id="@+id/etProductPrice"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_centerHorizontal="true"
-            android:layout_centerVertical="true"
-            android:ems="10"
-            android:inputType="numberDecimal"
-            android:background="@drawable/product_info_shape"
-            android:hint="@string/placeholder_product_price" />
 
     </android.support.design.widget.TextInputLayout>
 
@@ -71,11 +56,11 @@
         android:id="@+id/address_text_input_layout"
         android:layout_width="match_parent"
         android:padding="@dimen/product_info_margin"
+        app:hintTextAppearance="@style/TextInputEditTextAppearance"
         android:layout_height="wrap_content"
-        android:layout_below="@+id/price_text_input_layout"
-        android:layout_alignParentStart="true"
-        android:layout_marginTop="30dp">
-        <EditText
+        android:layout_below="@+id/description_text_input_layout"
+        android:layout_alignParentStart="true">
+        <android.support.design.widget.TextInputEditText
             android:id="@+id/etProductAddress"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
@@ -83,34 +68,44 @@
             android:layout_centerVertical="true"
             android:ems="10"
             android:background="@drawable/product_info_shape"
+            android:imeOptions="actionDone"
             android:hint="@string/placeholder_address_price" />
 
     </android.support.design.widget.TextInputLayout>
 
+    <android.support.design.widget.TextInputLayout
+        android:id="@+id/price_text_input_layout"
+        android:layout_width="match_parent"
+        android:padding="@dimen/product_info_margin"
+        app:hintTextAppearance="@style/TextInputEditTextAppearance"
+        android:layout_below="@+id/address_text_input_layout"
+        android:layout_height="wrap_content">
+        <android.support.design.widget.TextInputEditText
+            android:id="@+id/etProductPrice"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_centerHorizontal="true"
+            android:layout_centerVertical="true"
+            android:ems="10"
+            android:inputType="numberDecimal"
+            android:imeOptions="actionDone"
+            android:background="@drawable/product_info_shape"
+            android:hint="@string/placeholder_product_price" />
+
+    </android.support.design.widget.TextInputLayout>
 
     <Button
-        android:layout_width="wrap_content"
+        android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:text="@string/btn_continue_text"
+        android:text="@string/btn_next_text"
         android:id="@+id/btnContinue"
         android:textAllCaps="false"
         android:paddingTop="@dimen/product_info_margin"
         android:layout_gravity="center_horizontal"
-
-        android:layout_marginStart="113dp"
-        android:layout_below="@+id/address_text_input_layout"
+        android:theme="@style/ThemeOverlay.AppCompat.Dark.ActionBar"
+        android:layout_below="@+id/price_text_input_layout"
         android:layout_alignParentStart="true"
         android:layout_marginTop="40dp" />
 
-    <TextView
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:textAppearance="?android:attr/textAppearanceSmall"
-        android:text="Small Text"
-        android:id="@+id/textView"
-        android:layout_above="@+id/price_text_input_layout"
-        android:layout_alignParentStart="true"
-        android:layout_marginStart="926dp" />
-
-
 </RelativeLayout>
+

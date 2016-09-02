@@ -22,4 +22,10 @@
         <item name="cpb_rotation_speed">@string/cpb_default_rotation_speed</item>
     </style>
 
+    <style name="TextInputEditTextAppearance" parent="@android:style/TextAppearance">
+        <item name="android:textColor">@color/colorAccent</item>
+        <item name="android:textAppearance">?android:textAppearance</item>
+        <item name="android:textSize">18sp</item>
+    </style>
+
 </resources>

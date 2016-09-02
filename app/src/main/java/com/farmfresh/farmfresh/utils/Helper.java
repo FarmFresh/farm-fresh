@@ -6,6 +6,8 @@ import android.content.res.Resources;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.location.Location;
+import android.view.View;
+import android.view.inputmethod.InputMethodManager;
 import android.widget.Toast;
 
 import com.farmfresh.farmfresh.auth.AddressResultReceiver;
@@ -106,5 +108,17 @@ public class Helper {
         intent.putExtra(Constants.RECEIVER, resultReceiver);
         intent.putExtra(Constants.ADDRESS_DATA_EXTRA, address);
         context.startService(intent);
+    }
+
+    public static void showSoftKeyboard(View view, Context context){
+        if(view.requestFocus()){
+            InputMethodManager imm =(InputMethodManager) context.getSystemService(Context.INPUT_METHOD_SERVICE);
+            imm.showSoftInput(view,InputMethodManager.SHOW_IMPLICIT);
+        }
+    }
+
+    public static void hideSoftKeyboard(View view, Context context){
+        InputMethodManager imm =(InputMethodManager)context.getSystemService(Context.INPUT_METHOD_SERVICE);
+        imm.hideSoftInputFromWindow(view.getWindowToken(), 0);
     }
 }

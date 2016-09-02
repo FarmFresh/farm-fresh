@@ -25,12 +25,12 @@ public class NewProductActivity extends AppCompatActivity implements
         setSupportActionBar(toolbar);
         //Display icon in the toolbar
         getSupportActionBar().setDisplayHomeAsUpEnabled(true);
-        getSupportActionBar().setTitle("New Product");
+        getSupportActionBar().setTitle("Add Product Basic Info");
         this.product = new Product();
         ProductInfoFragment profileHeaderFragment = ProductInfoFragment.newInstance(product);
         getSupportFragmentManager()
                 .beginTransaction()
-                .add(R.id.flNewProduct, profileHeaderFragment)
+                .add(R.id.svNewProduct, profileHeaderFragment)
                 .commit();
         Button mBtnToolbar = (Button)findViewById(R.id.btnToolBar);
         mBtnToolbar.setOnClickListener(new View.OnClickListener() {
@@ -45,21 +45,22 @@ public class NewProductActivity extends AppCompatActivity implements
     public void withInfo(Product product) {
         this.product = product;
         //load product images fragment
+        getSupportActionBar().setTitle("Add Product Images");
         ProductImagesFragment productImagesFragment = ProductImagesFragment.newInstance(product);
         getSupportFragmentManager()
                 .beginTransaction()
-                .replace(R.id.flNewProduct, productImagesFragment)
+                .replace(R.id.svNewProduct, productImagesFragment)
                 .commit();
     }
 
     @Override
     public void withImages(Product product) {
         this.product = product;
-        //load product images fragment
+        getSupportActionBar().setTitle("Add New Product");
         UploadProductFragment uploadFragment = UploadProductFragment.newInstance(product);
         getSupportFragmentManager()
                 .beginTransaction()
-                .replace(R.id.flNewProduct, uploadFragment)
+                .replace(R.id.svNewProduct, uploadFragment)
                 .commit();
     }
 }

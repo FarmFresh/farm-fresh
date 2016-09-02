@@ -22,7 +22,7 @@
     <string name="placeholder_product_description">Product Description</string>
     <string name="product_price">Asking Price</string>
     <string name="placeholder_product_price">Asking Price</string>
-    <string name="btn_continue_text">Continue</string>
+    <string name="btn_next_text">Next:Add Images</string>
     <string name="btn_cancel">Cancel</string>
 
     <!-- TODO: Remove or change this placeholder text -->

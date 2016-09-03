@@ -206,7 +206,8 @@ public class MainActivity extends AppCompatActivity implements FireBaseAuthentic
                 Bundle bundle = new Bundle();
                 productList.clear();
                 for (String key : productMap.keySet()) {
-                    productList.add(productMap.get(key));
+                    if(markers.get(key).isVisible())
+                        productList.add(productMap.get(key));
                 }
                 bundle.putParcelable("productList", Parcels.wrap(productList));
 
@@ -514,7 +515,6 @@ public class MainActivity extends AppCompatActivity implements FireBaseAuthentic
         // Approximation to fit circle into view
         return 16384000 / Math.pow(2, zoomLevel);
     }
-
 
     @Override
     public void onKeyEntered(final String key, GeoLocation location) {

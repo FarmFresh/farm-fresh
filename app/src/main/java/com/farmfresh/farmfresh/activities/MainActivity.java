@@ -62,9 +62,6 @@ import com.google.android.gms.location.LocationServices;
 import com.google.android.gms.maps.GoogleMap;
 import com.google.android.gms.maps.OnMapReadyCallback;
 import com.google.android.gms.maps.SupportMapFragment;
-import com.google.android.gms.maps.model.CameraPosition;
-import com.google.android.gms.maps.model.Circle;
-import com.google.android.gms.maps.model.CircleOptions;
 import com.google.android.gms.maps.model.LatLng;
 import com.google.android.gms.maps.model.Marker;
 import com.google.firebase.auth.FirebaseUser;
@@ -85,7 +82,7 @@ import butterknife.BindView;
 import butterknife.ButterKnife;
 
 public class MainActivity extends AppCompatActivity implements FireBaseAuthentication.LoginListener,
-        GoogleApiClient.OnConnectionFailedListener, TrackLocation.Listener, GeoQueryEventListener {
+        GoogleApiClient.OnConnectionFailedListener,TrackLocation.Listener, GeoQueryEventListener {
 
     public final static String TAG = MainActivity.class.getSimpleName();
     private DrawerLayout mDrawer;
@@ -109,7 +106,6 @@ public class MainActivity extends AppCompatActivity implements FireBaseAuthentic
     private SupportMapFragment supportMapFragment;
     private GeoFire geoFire;
     private GeoQuery geoQuery;
-    private Circle searchCircle;
 
     private static final double EPSILON = 0.000000001;
 
@@ -117,7 +113,7 @@ public class MainActivity extends AppCompatActivity implements FireBaseAuthentic
     private DatabaseReference mFirebaseDatabaseReference;
 
     final ArrayList<Product> productList = new ArrayList<Product>();
-    HashMap<String, Product> productMap = new HashMap<String, Product>();
+    HashMap<String,Product> productMap = new HashMap<String, Product>();
     ArrayList<PlaceManager.Place> placeList = new ArrayList<PlaceManager.Place>();
     HashMap<String, Marker> markers = new HashMap<String, Marker>();
 
@@ -205,7 +201,7 @@ public class MainActivity extends AppCompatActivity implements FireBaseAuthentic
 
                 Bundle bundle = new Bundle();
                 productList.clear();
-                for (String key : productMap.keySet()) {
+                for(String key : productMap.keySet()){
                     productList.add(productMap.get(key));
                 }
                 bundle.putParcelable("productList", Parcels.wrap(productList));
@@ -254,10 +250,10 @@ public class MainActivity extends AppCompatActivity implements FireBaseAuthentic
                 searchView.clearFocus();
                 placeList.clear();
 
-                for (String key : productMap.keySet()) {
+                for(String key : productMap.keySet()){
                     Product product = productMap.get(key);
-                    if (product.getG() != null && query.equalsIgnoreCase(product.getName())) {
-                        placeList.add(new PlaceManager.Place(product.getName(), new LatLng(product.getL().get(0), product.getL().get(1))));
+                    if (product.getG()!=null && query.equalsIgnoreCase(product.getName()) ) {
+                        placeList.add(new PlaceManager.Place(product.getName(), new LatLng(product.getL().get(0),product.getL().get(1))));
                     }
                 }
 
@@ -342,7 +338,7 @@ public class MainActivity extends AppCompatActivity implements FireBaseAuthentic
                 tag = ProfileFragment.class.getSimpleName();
                 break;
             case R.id.menuSelling:
-                Intent newProductIntent = new Intent(this, NewProductActivity.class);
+                Intent newProductIntent = new Intent(this,NewProductActivity.class);
                 startActivity(newProductIntent);
                 return;
             case R.id.menuLogout:
@@ -425,13 +421,12 @@ public class MainActivity extends AppCompatActivity implements FireBaseAuthentic
         client.registerConnectionCallbacks(callbacks);
     }
 
-    class ReadyDisplayProduct implements OnMap.Listener, GoogleMap.OnCameraChangeListener {
+    class ReadyDisplayProduct implements OnMap.Listener {
         private GoogleMap map;
 
         @Override
         public void onMap(GoogleMap map) {
             this.map = map;
-            this.map.setOnCameraChangeListener(this);
         }
 
         public void populateMap(boolean clearMap) {
@@ -445,24 +440,11 @@ public class MainActivity extends AppCompatActivity implements FireBaseAuthentic
                 }
             }
         }
-        @Override
-        public void onCameraChange(CameraPosition cameraPosition) {
-//            Log.d("camerachange ", cameraPosition.toString());
-            // Update the search criteria for this geoQuery and the circle on the map
-            LatLng center = cameraPosition.target;
-            double radius = zoomLevelToRadius(cameraPosition.zoom);
-            if(geoQuery != null && searchCircle != null){
-                searchCircle.setCenter(center);
-                searchCircle.setRadius(radius);
-                geoQuery.setCenter(new GeoLocation(center.latitude, center.longitude));
-                geoQuery.setRadius(radius / 1000);
-            }
-        }
     }
 
     @Override
     public void accept(GoogleMap map, LatLng latlng) {
-        Log.d(MainActivity.TAG, "Location update " + latlng+" mylocation "+map.getMyLocation()+"");
+        Log.d(MainActivity.TAG,"Location update "+latlng);
         AddressResultReceiver resultReceiver = new AddressResultReceiver(this, null);
         User.latLng = latlng;
         //fetch address for location
@@ -470,50 +452,29 @@ public class MainActivity extends AppCompatActivity implements FireBaseAuthentic
         location.setLatitude(latlng.latitude);
         location.setLongitude(latlng.longitude);
         hasUserLocationChanged(latlng);
-        Helper.startFetchAddressIntentService(this, resultReceiver, location);
+        Helper.startFetchAddressIntentService(this,resultReceiver, location);
     }
 
-    private void hasUserLocationChanged(LatLng latLng) {
-        Log.d("isnull", (displayProduct.map.getMyLocation()==null)+"");
-        Double latitude=null;
-        Double longitude = null;
-
-        if(displayProduct.map.getMyLocation() != null){
-            latitude = displayProduct.map.getMyLocation().getLatitude();
-            longitude = displayProduct.map.getMyLocation().getLongitude();
-            Log.d("location_ll",latitude+" "+longitude);
-        }
-
-        if (geoQuery == null) {
+    private void hasUserLocationChanged(LatLng latLng){
+        if(geoQuery == null){
 //            geoQuery= geoFire.queryAtLocation(new GeoLocation(37.401025,-121.924067), 25);
-            geoQuery = geoFire.queryAtLocation(new GeoLocation(latLng.latitude, latLng.longitude), 1);
+            geoQuery= geoFire.queryAtLocation(new GeoLocation(latLng.latitude, latLng.longitude), 10);
             geoQuery.addGeoQueryEventListener(this);
-
-            this.searchCircle = displayProduct.map.addCircle(new CircleOptions().center(latLng).radius(1000));
-            this.searchCircle.setFillColor(Color.argb(66, 255, 0, 255));
-            this.searchCircle.setStrokeColor(Color.argb(66, 0, 0, 0));
-            this.searchCircle.setCenter(latLng);
-            this.searchCircle.setRadius(1000);
-        } /*else if(geoQuery != null && latitude != null && longitude != null){
-            float[] results = new float[1];
-            Location.distanceBetween(geoQuery.getCenter().latitude, geoQuery.getCenter().longitude, latitude, longitude, results);
-            float distance = (float) 0.0;
-            distance = results[0];
-
-            if (distance > (float) 500.0) {
-                Log.d("New User Location ", latLng + " distance "+distance);
-                geoQuery.setCenter(new GeoLocation(latitude, longitude));
-                geoQuery.setRadius(1);
-                this.searchCircle.setCenter(latLng);
-            }
-        }*/
+        }
+        float [] results = new float[10];
+        Location.distanceBetween(geoQuery.getCenter().latitude, geoQuery.getCenter().longitude , latLng.latitude, latLng.longitude, results);
+        float distance = -1;
+        if(results.length > 0 && results.length < 3) {
+            distance = results[results.length - 1];
+        }else if (results.length >= 3){
+            distance = results[2];
+        }
+        if(distance > 0.5){
+            Log.d("New User Location ", latLng+"");
+            geoQuery.setCenter(new GeoLocation(latLng.latitude,latLng.longitude));
+            geoQuery.setRadius(10);
+        }
     }
-
-    private double zoomLevelToRadius(double zoomLevel) {
-        // Approximation to fit circle into view
-        return 16384000 / Math.pow(2, zoomLevel);
-    }
-
 
     @Override
     public void onKeyEntered(final String key, GeoLocation location) {
@@ -523,10 +484,10 @@ public class MainActivity extends AppCompatActivity implements FireBaseAuthentic
             public void onDataChange(DataSnapshot dataSnapshot) {
                 Product product = (Product) dataSnapshot.getValue(Product.class);
                 product.setId(key);
-                productMap.put(key, product);
-                Marker marker = adder.addTo(displayProduct.map, product.getName(), new LatLng(product.getL().get(0), product.getL().get(1)), true);
+                productMap.put(key,product);
+                Marker marker = adder.addTo(displayProduct.map, product.getName(), new LatLng(product.getL().get(0),product.getL().get(1)), true);
                 markers.put(key, marker);
-                Log.d("key ", key + " " + product.getId() + " " + product.getG() + " " + product.getName() + " " + product.getL().get(0) + " " + product.getL().get(1));
+                Log.d("key ",key+" "+product.getId()+" "+product.getG()+" "+product.getName()+" "+product.getL().get(0)+" "+product.getL().get(1));
             }
 
             @Override
@@ -541,7 +502,7 @@ public class MainActivity extends AppCompatActivity implements FireBaseAuthentic
         Log.d("exited", key);
         productMap.remove(key);
         Marker marker = markers.get(key);
-        if (marker != null) {
+        if(marker != null){
             marker.remove();
             markers.remove(key);
         }
@@ -555,13 +516,13 @@ public class MainActivity extends AppCompatActivity implements FireBaseAuthentic
             public void onDataChange(DataSnapshot dataSnapshot) {
                 Product product = (Product) dataSnapshot.getValue(Product.class);
                 product.setId(key);
-                productMap.put(key, product);
+                productMap.put(key,product);
                 Marker marker = markers.get(key);
-                if (marker != null) {
+                if(marker != null){
                     marker.remove();
 //                            markers.remove(key);
                 }
-                marker = adder.addTo(displayProduct.map, product.getName(), new LatLng(product.getL().get(0), product.getL().get(1)), true);
+                marker = adder.addTo(displayProduct.map, product.getName(), new LatLng(product.getL().get(0),product.getL().get(1)), true);
                 markers.put(key, marker);
             }
 

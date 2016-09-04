@@ -40,6 +40,7 @@
                 android:layout_marginBottom="40dp"
                 android:layout_marginEnd="20dp"
                 android:src="@mipmap/ic_list"
+                android:visibility="gone"
                 app:backgroundTint="#00aced" />
 
         </android.support.design.widget.CoordinatorLayout>

@@ -8,11 +8,9 @@ import android.location.Location;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
-import android.support.design.widget.BottomSheetDialogFragment;
 import android.support.design.widget.FloatingActionButton;
 import android.support.design.widget.NavigationView;
 import android.support.v4.app.Fragment;
-import android.support.v4.app.FragmentManager;
 import android.support.v4.app.FragmentTransaction;
 import android.support.v4.view.MenuItemCompat;
 import android.support.v4.widget.DrawerLayout;
@@ -40,7 +38,7 @@ import com.farmfresh.farmfresh.action.TrackLocation;
 import com.farmfresh.farmfresh.auth.AddressResultReceiver;
 import com.farmfresh.farmfresh.auth.FireBaseAuthentication;
 import com.farmfresh.farmfresh.auth.GoogleAuthentication;
-import com.farmfresh.farmfresh.fragments.ListItemsBottomSheetFragment;
+import com.farmfresh.farmfresh.fragments.ListItemsFragment;
 import com.farmfresh.farmfresh.fragments.LoginFragment;
 import com.farmfresh.farmfresh.fragments.ProfileFragment;
 import com.farmfresh.farmfresh.helper.OnActivity;
@@ -60,6 +58,7 @@ import com.google.android.gms.common.api.GoogleApiClient;
 import com.google.android.gms.location.LocationRequest;
 import com.google.android.gms.location.LocationServices;
 import com.google.android.gms.maps.GoogleMap;
+import com.google.android.gms.maps.MapFragment;
 import com.google.android.gms.maps.OnMapReadyCallback;
 import com.google.android.gms.maps.SupportMapFragment;
 import com.google.android.gms.maps.model.CameraPosition;
@@ -106,7 +105,7 @@ public class MainActivity extends AppCompatActivity implements FireBaseAuthentic
     private TrackLocation track;
     private ReadyDisplayProduct displayProduct;
     private AddToMap adder;
-    private SupportMapFragment supportMapFragment;
+    private MapFragment supportMapFragment;
     private GeoFire geoFire;
     private GeoQuery geoQuery;
     private Circle searchCircle;
@@ -181,12 +180,14 @@ public class MainActivity extends AppCompatActivity implements FireBaseAuthentic
         new OnActivity.Builder(this, manager, track).build();
 
         mNvView.getMenu().getItem(0).setChecked(true);
-        FragmentManager fragmentManager = getSupportFragmentManager();
-        supportMapFragment = new SupportMapFragment();
+        android.app.FragmentManager fragmentManager = getFragmentManager();
+        supportMapFragment = new MapFragment();
+        int distance = 8000;
+        float scale = getResources().getDisplayMetrics().density * distance;
         if (supportMapFragment != null) {
             getMapAsync(supportMapFragment, new OnMap(manager, click, layer, move, track, displayProduct));
         }
-        fragmentManager.beginTransaction().replace(R.id.flContent, supportMapFragment).commit();
+        fragmentManager.beginTransaction().add(R.id.flContent, supportMapFragment).commit();
         setTitle("Home");
 
         mGoogleClient = getGoogleApiClient();
@@ -198,7 +199,7 @@ public class MainActivity extends AppCompatActivity implements FireBaseAuthentic
         OnPermission onPermission = new OnPermission.Builder(this).build();
         onPermission.beginRequest(location);
 
-        fab.setOnClickListener(new View.OnClickListener() {
+        /*fab.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
                 BottomSheetDialogFragment bottomSheetDialogFragment = new ListItemsBottomSheetFragment();
@@ -215,7 +216,7 @@ public class MainActivity extends AppCompatActivity implements FireBaseAuthentic
                 bottomSheetDialogFragment.show(getSupportFragmentManager(), bottomSheetDialogFragment.getTag());
 
             }
-        });
+        });*/
     }
 
     @Override
@@ -334,7 +335,7 @@ public class MainActivity extends AppCompatActivity implements FireBaseAuthentic
                 break;
             case R.id.menuHome:
                 title = "Home";
-                fragment = supportMapFragment;
+//                fragment = supportMapFragment;
                 tag = SupportMapFragment.class.getSimpleName();
                 break;
             case R.id.menuProfile:
@@ -418,7 +419,7 @@ public class MainActivity extends AppCompatActivity implements FireBaseAuthentic
         return new GoogleApiClient.Builder(this).enableAutoManage(MainActivity.this, 1, null).addApi(LocationServices.API).build();
     }
 
-    private void getMapAsync(SupportMapFragment fragment, OnMapReadyCallback callback) {
+    private void getMapAsync(MapFragment fragment, OnMapReadyCallback callback) {
         fragment.getMapAsync(callback);
     }
 
@@ -471,14 +472,31 @@ public class MainActivity extends AppCompatActivity implements FireBaseAuthentic
 
             if (distance < radius) {
                 Log.d("New User Location ", latLng + " distance "+distance);
+                ListItemsFragment listItemsFragment = new ListItemsFragment();
+                Bundle bundle = new Bundle();
 
+                productList.clear();
+                for (String key : productMap.keySet()) {
+                    if(markers.get(key).isVisible())
+                        productList.add(productMap.get(key));
+                }
+                bundle.putParcelable("productList", Parcels.wrap(productList));
+
+                listItemsFragment.setArguments(bundle);
+                android.app.FragmentTransaction ft = getFragmentManager().beginTransaction().setCustomAnimations(
+                        R.animator.card_flip_right_in,
+                        R.animator.card_flip_right_out,
+                        R.animator.card_flip_left_in,
+                        R.animator.card_flip_left_out);
+                ft.replace(R.id.flContent, listItemsFragment).addToBackStack("listItemsFragment");
+                ft.commit();
             }
         }
     }
 
     @Override
     public void accept(GoogleMap map, LatLng latlng) {
-        Log.d(MainActivity.TAG, "Location update " + latlng + " mylocation " + map.getMyLocation() + "");
+//        Log.d(MainActivity.TAG, "Location update " + latlng + " mylocation " + map.getMyLocation() + "");
         AddressResultReceiver resultReceiver = new AddressResultReceiver(this, null);
         User.latLng = latlng;
         //fetch address for location
@@ -490,7 +508,7 @@ public class MainActivity extends AppCompatActivity implements FireBaseAuthentic
     }
 
     private void hasUserLocationChanged(LatLng latLng) {
-        Log.d("isnull", (displayProduct.map.getMyLocation() == null) + "");
+        /*Log.d("isnull", (displayProduct.map.getMyLocation() == null) + "");
         Double latitude = null;
         Double longitude = null;
 
@@ -498,7 +516,7 @@ public class MainActivity extends AppCompatActivity implements FireBaseAuthentic
             latitude = displayProduct.map.getMyLocation().getLatitude();
             longitude = displayProduct.map.getMyLocation().getLongitude();
             Log.d("location_ll", latitude + " " + longitude);
-        }
+        }*/
 
         if (geoQuery == null) {
 //            geoQuery= geoFire.queryAtLocation(new GeoLocation(37.401025,-121.924067), 25);

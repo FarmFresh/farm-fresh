@@ -69,6 +69,7 @@ dependencies {
     compile 'com.github.castorflex.smoothprogressbar:library-circular:1.2.0'
 
 
+    compile 'it.sephiroth.android.library.floatingmenu:floatingmenu:1.0.0'
 }
 
 install {

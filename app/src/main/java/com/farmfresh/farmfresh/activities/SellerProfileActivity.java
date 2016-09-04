@@ -7,6 +7,7 @@ import android.support.annotation.NonNull;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
+import android.widget.ImageView;
 import android.widget.TextView;
 
 import com.farmfresh.farmfresh.R;
@@ -21,6 +22,8 @@ import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.ValueEventListener;
 import com.google.firebase.storage.FirebaseStorage;
 import com.google.firebase.storage.StorageReference;
+
+import org.parceler.Parcels;
 
 import java.util.ArrayList;
 
@@ -56,37 +59,83 @@ public class SellerProfileActivity extends AppCompatActivity {
         rvProducts.setLayoutManager(new LinearLayoutManager(this));
         // That's all!
 
-        getSellerInfo("User1");
+
+        User user = (User) Parcels.unwrap(getIntent().getParcelableExtra("user"));
+        Bitmap bm = (Bitmap) getIntent().getParcelableExtra("ProfileImage");
+
+        String userId = (String) Parcels.unwrap(getIntent().getParcelableExtra("userId"));
+
+        if (user != null && bm != null) {
+
+            getSellerListing(user.getInventory());
+            displaySellerInfo(user, bm);
+        }
+        else{
+            getSellerInfo(userId);
+        }
+
+//        makeFloatingAction();
     }
 
     // Get list of product by seller ID
     void getSellerInfo(String id){
 
         firebase.rootRef.child("users").child(id).addListenerForSingleValueEvent(
-                new ValueEventListener() {
-                    @Override
-                    public void onDataChange(DataSnapshot dataSnapshot) {
-                        // Get user value
-                        User user = dataSnapshot.getValue(User.class);
-                        user.toString();
+            new ValueEventListener() {
+                @Override
+                public void onDataChange(DataSnapshot dataSnapshot) {
+                    // Get user value
+                    User user = dataSnapshot.getValue(User.class);
+                    user.toString();
 
-                        getSellerListing(user.getInventory());
-                        displaySellerInfo(user);
-                    }
+                    getSellerListing(user.getInventory());
+                    displaySellerInfo(user);
+                }
 
-                    @Override
-                    public void onCancelled(DatabaseError databaseError) {
-                    }
-                });
+                @Override
+                public void onCancelled(DatabaseError databaseError) {
+                }
+            });
     }
+
+    void displaySellerInfo(User user, Bitmap bm){
+        TextView tvUserName = (TextView) findViewById(R.id.tvUserName);
+        tvUserName.setText(user.getDisplayName());
+
+        // get image from facebook profile
+        ImageView ivProfileImage = (ImageView) findViewById(R.id.ivProfileImage);
+        ivProfileImage.setImageBitmap(bm);
+    }
+
 
     void displaySellerInfo(User user){
         TextView tvUserName = (TextView) findViewById(R.id.tvUserName);
         tvUserName.setText(user.getDisplayName());
 
         // get image from facebook profile
-        //        ImageView ivProfileImage = (ImageView) findViewById(R.id.ivProfileImage);
+        ImageView ivProfileImage = (ImageView) findViewById(R.id.ivProfileImage);
+
+
+        String gs = firebase.databaseUrl + user.getProfileImageUrl();
+        storageRef = storage.getReferenceFromUrl(gs);
+
+        storageRef.getBytes(ONE_MEGABYTE).addOnSuccessListener(new OnSuccessListener<byte[]>() {
+            @Override
+            public void onSuccess(byte[] bytes) {
+                // Data for "images/island.jpg" is returns, use this as needed
+                Bitmap bm = BitmapFactory.decodeByteArray(bytes,0,bytes.length);
+                ImageView ivProfileImage = (ImageView) findViewById(R.id.ivProfileImage);
+                ivProfileImage.setImageBitmap(bm);
+
+            }
+        }).addOnFailureListener(new OnFailureListener() {
+            @Override
+            public void onFailure(@NonNull Exception exception) {
+                // Handle any errors
+            }
+        });
     }
+
 
     // Get list of products from product ids
     void getSellerListing(ArrayList<String> productIds) {
@@ -99,17 +148,11 @@ public class SellerProfileActivity extends AppCompatActivity {
                         public void onDataChange(DataSnapshot dataSnapshot) {
                             // Get user value
                             Product product = dataSnapshot.getValue(Product.class);
-                            product.toString();
+//                            product.toString();
 
-//                        products.add(product);
-//                        adapter.notifyItemInserted(products.size()-1);
-
-                            // doesn't work
-//                        getRealImageUrl(product);
-
-                            getImageUrl(product);
-
-                            // update adapter, limit number of item download later
+                            if (product != null) {
+                                getImageUrl(product);
+                            }
                         }
 
                         @Override
@@ -136,10 +179,10 @@ public class SellerProfileActivity extends AppCompatActivity {
                     int height = 100;
                     int width = 100;
                     if (bm.getWidth() > bm.getHeight()){
-                        height = 100* bm.getWidth() / bm.getHeight();
+                        height = 100* bm.getHeight() / bm.getWidth();
                     }
                     else{
-                        width = 100* bm.getHeight()/bm.getWidth();
+                        width = 100* bm.getWidth() / bm.getHeight();
                     }
 
                     Bitmap resized = Bitmap.createScaledBitmap(
@@ -161,6 +204,4 @@ public class SellerProfileActivity extends AppCompatActivity {
 
 
     }
-
-
 }

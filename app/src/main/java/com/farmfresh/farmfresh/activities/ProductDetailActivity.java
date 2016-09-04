@@ -57,32 +57,11 @@ public class ProductDetailActivity extends AppCompatActivity {
 
             }
         });
-            /*firebase = new GetFirebase();
-            // write product
-            firebase.writeNewProduct();
-            firebase.generateNewSeller();*/
+
         list_images = new ArrayList<>();
 
         carouselView = (CarouselView) findViewById(R.id.carouselView);
         carouselView.setImageListener(imageListener);
-            /*// get product by product id
-            final String id = "Product1";
-            firebase.rootRef.child("products").child(id).addListenerForSingleValueEvent(
-                    new ValueEventListener() {
-                        @Override
-                        public void onDataChange(DataSnapshot dataSnapshot) {
-                            // Get user value
-                            product = dataSnapshot.getValue(Product.class);
-                            product.toString();
-                            displayProductImages(product);
-                            displayProductInfo(product);
-                            getSellerInfo(product.getSellerId());
-                        }
-                        @Override
-                        public void onCancelled(DatabaseError databaseError) {
-                            Log.d("error", id.toString());
-                        }
-                    });*/
     }
 
     ImageListener imageListener = new ImageListener() {
@@ -92,7 +71,6 @@ public class ProductDetailActivity extends AppCompatActivity {
             Picasso.with(ProductDetailActivity.this)
                     .load(imageUrls.get(position))
                     .into(imageView);
-            //imageView.setImageBitmap(list_images.get(position));
         }
     };
 
@@ -141,84 +119,10 @@ public class ProductDetailActivity extends AppCompatActivity {
         ImageView ivProfileImage = (ImageView) findViewById(R.id.ivProfileImage);
         ivProfileImage.setTag(user);
 
-        // Get and display seller image
-//        FirebaseStorage storage;
-//        StorageReference storageRef;
-//        final long ONE_MEGABYTE = 1024 * 1024;
-
-//        String gs = user.getProfileImageUrl();
-//        Log.d("DEBUG:", gs);
-//        storage = FirebaseStorage.getInstance();
-//        storageRef = storage.getReferenceFromUrl(gs);
-
         Picasso.with(ProductDetailActivity.this)
                 .load(user.getProfileImageUrl())
                 .into(ivProfileImage);
-
-//        storageRef.getBytes(ONE_MEGABYTE).addOnSuccessListener(new OnSuccessListener<byte[]>() {
-//            @Override
-//            public void onSuccess(byte[] bytes) {
-//                // Data for "images/island.jpg" is returns, use this as needed
-//                Bitmap bm = BitmapFactory.decodeByteArray(bytes,0,bytes.length);
-//                ImageView ivProfileImage = (ImageView) findViewById(R.id.ivProfileImage);
-//                ivProfileImage.setImageBitmap(bm);
-//
-//            }
-//        }).addOnFailureListener(new OnFailureListener() {
-//            @Override
-//            public void onFailure(@NonNull Exception exception) {
-//                // Handle any errors
-//            }
-//        });
-
     }
-
-
-//    void displayProductImages(Product product) {
-
-//        // Storage
-//        FirebaseStorage storage = FirebaseStorage.getInstance();
-//        StorageReference storageRef;
-//        final long ONE_MEGABYTE = 1024 * 1024;
-//
-//        int a = product.getImageUrls().size();
-////        assert(a > -1);
-//
-
-//        for (int i=0; i < product.getImageUrls().size(); ++i){
-//            storageRef = storage.getReferenceFromUrl(product.getImageUrls().get(i));
-//
-//            storageRef.getBytes(ONE_MEGABYTE).addOnSuccessListener(new OnSuccessListener<byte[]>() {
-//                @Override
-//                public void onSuccess(byte[] bytes) {
-//                    // Data for "images/island.jpg" is returns, use this as needed
-//                    Log.d("DEBUG: early", Integer.toString(list_images.size()));
-//                    Bitmap bm = BitmapFactory.decodeByteArray(bytes,0,bytes.length);
-//                    bm.toString();
-//                    int a = list_images.size();
-//
-//                    int c = list_images.size();
-//                    Log.d("DEBUG: size", Integer.toString(list_images.size()));
-//                    // draw this photo
-//                    list_images.add(0, bm);
-////                    list_images.add(bitmap);
-//
-//                    // reset carousel each time list_images increases
-//                    carouselView.setPageCount(list_images.size());
-////                    carouselView.setImageListener(imageListener);
-//
-//                }
-//            }).addOnFailureListener(new OnFailureListener() {
-//                @Override
-//                public void onFailure(@NonNull Exception exception) {
-//                    // Handle any errors
-//                }
-//            });
-//        }
-
-//    }
-
-
 
     @Override
     protected void onStart(){

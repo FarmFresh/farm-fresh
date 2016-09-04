@@ -87,7 +87,7 @@ public class SellerProductsAdapter extends
         tvName.setText(product.getName());
         tvPrice.setText(product.getPrice());
 
-        if (product.getImageUrls().size() > 0) {
+        if (product.getImageUrls()!= null && product.getImageUrls().size() > 0) {
             Picasso.with(mContext)
                     .load(product.getImageUrls().get(0))
                     .into(ivProductImage);

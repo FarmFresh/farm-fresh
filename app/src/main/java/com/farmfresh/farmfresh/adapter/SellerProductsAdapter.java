@@ -10,6 +10,7 @@ import android.widget.TextView;
 
 import com.farmfresh.farmfresh.R;
 import com.farmfresh.farmfresh.models.Product;
+import com.squareup.picasso.Picasso;
 
 import java.util.List;
 
@@ -87,11 +88,9 @@ public class SellerProductsAdapter extends
         tvPrice.setText(product.getPrice());
 
         if (product.getImageUrls().size() > 0) {
-            ivProductImage.setImageBitmap(product.getIcon());
-//            String a = product.getImageUrls().get(0);
-//            Picasso.with(mContext)
-//                    .load(product.getImageUrls().get(0))
-//                    .into(ivProductImage);
+            Picasso.with(mContext)
+                    .load(product.getImageUrls().get(0))
+                    .into(ivProductImage);
         }
     }
 

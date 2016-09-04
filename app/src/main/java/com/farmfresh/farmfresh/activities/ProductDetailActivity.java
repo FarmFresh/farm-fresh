@@ -88,24 +88,21 @@ public class ProductDetailActivity extends AppCompatActivity {
     // Get seller information who is associated with this product
     void getSellerInfo(String id){
 
-        id.toString();
-
         database.getReference().child("users").child(id).addListenerForSingleValueEvent(
-                new ValueEventListener() {
-                    @Override
-                    public void onDataChange(DataSnapshot dataSnapshot) {
-                        // Get user value
-                        User user = dataSnapshot.getValue(User.class);
-                        user.toString();
+            new ValueEventListener() {
+                @Override
+                public void onDataChange(DataSnapshot dataSnapshot) {
+                    // Get user value
+                    User user = dataSnapshot.getValue(User.class);
+                    user.toString();
 
-                        displayUserInfo(user);
-                    }
+                    displayUserInfo(user);
+                }
 
-                    @Override
-                    public void onCancelled(DatabaseError databaseError) {
-//                    Log.d("error", id.toString());
-                    }
-                });
+                @Override
+                public void onCancelled(DatabaseError databaseError) {
+                }
+            });
     }
 
     // display seller information
@@ -179,10 +176,6 @@ public class ProductDetailActivity extends AppCompatActivity {
         ImageView ivProfileImage = (ImageView) findViewById(R.id.ivProfileImage);
         User u = (User) ivProfileImage.getTag();
         intent.putExtra("user", Parcels.wrap(u));
-
-        ivProfileImage.buildDrawingCache();
-        Bitmap bm = (Bitmap) ivProfileImage.getDrawingCache();
-        intent.putExtra("ProfileImage", bm);
         startActivity(intent);
     }
 }

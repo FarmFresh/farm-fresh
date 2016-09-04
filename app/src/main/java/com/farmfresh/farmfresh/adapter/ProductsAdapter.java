@@ -7,13 +7,13 @@ import android.view.View;
 import android.view.ViewGroup;
 
 import com.farmfresh.farmfresh.R;
-import com.farmfresh.farmfresh.utils.Constants;
 import com.farmfresh.farmfresh.models.Product;
+import com.farmfresh.farmfresh.utils.Constants;
 import com.farmfresh.farmfresh.viewholder.ViewHolderProductImage;
 import com.farmfresh.farmfresh.viewholder.ViewHolderProductOnly;
+import com.squareup.picasso.Picasso;
 
 import java.util.List;
-
 /**
  * Created by bhaskarjaiswal on 8/21/16.
  */
@@ -72,7 +72,7 @@ public class ProductsAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolde
     }
 
     private void configureViewHolderProductDescription(final ViewHolderProductOnly viewProduct, int position) {
-        Product product = (Product) productList.get(position);
+        Product product = productList.get(position);
 
         viewProduct.getTvName().setText(product.getName());
         viewProduct.getTvDescription().setText(product.getDescription());
@@ -82,11 +82,20 @@ public class ProductsAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolde
 
     private void configureViewHolderProductImage(final ViewHolderProductImage viewProduct, int position) {
 
+        Product product = productList.get(position);
+
+        viewProduct.getTvName().setText(product.getName());
+        viewProduct.getTvDescription().setText(product.getDescription());
+        viewProduct.getTvPrice().setText(product.getPrice());
+        Picasso.with(context).load(product.getImageUrls().get(0)).into(viewProduct.getIvImage());
     }
 
     @Override
     public int getItemViewType(int position) {
-        Product product = (Product) productList.get(position);
+        Product product = productList.get(position);
+        if(product.getImageUrls() != null && product.getImageUrls().size() != 0){
+            return Constants.PRODUCT_IMAGE;
+        }
 
         return Constants.PRODUCT_ONLY;
     }

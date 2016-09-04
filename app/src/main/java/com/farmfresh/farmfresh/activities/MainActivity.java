@@ -182,8 +182,6 @@ public class MainActivity extends AppCompatActivity implements FireBaseAuthentic
         mNvView.getMenu().getItem(0).setChecked(true);
         android.app.FragmentManager fragmentManager = getFragmentManager();
         supportMapFragment = new MapFragment();
-        int distance = 8000;
-        float scale = getResources().getDisplayMetrics().density * distance;
         if (supportMapFragment != null) {
             getMapAsync(supportMapFragment, new OnMap(manager, click, layer, move, track, displayProduct));
         }

@@ -45,10 +45,6 @@ public class ListItemsFragment extends Fragment {
         rvProducts.setLayoutManager(layoutManager);
         rvProducts.setAdapter(productsAdapter);
 
-        int distance = 8000;
-        float scale = getResources().getDisplayMetrics().density * distance;
-        v.setCameraDistance(scale);
-
         return v;
     }
 }

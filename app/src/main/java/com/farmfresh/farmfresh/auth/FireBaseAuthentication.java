@@ -129,8 +129,6 @@ public class FireBaseAuthentication {
     }
 
 
-
-
     public interface LoginListener {
         void onLoginSuccess(FirebaseUser currentUser);
     }

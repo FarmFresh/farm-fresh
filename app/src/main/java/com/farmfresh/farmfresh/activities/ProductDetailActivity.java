@@ -1,13 +1,11 @@
 package com.farmfresh.farmfresh.activities;
 
+
 import android.content.Intent;
 import android.graphics.Bitmap;
-import android.graphics.BitmapFactory;
 import android.net.Uri;
 import android.os.Bundle;
-import android.support.annotation.NonNull;
 import android.support.v7.app.AppCompatActivity;
-import android.util.Log;
 import android.view.View;
 import android.widget.ImageView;
 import android.widget.TextView;
@@ -17,18 +15,16 @@ import com.farmfresh.farmfresh.models.Product;
 import com.farmfresh.farmfresh.models.User;
 import com.farmfresh.farmfresh.utils.Constants;
 import com.farmfresh.farmfresh.utils.GetFirebase;
-import com.google.android.gms.tasks.OnFailureListener;
-import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.ValueEventListener;
-import com.google.firebase.storage.FirebaseStorage;
-import com.google.firebase.storage.StorageReference;
 import com.squareup.picasso.Picasso;
 import com.synnapps.carouselview.CarouselView;
 import com.synnapps.carouselview.ImageListener;
+
+import org.parceler.Parcels;
 
 import java.util.ArrayList;
 
@@ -62,32 +58,11 @@ public class ProductDetailActivity extends AppCompatActivity {
 
             }
         });
-            /*firebase = new GetFirebase();
-            // write product
-            firebase.writeNewProduct();
-            firebase.generateNewSeller();*/
+
         list_images = new ArrayList<>();
 
         carouselView = (CarouselView) findViewById(R.id.carouselView);
         carouselView.setImageListener(imageListener);
-            /*// get product by product id
-            final String id = "Product1";
-            firebase.rootRef.child("products").child(id).addListenerForSingleValueEvent(
-                    new ValueEventListener() {
-                        @Override
-                        public void onDataChange(DataSnapshot dataSnapshot) {
-                            // Get user value
-                            product = dataSnapshot.getValue(Product.class);
-                            product.toString();
-                            displayProductImages(product);
-                            displayProductInfo(product);
-                            getSellerInfo(product.getSellerId());
-                        }
-                        @Override
-                        public void onCancelled(DatabaseError databaseError) {
-                            Log.d("error", id.toString());
-                        }
-                    });*/
     }
 
     ImageListener imageListener = new ImageListener() {
@@ -97,7 +72,6 @@ public class ProductDetailActivity extends AppCompatActivity {
             Picasso.with(ProductDetailActivity.this)
                     .load(imageUrls.get(position))
                     .into(imageView);
-            //imageView.setImageBitmap(list_images.get(position));
         }
     };
 
@@ -115,8 +89,6 @@ public class ProductDetailActivity extends AppCompatActivity {
     // Get seller information who is associated with this product
     void getSellerInfo(String id){
 
-        id.toString();
-
         database.getReference().child("users").child(id).addListenerForSingleValueEvent(
                 new ValueEventListener() {
                     @Override
@@ -130,7 +102,6 @@ public class ProductDetailActivity extends AppCompatActivity {
 
                     @Override
                     public void onCancelled(DatabaseError databaseError) {
-//                    Log.d("error", id.toString());
                     }
                 });
     }
@@ -144,79 +115,16 @@ public class ProductDetailActivity extends AppCompatActivity {
         tvSellerName.setText(user.getDisplayName());
 
         ImageView ivProfileImage = (ImageView) findViewById(R.id.ivProfileImage);
-        // Get and display seller image
+        ivProfileImage.setTag(user);
 
-        final String id = product.getSellerId();
-
-
+        Picasso.with(ProductDetailActivity.this)
+                .load(user.getProfileImageUrl())
+                .into(ivProfileImage);
     }
-
-
-    void displayProductImages(Product product) {
-
-        // Storage
-        FirebaseStorage storage = FirebaseStorage.getInstance();
-        StorageReference storageRef;
-        final long ONE_MEGABYTE = 1024 * 1024;
-
-        int a = product.getImageUrls().size();
-        assert(a > -1);
-
-        for (int i=0; i < product.getImageUrls().size(); ++i){
-            storageRef = storage.getReferenceFromUrl(product.getImageUrls().get(i));
-
-            storageRef.getBytes(ONE_MEGABYTE).addOnSuccessListener(new OnSuccessListener<byte[]>() {
-                @Override
-                public void onSuccess(byte[] bytes) {
-                    // Data for "images/island.jpg" is returns, use this as needed
-                    Log.d("DEBUG: early", Integer.toString(list_images.size()));
-                    Bitmap bm = BitmapFactory.decodeByteArray(bytes,0,bytes.length);
-                    bm.toString();
-                    int a = list_images.size();
-
-                    int c = list_images.size();
-                    Log.d("DEBUG: size", Integer.toString(list_images.size()));
-                    // draw this photo
-                    list_images.add(0, bm);
-//                    list_images.add(bitmap);
-
-                    // reset carousel each time list_images increases
-                    carouselView.setPageCount(list_images.size());
-//                    carouselView.setImageListener(imageListener);
-
-                }
-            }).addOnFailureListener(new OnFailureListener() {
-                @Override
-                public void onFailure(@NonNull Exception exception) {
-                    // Handle any errors
-                }
-            });
-        }
-
-    }
-
-
 
     @Override
     protected void onStart(){
         super.onStart();
-
-
-//        tvProductName = (TextView) findViewById(R.id.tvProductName);
-
-//        conditionRef.addValueEventListener(new ValueEventListener() {
-//            @Override
-//            public void onDataChange(DataSnapshot dataSnapshot) {
-//                // populate data from database
-////                String text = dataSnapshot.getValue(String.class);
-////                tvProductName.setText(text);
-//            }
-//
-//            @Override
-//            public void onCancelled(DatabaseError databaseError) {
-//
-//            }
-//        });
 
         final ImageView ivSellerEmail = (ImageView) findViewById(R.id.ivSellerEmail);
         ivSellerEmail.setOnClickListener(new View.OnClickListener() {
@@ -243,5 +151,32 @@ public class ProductDetailActivity extends AppCompatActivity {
                 }
             }
         });
+    }
+
+    void onSellerPhone(View view){
+        Intent callIntent = new Intent(Intent.ACTION_CALL);
+        callIntent.setData(Uri.parse("tel:0377778888"));
+        if (callIntent.resolveActivity(getPackageManager()) != null) {
+            startActivity(callIntent);
+        }
+    }
+
+    void onSellerSMS(View view){
+        Uri smsUri = Uri.parse("tel:" + "0377778888");
+        Intent intent = new Intent(Intent.ACTION_VIEW, smsUri);
+        intent.putExtra("address", "0377778888");
+        intent.putExtra("sms_body", "");
+        intent.setType("vnd.android-dir/mms-sms");//here setType will set the previous data null.
+        if (intent.resolveActivity(getPackageManager()) != null) {
+            startActivity(intent);
+        }
+    }
+
+    void onSellerProfile(View view){
+        Intent intent = new Intent(this, SellerProfileActivity.class);
+        ImageView ivProfileImage = (ImageView) findViewById(R.id.ivProfileImage);
+        User u = (User) ivProfileImage.getTag();
+        intent.putExtra("user", Parcels.wrap(u));
+        startActivity(intent);
     }
 }

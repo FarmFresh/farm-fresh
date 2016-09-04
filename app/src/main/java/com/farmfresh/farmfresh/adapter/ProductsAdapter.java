@@ -72,7 +72,7 @@ public class ProductsAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolde
     }
 
     private void configureViewHolderProductDescription(final ViewHolderProductOnly viewProduct, int position) {
-        Product product = (Product) productList.get(position);
+        Product product = productList.get(position);
 
         viewProduct.getTvName().setText(product.getName());
         viewProduct.getTvDescription().setText(product.getDescription());
@@ -81,14 +81,15 @@ public class ProductsAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolde
     }
 
     private void configureViewHolderProductImage(final ViewHolderProductImage viewProduct, int position) {
-
+        Product product = productList.get(position);
+        viewProduct.getTvDescription().setText(product.getDescription());
     }
 
     @Override
     public int getItemViewType(int position) {
-        Product product = (Product) productList.get(position);
-
-        return Constants.PRODUCT_ONLY;
+        Product product = productList.get(position);
+        return (product.getImageUrls() != null && product.getImageUrls().size() > 0) ?
+                Constants.PRODUCT_IMAGE : Constants.PRODUCT_ONLY;
     }
 
     @Override

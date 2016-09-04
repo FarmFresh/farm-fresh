@@ -12,6 +12,8 @@ import com.farmfresh.farmfresh.adapter.SellerProductsAdapter;
 import com.farmfresh.farmfresh.models.Product;
 import com.farmfresh.farmfresh.models.User;
 import com.farmfresh.farmfresh.utils.Constants;
+import com.google.firebase.auth.FirebaseAuth;
+import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.database.ChildEventListener;
 import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
@@ -59,11 +61,12 @@ public class SellerProfileActivity extends AppCompatActivity {
 
         // from ProductDetailActivity
         if (user != null) {
-            getSellerListing(user);
+            getSellerListing();
             displaySellerInfo(user);
         }
         // from MainActivity
         else{
+            getSellerListing();
             getSellerInfo(userId);
         }
 
@@ -101,45 +104,48 @@ public class SellerProfileActivity extends AppCompatActivity {
                 .into(ivProfileImage);
     }
 
-
     // Get list of products from product ids
-    void getSellerListing(User user) {
+    void getSellerListing() {
 
-        Query queryRef = productsRef.orderByChild("sellerId")
-                .startAt("pMfeFjNSp6eIXsoao3JkbkjoC9b2")
-                .endAt("pMfeFjNSp6eIXsoao3JkbkjoC9b2");
+        final FirebaseUser currentUser = FirebaseAuth.getInstance().getCurrentUser();
+        if(currentUser != null) {
+            String userId = currentUser.getUid();
+            Query queryRef = productsRef.orderByChild("sellerId")
+                    .startAt(userId) //"pMfeFjNSp6eIXsoao3JkbkjoC9b2"
+                    .endAt(userId); //"pMfeFjNSp6eIXsoao3JkbkjoC9b2"
 
-        queryRef.addChildEventListener(new ChildEventListener() {
-            @Override
-            public void onChildAdded(DataSnapshot snapshot, String previousChild) {
-                Product product = snapshot.getValue(Product.class);
-                products.add(product);
-                adapter.notifyItemInserted(products.size()-1);
-            }
+            queryRef.addChildEventListener(new ChildEventListener() {
+                @Override
+                public void onChildAdded(DataSnapshot snapshot, String previousChild) {
+                    Product product = snapshot.getValue(Product.class);
+                    products.add(product);
+                    adapter.notifyItemInserted(products.size()-1);
+                }
 
-            @Override
-            public void onChildRemoved(DataSnapshot snapshot) {
-                Product product = snapshot.getValue(Product.class);
-                int i = products.indexOf(product);
-                products.remove(i);
-                adapter.notifyItemRemoved(i);
-            }
+                @Override
+                public void onChildRemoved(DataSnapshot snapshot) {
+                    Product product = snapshot.getValue(Product.class);
+                    int i = products.indexOf(product);
+                    products.remove(i);
+                    adapter.notifyItemRemoved(i);
+                }
 
-            @Override
-            public void onCancelled(DatabaseError databaseError) {
+                @Override
+                public void onCancelled(DatabaseError databaseError) {
 
-            }
+                }
 
-            @Override
-            public void onChildChanged(DataSnapshot dataSnapshot, String s) {
+                @Override
+                public void onChildChanged(DataSnapshot dataSnapshot, String s) {
 
-            }
+                }
 
-            @Override
-            public void onChildMoved(DataSnapshot dataSnapshot, String s) {
+                @Override
+                public void onChildMoved(DataSnapshot dataSnapshot, String s) {
 
-            }
-        });
+                }
+            });
+        }
     }
 
     void getImageUrl(Product product){

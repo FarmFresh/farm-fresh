@@ -31,13 +31,35 @@
             android:layout_below="@+id/tvSellerName"/>
 
         <ImageView
-            android:layout_width="30dp"
-            android:layout_height="30dp"
+            android:layout_width="50dp"
+            android:layout_height="50dp"
             android:id="@+id/ivProfileImage"
             android:src="@drawable/tweet_compose"
             android:layout_alignParentTop="true"
             android:layout_alignParentLeft="true"
-            android:layout_alignParentStart="true" />
+            android:layout_alignParentStart="true"
+            android:onClick="onSellerProfile"/>
+
+        <!--<android.support.design.widget.CoordinatorLayout-->
+        <!--android:layout_width="match_parent"-->
+        <!--android:layout_height="match_parent"-->
+        <!--android:layout_alignParentRight="true"-->
+        <!--android:layout_alignParentEnd="true"-->
+        <!--android:layout_below="@+id/ivProfileImage"-->
+        <!--android:paddingTop="15dp"-->
+        <!--android:id="@+id/imageView">-->
+
+        <!--<android.support.design.widget.FloatingActionButton-->
+        <!--android:layout_width="wrap_content"-->
+        <!--android:layout_height="wrap_content"-->
+        <!--android:layout_gravity="top|right"-->
+        <!--android:id="@+id/fabMenu"-->
+        <!--android:alpha="1"-->
+        <!--android:layout_margin="16dp"-->
+        <!--android:src="@android:drawable/ic_dialog_info"-->
+        <!--app:layout_anchorGravity="top|right|end" />-->
+
+        <!--</android.support.design.widget.CoordinatorLayout>-->
 
         <TextView
             android:layout_width="wrap_content"
@@ -56,36 +78,11 @@
             android:layout_alignParentLeft="true"
             android:layout_alignParentStart="true" />
 
-        <EditText
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:hint="Quantity"
-            android:id="@+id/tvQuantity"
-            android:layout_below="@+id/tvPrice"
-            android:layout_alignParentLeft="true"
-            android:layout_alignParentStart="true" />
-
-        <Button
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:id="@+id/btBuyNow"
-            android:layout_below="@+id/tvQuantity"
-            android:layout_centerVertical="true"
-            android:text="Buy Now" />
-
-        <Button
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:id="@+id/btAddCart"
-            android:layout_below="@+id/btBuyNow"
-            android:layout_centerVertical="true"
-            android:text="Add to Cart"/>
-
         <include android:id="@+id/XMLratings"
             android:layout_width="match_parent"
             android:layout_height="match_parent"
             layout="@layout/product_rating"
-            android:layout_below="@+id/btAddCart"/>
+            android:layout_below="@+id/tvProductName"/>
 
         <TextView
             android:layout_width="wrap_content"
@@ -98,29 +95,41 @@
             android:layout_alignParentStart="true" />
 
         <android.support.v7.widget.LinearLayoutCompat
-            android:layout_width="match_parent"
-            android:layout_height="100dp"
-            android:layout_below="@+id/tvDescription">
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_alignParentTop="true"
+            android:layout_alignParentRight="true"
+            android:layout_alignParentEnd="true"
+            android:orientation="vertical"
+            android:id="@+id/lvContact">
+
+            <ImageView
+                android:layout_width="50dp"
+                android:layout_height="50dp"
+                android:id="@+id/ivHeart"
+                android:src="@drawable/tweet_compose"
+                android:layout_marginTop="20dp" />
 
             <ImageView
                 android:layout_width="50dp"
                 android:layout_height="50dp"
                 android:id="@+id/ivSellerEmail"
-                android:layout_below="@+id/tvDescription"
-                android:layout_alignParentLeft="true"
-                android:layout_alignParentStart="true"
-                android:src="@drawable/home_icon" />
+                android:src="@drawable/mentions_icon"
+                android:alpha="1"/>
 
             <ImageView
                 android:layout_width="50dp"
                 android:layout_height="50dp"
                 android:id="@+id/ivSellerPhone"
-                android:layout_below="@+id/tvDescription"
-                android:layout_centerVertical="true"
-                android:layout_alignParentLeft="true"
-                android:layout_alignParentStart="true"
+                android:onClick="onSellerPhone"
                 android:src="@drawable/mentions_icon" />
 
+            <ImageView
+                android:layout_width="50dp"
+                android:layout_height="50dp"
+                android:id="@+id/ivSellerSMS"
+                android:onClick="onSellerSMS"
+                android:src="@drawable/mentions_icon" />
         </android.support.v7.widget.LinearLayoutCompat>
 
 

@@ -58,7 +58,7 @@ public class EmailPasswordSignUpFragment extends Fragment {
         btnSubmit.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                isValidInput=true;
+                reset();
                 createUser();
             }
         });
@@ -102,8 +102,7 @@ public class EmailPasswordSignUpFragment extends Fragment {
         if(!isValidFullName(fullName)) {
             isValidInput = false;
             tilUserFullName.setErrorEnabled(true);
-            tilUserFullName.setError(String.format("Name must be %d characters long",
-                    Constants.USER_FULL_NAME_MIN_LENGTH));
+            tilUserFullName.setError("Invalid name");
         }
     }
 
@@ -122,5 +121,15 @@ public class EmailPasswordSignUpFragment extends Fragment {
             tilUserPassword.setError(String.format("Password must be %d characters long",
                     Constants.USER_PASSWORD_MIN_LENGTH));
         }
+    }
+
+    private void reset() {
+        isValidInput = true;
+        tilUserFullName.setErrorEnabled(false);
+        tilUserFullName.setError(null);
+        tilUserEmail.setErrorEnabled(false);
+        tilUserEmail.setError(null);
+        tilUserPassword.setErrorEnabled(false);
+        tilUserPassword.setError(null);
     }
 }

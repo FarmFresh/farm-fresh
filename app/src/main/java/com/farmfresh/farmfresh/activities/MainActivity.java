@@ -533,6 +533,8 @@ public class MainActivity extends AppCompatActivity implements FireBaseAuthentic
                 }
                 bundle.putParcelable("productList", Parcels.wrap(productList));
 
+                mBottomSheetBehavior.setState(BottomSheetBehavior.STATE_COLLAPSED);
+
                 listItemsFragment.setArguments(bundle);
                 android.app.FragmentTransaction ft = getFragmentManager().beginTransaction().setCustomAnimations(
                         R.animator.card_flip_right_in,
@@ -560,7 +562,6 @@ public class MainActivity extends AppCompatActivity implements FireBaseAuthentic
 
             Log.d("Markerclicked", product.getName() + "");
 
-//            String url = "https://maps.googleapis.com/maps/api/distancematrix/json?units=imperial&origins=40.6655101,-73.89188969999998&destinations=40.6905615,-73.9976592&mode=driving&key=AIzaSyCkmV63LtrA1HeGxmyr0QyXin7ia7U38wA";
             String url = "https://maps.googleapis.com/maps/api/distancematrix/json?units=imperial&origins="+User.latLng.latitude+","+User.latLng.longitude+"&destinations="+product.getL().get(0)+","+product.getL().get(1)+"&mode=driving&key="+ Keys.GOOGLE_API_KEY;
 //            Log.d("volley-url",url);
             updateDistance(url);

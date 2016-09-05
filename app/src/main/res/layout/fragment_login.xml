@@ -3,6 +3,7 @@
     xmlns:gpb="http://schemas.android.com/apk/res-auto"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
+    xmlns:app="http://schemas.android.com/tools"
     android:background="@drawable/product_info_shape">
 
 
@@ -12,6 +13,9 @@
         android:layout_height="wrap_content"
         android:gravity="center_vertical"
         android:orientation="vertical"
+        android:layout_marginTop="30dp"
+        android:padding="@dimen/activity_horizontal_margin"
+        android:background="@drawable/product_info_shape"
         >
         <include
             android:layout_gravity="center_horizontal"
@@ -29,20 +33,102 @@
             layout="@layout/layout_facebook_login" />
     </LinearLayout>
 
-
-
-    <Button
-        android:layout_width="wrap_content"
+    <TextView
+        android:padding="@dimen/activity_horizontal_margin"
+        android:id="@+id/orDivider"
+        android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:id="@+id/btnSignup"
-        android:gravity="center_vertical"
-        android:textAllCaps="false"
-        android:text="Sign up"
-        android:layout_gravity="center"
-        android:theme="@style/ThemeOverlay.AppCompat.Dark.ActionBar"
+        android:text="or"
         android:layout_below="@+id/llSocial"
-        android:layout_centerHorizontal="true"
-        android:layout_marginTop="52dp" />
+        android:gravity="center"/>
+
+    <RelativeLayout
+        android:layout_below="@+id/orDivider"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:padding="@dimen/activity_horizontal_margin"
+        android:background="@drawable/product_info_shape"
+        android:layout_alignEnd="@+id/orDivider">
+
+        <android.support.design.widget.TextInputLayout
+            android:id="@+id/user_email_text_input_layout"
+            android:layout_width="match_parent"
+            android:padding="@dimen/product_info_margin"
+            app:hintTextAppearance="@style/TextInputEditTextAppearance"
+            android:layout_height="wrap_content"
+            android:layout_alignParentTop="true"
+            android:layout_alignParentEnd="true">
+
+            <android.support.design.widget.TextInputEditText
+                android:id="@+id/etUserEmail"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:ems="10"
+                android:inputType="textEmailAddress"
+                android:imeOptions="actionNext"
+                android:background="@drawable/product_info_shape"
+                android:hint="@string/user_email" />
+
+        </android.support.design.widget.TextInputLayout>
+
+        <android.support.design.widget.TextInputLayout
+            android:id="@+id/user_password_text_input_layout"
+            android:layout_width="match_parent"
+            android:padding="@dimen/product_info_margin"
+            app:hintTextAppearance="@style/TextInputEditTextAppearance"
+            android:layout_height="wrap_content"
+            android:layout_below="@+id/user_email_text_input_layout"
+            android:layout_alignParentStart="true">
+
+            <android.support.design.widget.TextInputEditText
+                android:id="@+id/etUserPassword"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:ems="10"
+                android:inputType="textPassword"
+                android:imeOptions="actionDone"
+                android:background="@drawable/product_info_shape"
+                android:hint="@string/user_password"
+                android:layout_alignStart="@+id/user_password_text_input_layout"/>
+
+        </android.support.design.widget.TextInputLayout>
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="horizontal"
+            android:layout_marginTop="20dp"
+            android:layout_below="@+id/user_password_text_input_layout">
+
+            <Button
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:id="@+id/btnSignIn"
+                android:gravity="center_vertical"
+                android:textAllCaps="false"
+                android:text="Sign up"
+                android:textAlignment="center"
+                android:theme="@style/ThemeOverlay.AppCompat.Dark.ActionBar"
+                android:layout_below="@+id/llSocial"
+                android:layout_centerHorizontal="true"
+                android:layout_weight="0.5" />
+
+            <Button
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:id="@+id/btnSignup"
+                android:gravity="center_vertical"
+                android:textAllCaps="false"
+                android:text="Sign In"
+                android:layout_gravity="center"
+                android:textAlignment="center"
+                android:theme="@style/ThemeOverlay.AppCompat.Dark.ActionBar"
+                android:layout_below="@+id/llSocial"
+                android:layout_centerHorizontal="true"
+                android:layout_weight="0.5" />
+        </LinearLayout>
+
+    </RelativeLayout>
 
    <com.jpardogo.android.googleprogressbar.library.GoogleProgressBar
        android:id="@+id/google_progress"

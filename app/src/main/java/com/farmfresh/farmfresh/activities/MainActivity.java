@@ -2,6 +2,7 @@ package com.farmfresh.farmfresh.activities;
 
 import android.Manifest;
 import android.content.Intent;
+import android.content.res.ColorStateList;
 import android.content.res.Configuration;
 import android.graphics.Color;
 import android.location.Location;
@@ -28,6 +29,12 @@ import android.widget.EditText;
 import android.widget.ImageView;
 import android.widget.TextView;
 
+import com.android.volley.Request;
+import com.android.volley.RequestQueue;
+import com.android.volley.Response;
+import com.android.volley.VolleyError;
+import com.android.volley.toolbox.StringRequest;
+import com.android.volley.toolbox.Volley;
 import com.facebook.FacebookSdk;
 import com.facebook.appevents.AppEventsLogger;
 import com.farmfresh.farmfresh.R;
@@ -50,6 +57,7 @@ import com.farmfresh.farmfresh.helper.PlaceManager;
 import com.farmfresh.farmfresh.models.Product;
 import com.farmfresh.farmfresh.models.User;
 import com.farmfresh.farmfresh.utils.Helper;
+import com.farmfresh.farmfresh.utils.Keys;
 import com.firebase.geofire.GeoFire;
 import com.firebase.geofire.GeoLocation;
 import com.firebase.geofire.GeoQuery;
@@ -76,6 +84,8 @@ import com.google.firebase.database.ValueEventListener;
 import com.google.maps.android.ui.IconGenerator;
 import com.squareup.picasso.Picasso;
 
+import org.json.JSONException;
+import org.json.JSONObject;
 import org.parceler.Parcels;
 
 import java.util.ArrayList;
@@ -222,12 +232,14 @@ public class MainActivity extends AppCompatActivity implements FireBaseAuthentic
                 if (newState == BottomSheetBehavior.STATE_COLLAPSED) {
                     mBottomSheetBehavior.setPeekHeight(0);
                     ivProductImage.setVisibility(View.GONE);
-                    ivProductImage.setImageResource(0);
                     fabCar.setVisibility(View.INVISIBLE);
+                    fabCar.setBackgroundTintList(ColorStateList.valueOf(Color.parseColor("#0084B4")));
+                    fabCar.setImageResource(R.drawable.car_collapsed);
                 } else if (newState == BottomSheetBehavior.STATE_EXPANDED) {
                     ivProductImage.setVisibility(View.VISIBLE);
-                    ivProductImage.setImageResource(R.drawable.car_collapsed);
                     fabCar.setVisibility(View.VISIBLE);
+                    fabCar.setBackgroundTintList(ColorStateList.valueOf(Color.parseColor("#FFFFFF")));
+                    fabCar.setImageResource(R.drawable.car_expanded);
                 }
             }
 
@@ -538,13 +550,51 @@ public class MainActivity extends AppCompatActivity implements FireBaseAuthentic
 //            mBottomSheetBehavior.setState(BottomSheetBehavior.STATE_COLLAPSED);
             fabCar.setVisibility(View.VISIBLE);
             Product product = markersProductMap.get(marker);
+
+            ivProductImage.setImageResource(0);
+            if(product.getImageUrls() != null && product.getImageUrls().size() !=0){
+                Picasso.with(MainActivity.this)
+                        .load(product.getImageUrls().get(0))
+                        .into(ivProductImage);
+            }
+
             Log.d("Markerclicked", product.getName() + "");
 
+//            String url = "https://maps.googleapis.com/maps/api/distancematrix/json?units=imperial&origins=40.6655101,-73.89188969999998&destinations=40.6905615,-73.9976592&mode=driving&key=AIzaSyCkmV63LtrA1HeGxmyr0QyXin7ia7U38wA";
+            String url = "https://maps.googleapis.com/maps/api/distancematrix/json?units=imperial&origins="+User.latLng.latitude+","+User.latLng.longitude+"&destinations="+product.getL().get(0)+","+product.getL().get(1)+"&mode=driving&key="+ Keys.GOOGLE_API_KEY;
+//            Log.d("volley-url",url);
+            updateDistance(url);
 
             return false;
         }
 
+        private void updateDistance(String url) {
+            RequestQueue queue = Volley.newRequestQueue(MainActivity.this);
 
+            StringRequest stringRequest = new StringRequest(Request.Method.GET, url,
+                    new Response.Listener<String>() {
+                        @Override
+                        public void onResponse(String response) {
+                            Log.d("volley",response);
+                            try {
+                                JSONObject jsonObject = new JSONObject(response);
+                                jsonObject = jsonObject.getJSONArray("rows").getJSONObject(0).getJSONArray("elements").getJSONObject(0);
+                                String duration = jsonObject.getJSONObject("duration").get("text").toString();
+                                String distance = jsonObject.getJSONObject("distance").get("text").toString();
+//                                Log.d("volley-duration",duration);
+                                tvDuration.setText(duration);
+                            } catch (JSONException e) {
+                                e.printStackTrace();
+                            }
+                        }
+                    }, new Response.ErrorListener() {
+                @Override
+                public void onErrorResponse(VolleyError error) {
+                    Log.d("volley-error",error.toString());
+                }
+            });
+            queue.add(stringRequest);
+        }
     }
 
     @Override

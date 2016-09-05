@@ -2,6 +2,7 @@
 
 # farm-fresh
 app/src/main/java/com/farmfresh/farmfresh/schema/
+app/src/main/java/com/farmfresh/farmfresh/utils/Keys.java
 *.json
 
 # built application files

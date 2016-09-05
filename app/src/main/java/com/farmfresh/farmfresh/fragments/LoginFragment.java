@@ -2,6 +2,7 @@ package com.farmfresh.farmfresh.fragments;
 
 import android.content.Context;
 import android.content.Intent;
+import android.databinding.DataBindingUtil;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
@@ -19,6 +20,7 @@ import com.farmfresh.farmfresh.auth.EmailPasswordAuthentication;
 import com.farmfresh.farmfresh.auth.FacebookAuthentication;
 import com.farmfresh.farmfresh.auth.FireBaseAuthentication;
 import com.farmfresh.farmfresh.auth.GoogleAuthentication;
+import com.farmfresh.farmfresh.databinding.FragmentLoginBinding;
 import com.farmfresh.farmfresh.utils.Constants;
 import com.google.android.gms.common.SignInButton;
 import com.jpardogo.android.googleprogressbar.library.GoogleProgressBar;
@@ -40,7 +42,9 @@ public class LoginFragment extends Fragment {
     private GoogleProgressBar mProgressBar;
     private SignInButton mGoogleSignInButton;
     private Button btnSignUp;
+    private Button btnsignIn;
     private SignUpListener signupListener;
+    private FragmentLoginBinding binding;
 
     public static LoginFragment newInstance(GoogleAuthentication googleAuthentication,
                                             FacebookAuthentication facebookAuthentication,
@@ -59,36 +63,9 @@ public class LoginFragment extends Fragment {
     @Override
     public View onCreateView(LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
         super.onCreateView(inflater, container, savedInstanceState);
-        final View view = inflater.inflate(R.layout.fragment_login, container, false);
-        mGoogleSignInButton = (SignInButton) view.findViewById(R.id.btnGoogleSignIn);
-        mGoogleSignInButton.setSize(SignInButton.SIZE_WIDE);
-        mGoogleSignInButton.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                LoginFragment.this.googleSignIn();
-            }
-        });
-        mFacebookSignInButton = (LoginButton) view.findViewById(R.id.btnFacebookSignIn);
-        mFacebookSignInButton.setReadPermissions("email");
-        mFacebookSignInButton.setFragment(this);
-        LoginManager.getInstance().registerCallback(mFacebookAuthentication.getMCallbackManager(),
-                mFacebookAuthentication.getFacebookCallback());
-        mFacebookSignInButton.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                facebookSignIn();
-            }
-        });
-
-        btnSignUp = (Button)view.findViewById(R.id.btnSignup);
-        btnSignUp.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                signupListener.onSignup();
-            }
-        });
-        mProgressBar = (GoogleProgressBar)view.findViewById(R.id.google_progress);
-        return view;
+        binding = DataBindingUtil.inflate(inflater, R.layout.fragment_login, container, false);
+        bindingViews();
+        return binding.getRoot();
     }
 
     @Override
@@ -161,16 +138,59 @@ public class LoginFragment extends Fragment {
 
     public void emailPasswordSignIn() {
         showProgressBar();
+        String email = binding.etUserEmail.getText().toString();
+        String password = binding.etUserPassword.getText().toString();
+        mFireBaseAuthentication.fireBaseWithPasswordAuthentication(email, password, getActivity());
     }
 
     private void showProgressBar() {
-        mGoogleSignInButton.setVisibility(View.INVISIBLE);
-        mFacebookSignInButton.setVisibility(View.INVISIBLE);
-        mProgressBar.setVisibility(View.VISIBLE);
+        binding.llSocial.setVisibility(View.GONE);
+        binding.rlEmailLogin.setVisibility(View.GONE);
+        binding.orDivider.setVisibility(View.GONE);
+        binding.googleProgress.setVisibility(View.VISIBLE);
     }
 
 
     public interface SignUpListener {
         void onSignup();
+    }
+
+    private void bindingViews() {
+        mGoogleSignInButton = (SignInButton) binding.googleLoginIn.findViewById(R.id.btnGoogleSignIn);
+        mGoogleSignInButton.setSize(SignInButton.SIZE_WIDE);
+        mGoogleSignInButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                LoginFragment.this.googleSignIn();
+            }
+        });
+
+        mFacebookSignInButton = (LoginButton) binding.facebookLoginIn.findViewById(R.id.btnFacebookSignIn);
+        mFacebookSignInButton.setReadPermissions("email");
+        mFacebookSignInButton.setFragment(this);
+        LoginManager.getInstance().registerCallback(mFacebookAuthentication.getMCallbackManager(),
+                mFacebookAuthentication.getFacebookCallback());
+        mFacebookSignInButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                facebookSignIn();
+            }
+        });
+
+        btnSignUp = binding.btnSignup;
+        btnSignUp.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                signupListener.onSignup();
+            }
+        });
+        btnsignIn = binding.btnSignIn;
+        btnsignIn.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                emailPasswordSignIn();
+            }
+        });
+        mProgressBar = binding.googleProgress;
     }
 }

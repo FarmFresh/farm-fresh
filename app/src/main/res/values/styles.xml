@@ -28,4 +28,13 @@
         <item name="android:textSize">18sp</item>
     </style>
 
+    <!-- style for facebookActivity to hide progress bar -->
+    <style name="FullyTranslucent" parent="android:Theme.Translucent.NoTitleBar">
+        <item name="android:progressBarStyle">@style/InvisibleProgress</item>
+    </style>
+
+    <style name="InvisibleProgress">
+        <item name="android:visibility">gone</item>
+    </style>
+
 </resources>

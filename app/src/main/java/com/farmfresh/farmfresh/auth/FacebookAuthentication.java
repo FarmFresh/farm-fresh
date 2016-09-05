@@ -7,6 +7,8 @@ import android.util.Log;
 import com.facebook.CallbackManager;
 import com.facebook.FacebookCallback;
 import com.facebook.FacebookException;
+import com.facebook.internal.CallbackManagerImpl;
+import com.facebook.login.LoginManager;
 import com.facebook.login.LoginResult;
 
 /**
@@ -29,7 +31,9 @@ public class FacebookAuthentication extends AppAuthentication {
 
     @Override
     public void onActivityResult(int requestCode, int resultCode, Intent data) {
-        mCallbackManager.onActivityResult(requestCode, resultCode, data);
+        if(requestCode == CallbackManagerImpl.RequestCodeOffset.Login.toRequestCode()){
+            mCallbackManager.onActivityResult(requestCode, resultCode, data);
+        }
     }
 
     public CallbackManager getMCallbackManager() {
@@ -54,5 +58,9 @@ public class FacebookAuthentication extends AppAuthentication {
                 Log.d(TAG, "facebook:onError", error);
             }
         };
+    }
+
+    public void logout() {
+        LoginManager.getInstance().logOut();
     }
 }

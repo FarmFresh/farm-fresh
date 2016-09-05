@@ -5,7 +5,16 @@ package com.farmfresh.farmfresh.utils;
  */
 public class Constants {
     public static final int RC_GOOGLE_SIGN_IN = 10001;
-    public static final int RC_FACEBOOK_SIGN_IN = 10002;
+    public static final int RC_EMAIL_PWD_SIGN_UP = 10002;
+    public static final int RC_EMAIL_PWD_SIGN_IN = 10002;
+
+    /**
+     * Please do not use the range between the
+     * value you set and another 100 entries after it in your
+     * other requests.
+     **/
+
+    public static final int RC_FACEBOOK_REQUEST_OFFSET = 20000;
 
     public static final int PRODUCT_ONLY=1;
     public static final int PRODUCT_IMAGE=2;
@@ -36,4 +45,12 @@ public class Constants {
     public static final int FETCH_ADDRESS_SUCCESS_RESULT = 0;
     public static final int FETCH_ADDRESS_FAILURE_RESULT = 1;
 
+
+    //Email and Password signup related constants
+    public static final int USER_FULL_NAME_MIN_LENGTH = 3;
+    public static final int USER_PASSWORD_MIN_LENGTH = 8;
+    public static final String USER_EMAIL_PATTERN = "^[_A-Za-z0-9-\\+]+(\\.[_A-Za-z0-9-]+)*@"
+            + "[A-Za-z0-9-]+(\\.[A-Za-z0-9]+)*(\\.[A-Za-z]{2,})$";
+    public static final String USER_EMAIL_KEY = "userEmail";
+    public static final String USER_PASSWORD_KEY = "userPassword";
 }

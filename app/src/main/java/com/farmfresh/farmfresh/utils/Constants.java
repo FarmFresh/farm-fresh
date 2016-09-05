@@ -36,4 +36,11 @@ public class Constants {
     public static final int FETCH_ADDRESS_SUCCESS_RESULT = 0;
     public static final int FETCH_ADDRESS_FAILURE_RESULT = 1;
 
+    public static final String USER_LATITUDE = "user_latitude";
+    public static final String USER_LONGITUDE = "user_longitude";
+    public static final String DESTINATION_LATITUDE = "destination_latitude";
+    public static final String DESTINATION_LONGITUDE = "destination_longitude";
+    public static final String GOOGLE_API_KEY = "google_api_key";
+
+    public static final String GOOGLE_DISTANCE = "https://maps.googleapis.com/maps/api/distancematrix/json?units=imperial&origins="+USER_LATITUDE+","+USER_LONGITUDE+"&destinations="+DESTINATION_LATITUDE+","+DESTINATION_LONGITUDE+"&mode=driving&key="+GOOGLE_API_KEY;
 }

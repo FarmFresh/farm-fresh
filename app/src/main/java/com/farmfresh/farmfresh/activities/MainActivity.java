@@ -56,6 +56,7 @@ import com.farmfresh.farmfresh.helper.OnPermission;
 import com.farmfresh.farmfresh.helper.PlaceManager;
 import com.farmfresh.farmfresh.models.Product;
 import com.farmfresh.farmfresh.models.User;
+import com.farmfresh.farmfresh.utils.Constants;
 import com.farmfresh.farmfresh.utils.Helper;
 import com.farmfresh.farmfresh.utils.Keys;
 import com.firebase.geofire.GeoFire;
@@ -520,6 +521,7 @@ public class MainActivity extends AppCompatActivity implements FireBaseAuthentic
             float[] results = new float[1];
             Location.distanceBetween(geoQuery.getCenter().latitude, geoQuery.getCenter().longitude, latLng.latitude, latLng.longitude, results);
             float distance = results[0];
+            float[] productDistance = new float[1];
 
             if (distance < radius) {
                 Log.d("New User Location ", latLng + " distance " + distance);
@@ -528,12 +530,18 @@ public class MainActivity extends AppCompatActivity implements FireBaseAuthentic
 
                 productList.clear();
                 for (String key : productMap.keySet()) {
-                    if (markers.get(key).isVisible())
+                    if (markers.get(key).isVisible()){
+                        Product product = productMap.get(key);
+                        float dist = getProductDistance(product, productDistance);
+                        product.setDistance(String.format("%.2f",dist)+" mi");
                         productList.add(productMap.get(key));
+                    }
                 }
                 bundle.putParcelable("productList", Parcels.wrap(productList));
 
                 mBottomSheetBehavior.setState(BottomSheetBehavior.STATE_COLLAPSED);
+                mBottomSheetBehavior.setPeekHeight(1);
+                Log.d("bottomsheetstate",mBottomSheetBehavior.getState()+"");
 
                 listItemsFragment.setArguments(bundle);
                 android.app.FragmentTransaction ft = getFragmentManager().beginTransaction().setCustomAnimations(
@@ -562,8 +570,13 @@ public class MainActivity extends AppCompatActivity implements FireBaseAuthentic
 
             Log.d("Markerclicked", product.getName() + "");
 
-            String url = "https://maps.googleapis.com/maps/api/distancematrix/json?units=imperial&origins="+User.latLng.latitude+","+User.latLng.longitude+"&destinations="+product.getL().get(0)+","+product.getL().get(1)+"&mode=driving&key="+ Keys.GOOGLE_API_KEY;
+
+
+//            String url = "https://maps.googleapis.com/maps/api/distancematrix/json?units=imperial&origins="+User.latLng.latitude+","+User.latLng.longitude+"&destinations="+product.getL().get(0)+","+product.getL().get(1)+"&mode=driving&key="+ Keys.GOOGLE_API_KEY;
 //            Log.d("volley-url",url);
+
+            String url = Constants.GOOGLE_DISTANCE.replace(Constants.USER_LATITUDE,User.latLng.latitude+"").replace(Constants.USER_LONGITUDE,User.latLng.longitude+"").replace(Constants.DESTINATION_LATITUDE,product.getL().get(0)+"").replace(Constants.DESTINATION_LONGITUDE,product.getL().get(1)+"").replace(Constants.GOOGLE_API_KEY,Keys.GOOGLE_API_KEY);
+
             updateDistance(url);
 
             return false;
@@ -576,7 +589,7 @@ public class MainActivity extends AppCompatActivity implements FireBaseAuthentic
                     new Response.Listener<String>() {
                         @Override
                         public void onResponse(String response) {
-                            Log.d("volley",response);
+//                            Log.d("volley",response);
                             try {
                                 JSONObject jsonObject = new JSONObject(response);
                                 jsonObject = jsonObject.getJSONArray("rows").getJSONObject(0).getJSONArray("elements").getJSONObject(0);
@@ -646,6 +659,11 @@ public class MainActivity extends AppCompatActivity implements FireBaseAuthentic
                 this.searchCircle.setCenter(latLng);
             }
         }*/
+    }
+
+    private float getProductDistance(Product product, float [] results){
+        Location.distanceBetween(User.latLng.latitude, User.latLng.longitude, product.getL().get(0), product.getL().get(1), results);
+        return(float) (results[0]/1600.00);
     }
 
     private double zoomLevelToRadius(double zoomLevel) {

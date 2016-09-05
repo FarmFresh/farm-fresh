@@ -1,5 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
     package="com.farmfresh.farmfresh">
 
     <uses-permission android:name="android.permission.INTERNET" />
@@ -35,9 +36,12 @@
             android:name="com.facebook.FacebookActivity"
             android:configChanges="keyboard|keyboardHidden|screenLayout|screenSize|orientation"
             android:label="@string/app_name"
-            android:theme="@android:style/Theme.Translucent.NoTitleBar" />
+            tools:replace="android:theme"
+            android:screenOrientation="portrait"
+            android:theme="@style/FullyTranslucent" />
         <activity
             android:name="com.facebook.CustomTabActivity"
+            android:screenOrientation="portrait"
             android:exported="true">
             <intent-filter>
                 <action android:name="android.intent.action.VIEW" />
@@ -48,13 +52,15 @@
                 <data android:scheme="@string/fb_login_protocol_scheme" />
             </intent-filter>
         </activity>
-        <activity android:name=".activities.ProductDetailActivity" />
+        <activity android:name=".activities.ProductDetailActivity"
+            android:screenOrientation="portrait"/>
         <activity
             android:name=".activities.NewProductActivity"
             android:parentActivityName=".activities.MainActivity"
+            android:screenOrientation="portrait"
             android:windowSoftInputMode="adjustResize"/>
-        <activity android:name=".activities.SellerProfileActivity"></activity>
-
+        <activity android:name=".activities.SellerProfileActivity"
+            android:screenOrientation="portrait"></activity>
 
         <service
             android:name=".google.api.FetchAddressFromLocationIntentService"

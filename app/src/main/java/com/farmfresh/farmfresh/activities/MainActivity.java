@@ -352,9 +352,8 @@ public class MainActivity extends AppCompatActivity implements FireBaseAuthentic
         updateNavigationHeader();
         updateNavigationMenuItems();
         //goto home page after successful login
-
-        selectDrawerItem(mNvView.getMenu().findItem(R.id.menuHome));
-        //TODO: go to state before login
+        getSupportFragmentManager().popBackStack();
+        setTitle("Home");
     }
 
     @Override
@@ -414,8 +413,8 @@ public class MainActivity extends AppCompatActivity implements FireBaseAuthentic
         final FragmentTransaction fragmentTransaction = getSupportFragmentManager().beginTransaction();
         if (fragment != null) {
             fragmentTransaction
-                    .replace(R.id.flContent, fragment, tag);
-            fragmentTransaction.commit();
+                    .replace(R.id.flContent, fragment, tag).
+                    addToBackStack(tag).commit();
             getSupportFragmentManager().executePendingTransactions();
             //Highlight the selected item
             item.setChecked(true);

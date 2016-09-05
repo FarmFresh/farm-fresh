@@ -15,6 +15,7 @@ import com.facebook.FacebookSdk;
 import com.facebook.login.LoginManager;
 import com.facebook.login.widget.LoginButton;
 import com.farmfresh.farmfresh.R;
+import com.farmfresh.farmfresh.auth.EmailPasswordAuthentication;
 import com.farmfresh.farmfresh.auth.FacebookAuthentication;
 import com.farmfresh.farmfresh.auth.FireBaseAuthentication;
 import com.farmfresh.farmfresh.auth.GoogleAuthentication;
@@ -33,17 +34,23 @@ public class LoginFragment extends Fragment {
     private GoogleAuthentication mGoogleAuthentication;
     private FacebookAuthentication mFacebookAuthentication;
     private FireBaseAuthentication mFireBaseAuthentication;
+    private EmailPasswordAuthentication mEmailPasswordAuthentication;
     private LoginButton mFacebookSignInButton;
     private FireBaseAuthentication.LoginListener mFireBaseLoginListener;
     private GoogleProgressBar mProgressBar;
     private SignInButton mGoogleSignInButton;
     private Button btnSignUp;
-    public static LoginFragment newInstance(GoogleAuthentication googleAuthentication, FacebookAuthentication facebookAuthentication) {
+    private SignUpListener signupListener;
+
+    public static LoginFragment newInstance(GoogleAuthentication googleAuthentication,
+                                            FacebookAuthentication facebookAuthentication,
+                                            EmailPasswordAuthentication emailPasswordAuthentication) {
         Bundle args = new Bundle();
         LoginFragment fragment = new LoginFragment();
         fragment.mGoogleAuthentication = googleAuthentication;
         fragment.mFireBaseAuthentication = googleAuthentication.getMFireBaseAuthentication();
         fragment.mFacebookAuthentication = facebookAuthentication;
+        fragment.mEmailPasswordAuthentication = emailPasswordAuthentication;
         fragment.setArguments(args);
         return fragment;
     }
@@ -77,9 +84,7 @@ public class LoginFragment extends Fragment {
         btnSignUp.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                getActivity().getSupportFragmentManager().beginTransaction()
-                        .replace(R.id.flContent, new EmailPasswordSignUpFragment())
-                        .commit();
+                signupListener.onSignup();
             }
         });
         mProgressBar = (GoogleProgressBar)view.findViewById(R.id.google_progress);
@@ -94,6 +99,12 @@ public class LoginFragment extends Fragment {
         } else {
             throw new ClassCastException(context.toString()
                     + " must implement FireBaseAuthentication.LoginListener");
+        }
+        if(context instanceof  SignUpListener) {
+            signupListener = (SignUpListener)context;
+        }else {
+            throw new ClassCastException(context.toString()
+                    + " must implement LoginFragment.SignUpListener");
         }
     }
 
@@ -123,6 +134,10 @@ public class LoginFragment extends Fragment {
             mGoogleAuthentication.onActivityResult(requestCode, resultCode, data);
         } else if (FacebookSdk.isFacebookRequestCode(requestCode)) {
             mFacebookAuthentication.onActivityResult(requestCode, resultCode, data);
+        } else if (requestCode == Constants.RC_EMAIL_PWD_SIGN_IN) {
+            mEmailPasswordAuthentication.onActivityResult(requestCode, resultCode, data);
+        } else if (requestCode == Constants.RC_EMAIL_PWD_SIGN_UP) {
+            mEmailPasswordAuthentication.onActivityResult(requestCode, resultCode, data);
         }
     }
 
@@ -144,9 +159,18 @@ public class LoginFragment extends Fragment {
         }
     }
 
+    public void emailPasswordSignIn() {
+        showProgressBar();
+    }
+
     private void showProgressBar() {
         mGoogleSignInButton.setVisibility(View.INVISIBLE);
         mFacebookSignInButton.setVisibility(View.INVISIBLE);
         mProgressBar.setVisibility(View.VISIBLE);
+    }
+
+
+    public interface SignUpListener {
+        void onSignup();
     }
 }

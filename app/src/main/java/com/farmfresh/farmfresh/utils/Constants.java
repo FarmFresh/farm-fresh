@@ -5,6 +5,8 @@ package com.farmfresh.farmfresh.utils;
  */
 public class Constants {
     public static final int RC_GOOGLE_SIGN_IN = 10001;
+    public static final int RC_EMAIL_PWD_SIGN_UP = 10002;
+    public static final int RC_EMAIL_PWD_SIGN_IN = 10002;
 
     /**
      * Please do not use the range between the
@@ -49,4 +51,6 @@ public class Constants {
     public static final int USER_PASSWORD_MIN_LENGTH = 8;
     public static final String USER_EMAIL_PATTERN = "^[_A-Za-z0-9-\\+]+(\\.[_A-Za-z0-9-]+)*@"
             + "[A-Za-z0-9-]+(\\.[A-Za-z0-9]+)*(\\.[A-Za-z]{2,})$";
+    public static final String USER_EMAIL_KEY = "userEmail";
+    public static final String USER_PASSWORD_KEY = "userPassword";
 }

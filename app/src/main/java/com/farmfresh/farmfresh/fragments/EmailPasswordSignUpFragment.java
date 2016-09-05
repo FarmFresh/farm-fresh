@@ -1,19 +1,35 @@
 package com.farmfresh.farmfresh.fragments;
 
 import android.databinding.DataBindingUtil;
+import android.location.Location;
 import android.os.Bundle;
+import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.support.design.widget.TextInputEditText;
 import android.support.design.widget.TextInputLayout;
 import android.support.v4.app.Fragment;
+import android.support.v4.app.FragmentActivity;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
 
 import com.farmfresh.farmfresh.R;
+import com.farmfresh.farmfresh.auth.AddressResultReceiver;
+import com.farmfresh.farmfresh.auth.FireBaseAuthentication;
 import com.farmfresh.farmfresh.databinding.FragmentEmailPwdSignupBinding;
+import com.farmfresh.farmfresh.models.User;
 import com.farmfresh.farmfresh.utils.Constants;
+import com.farmfresh.farmfresh.utils.Helper;
+import com.firebase.geofire.GeoFire;
+import com.firebase.geofire.GeoLocation;
+import com.google.android.gms.tasks.OnCompleteListener;
+import com.google.android.gms.tasks.Task;
+import com.google.firebase.auth.AuthResult;
+import com.google.firebase.auth.FirebaseAuth;
+import com.google.firebase.auth.FirebaseUser;
+import com.google.firebase.database.DatabaseReference;
+import com.google.firebase.database.FirebaseDatabase;
 
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
@@ -35,6 +51,24 @@ public class EmailPasswordSignUpFragment extends Fragment {
 
     private Button btnSubmit;
     private boolean isValidInput = true;
+    private FirebaseAuth firebaseAuth;
+    private FragmentActivity parentActivity;
+    private FireBaseAuthentication.LoginListener mFireBaseLoginListener;
+
+    public static EmailPasswordSignUpFragment newInstance(FireBaseAuthentication.LoginListener fireBaseLoginListener) {
+        Bundle args = new Bundle();
+        EmailPasswordSignUpFragment fragment = new EmailPasswordSignUpFragment();
+        fragment.mFireBaseLoginListener = fireBaseLoginListener;
+        fragment.setArguments(args);
+        return fragment;
+    }
+
+    @Override
+    public void onCreate(@Nullable Bundle savedInstanceState) {
+        super.onCreate(savedInstanceState);
+        firebaseAuth = FirebaseAuth.getInstance();
+        parentActivity = getActivity();
+    }
 
     @Nullable
     @Override
@@ -43,7 +77,6 @@ public class EmailPasswordSignUpFragment extends Fragment {
         bindingSetup();
         return binding.getRoot();
     }
-
 
     private void bindingSetup() {
         etUserFullName = binding.etUserName;
@@ -64,19 +97,50 @@ public class EmailPasswordSignUpFragment extends Fragment {
         });
     }
 
-    private void validateFields() {
-        final String userFullName = etUserFullName.getText().toString();
-        final String userEmail = etUserEmail.getText().toString();
-        final String userPassword = etUserPassword.getText().toString();
-        validateFullName(userFullName);
-        validateEmail(userEmail);
-        validatePassword(userPassword);
+    private void validateFields(String email, String password, String fullName) {
+        validateFullName(fullName);
+        validateEmail(email);
+        validatePassword(password);
     }
 
     private void createUser() {
-        validateFields();
+        final String userFullName = etUserFullName.getText().toString();
+        final String userEmail = etUserEmail.getText().toString();
+        final String userPassword = etUserPassword.getText().toString();
+        validateFields(userEmail, userPassword, userFullName);
         if(isValidInput) {
-
+            firebaseAuth.createUserWithEmailAndPassword(userEmail, userPassword).addOnCompleteListener(getActivity(), new OnCompleteListener<AuthResult>() {
+                @Override
+                public void onComplete(@NonNull Task<AuthResult> task) {
+                    final FirebaseUser firebaseUser = task.getResult().getUser();
+                    final String fireBaseUserId = firebaseUser.getUid();
+                    DatabaseReference usersRef = FirebaseDatabase.getInstance()
+                            .getReference()
+                            .child(Constants.NODE_USERS);
+                    final DatabaseReference currentUserRef = usersRef.child(fireBaseUserId);
+                    User user = new User();
+                    user.setEmail(firebaseUser.getEmail());
+                    user.setDisplayName(userFullName);
+                    //add remaining properties to the user node
+                    currentUserRef.setValue(user).addOnCompleteListener(new OnCompleteListener<Void>() {
+                        @Override
+                        public void onComplete(@NonNull Task<Void> task) {
+                            if (User.latLng != null) {
+                                //set geolocation for that user.
+                                GeoFire geoFire = new GeoFire(currentUserRef);
+                                geoFire.setLocation("location", new GeoLocation(User.latLng.latitude, User.latLng.longitude));
+                                //fetch address for location
+                                Location location = new Location("");
+                                location.setLatitude(User.latLng.latitude);
+                                location.setLongitude(User.latLng.longitude);
+                                AddressResultReceiver resultReceiver = new AddressResultReceiver(parentActivity, null);
+                                Helper.startFetchAddressIntentService(parentActivity,resultReceiver, location);
+                            }
+                            mFireBaseLoginListener.onLoginSuccess(firebaseUser);
+                        }
+                    });
+                }
+            });
         }
     }
 

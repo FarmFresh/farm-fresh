@@ -44,10 +44,13 @@ import com.farmfresh.farmfresh.action.AddToMap;
 import com.farmfresh.farmfresh.action.MoveToLocationFirstTime;
 import com.farmfresh.farmfresh.action.TrackLocation;
 import com.farmfresh.farmfresh.auth.AddressResultReceiver;
+import com.farmfresh.farmfresh.auth.EmailPasswordAuthentication;
 import com.farmfresh.farmfresh.auth.FacebookAuthentication;
 import com.farmfresh.farmfresh.auth.FireBaseAuthentication;
 import com.farmfresh.farmfresh.auth.GoogleAuthentication;
 import com.farmfresh.farmfresh.fragments.ListItemsFragment;
+import com.farmfresh.farmfresh.fragments.EmailPasswordSignUpFragment;
+import com.farmfresh.farmfresh.fragments.ListItemsBottomSheetFragment;
 import com.farmfresh.farmfresh.fragments.LoginFragment;
 import com.farmfresh.farmfresh.fragments.ProfileFragment;
 import com.farmfresh.farmfresh.helper.OnActivity;
@@ -97,7 +100,7 @@ import butterknife.BindView;
 import butterknife.ButterKnife;
 
 public class MainActivity extends AppCompatActivity implements FireBaseAuthentication.LoginListener,
-        GoogleApiClient.OnConnectionFailedListener, TrackLocation.Listener, GeoQueryEventListener {
+        GoogleApiClient.OnConnectionFailedListener,TrackLocation.Listener, GeoQueryEventListener, LoginFragment.SignUpListener {
 
     public final static String TAG = MainActivity.class.getSimpleName();
     private DrawerLayout mDrawer;
@@ -108,6 +111,7 @@ public class MainActivity extends AppCompatActivity implements FireBaseAuthentic
     private FireBaseAuthentication mFireBaseAuthentication;
     private GoogleAuthentication mGoogleAuthentication;
     private FacebookAuthentication mFacebookAuthentication;
+    private EmailPasswordAuthentication emailPasswordAuthentication;
     private de.hdodenhof.circleimageview.CircleImageView mProfileImage;
     private TextView mUserDisplayName;
     private TextView mUserEmail;
@@ -195,7 +199,7 @@ public class MainActivity extends AppCompatActivity implements FireBaseAuthentic
         mFireBaseAuthentication = new FireBaseAuthentication(this, this);
         mGoogleAuthentication = new GoogleAuthentication(mFireBaseAuthentication, this, this);
         mFacebookAuthentication = new FacebookAuthentication(mFireBaseAuthentication, this);
-
+        emailPasswordAuthentication = new EmailPasswordAuthentication(mFireBaseAuthentication, this);
         mFirebaseDatabaseReference = FirebaseDatabase.getInstance().getReference();
 
         geoFire = new GeoFire(mFirebaseDatabaseReference.child("products"));
@@ -385,7 +389,7 @@ public class MainActivity extends AppCompatActivity implements FireBaseAuthentic
         switch (item.getItemId()) {
             case R.id.menuLogin:
                 title = "Login into your account";
-                fragment = LoginFragment.newInstance(mGoogleAuthentication, mFacebookAuthentication);
+                fragment = LoginFragment.newInstance(mGoogleAuthentication, mFacebookAuthentication, emailPasswordAuthentication);
                 tag = LoginFragment.TAG;
                 break;
             case R.id.menuHome:
@@ -731,5 +735,12 @@ public class MainActivity extends AppCompatActivity implements FireBaseAuthentic
     @Override
     public void onGeoQueryError(DatabaseError error) {
         Log.d("GeoQueryError", error.toString());
+    }
+
+    @Override
+    public void onSignup() {
+        getSupportFragmentManager().beginTransaction()
+                .replace(R.id.flContent, EmailPasswordSignUpFragment.newInstance(this))
+                .commit();
     }
 }

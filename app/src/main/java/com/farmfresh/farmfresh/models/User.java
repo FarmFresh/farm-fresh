@@ -23,7 +23,10 @@ public class User {
 
     public User() {};
 
+<<<<<<< HEAD
 
+=======
+>>>>>>> e4b52971d57dbdd71a07fc3a4883d08fbfce4e7e
     public void setId(String id) {
         this.id = id;
     }

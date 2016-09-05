@@ -90,6 +90,7 @@ public class ProductDetailActivity extends AppCompatActivity {
     void getSellerInfo(String id){
 
         database.getReference().child("users").child(id).addListenerForSingleValueEvent(
+<<<<<<< HEAD
                 new ValueEventListener() {
                     @Override
                     public void onDataChange(DataSnapshot dataSnapshot) {
@@ -104,6 +105,22 @@ public class ProductDetailActivity extends AppCompatActivity {
                     public void onCancelled(DatabaseError databaseError) {
                     }
                 });
+=======
+            new ValueEventListener() {
+                @Override
+                public void onDataChange(DataSnapshot dataSnapshot) {
+                    // Get user value
+                    User user = dataSnapshot.getValue(User.class);
+                    user.toString();
+
+                    displayUserInfo(user);
+                }
+
+                @Override
+                public void onCancelled(DatabaseError databaseError) {
+                }
+            });
+>>>>>>> e4b52971d57dbdd71a07fc3a4883d08fbfce4e7e
     }
 
     // display seller information

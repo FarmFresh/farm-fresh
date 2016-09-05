@@ -19,9 +19,9 @@ public class SellingFragment extends Fragment {
     @Override
     public View onCreateView(LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
         super.onCreateView(inflater, container, savedInstanceState);
-        final View view = inflater.inflate(R.layout.fragment_test, container, false);
-        mTvTest = (TextView)view.findViewById(R.id.tvTest);
-        mTvTest.setText("You are in selling fragment");
+        final View view = inflater.inflate(R.layout.fragment_seller_profile, container, false);
+//        mTvTest = (TextView)view.findViewById(R.id.tvTest);
+//        mTvTest.setText("You are in selling fragment");
         return view;
     }
 }

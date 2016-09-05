@@ -2,6 +2,7 @@ package com.farmfresh.farmfresh.viewholder;
 
 import android.support.v7.widget.RecyclerView;
 import android.view.View;
+import android.widget.ImageView;
 import android.widget.TextView;
 
 import com.farmfresh.farmfresh.R;
@@ -15,8 +16,17 @@ import butterknife.ButterKnife;
  */
 public class ViewHolderProductImage extends RecyclerView.ViewHolder  {
 
+    @BindView(R.id.ivImage)
+    ImageView ivImage;
+
+    @BindView(R.id.tvName)
+    TextView tvName;
+
     @BindView(R.id.tvDescription)
     TextView tvDescription;
+
+    @BindView(R.id.tvPrice)
+    TextView tvPrice;
 
     private ProductsAdapter.OnProductClickListener productClicked;
 
@@ -25,9 +35,31 @@ public class ViewHolderProductImage extends RecyclerView.ViewHolder  {
         ButterKnife.bind(this, itemView);
 
         this.productClicked = productClicked;
+
+        tvDescription.setOnClickListener(new View.OnClickListener(){
+            @Override
+            public void onClick(View v) {
+                if (productClicked != null) {
+                    productClicked.onProductClick(itemView, getLayoutPosition());
+                }
+
+            }
+        });
+    }
+
+    public ImageView getIvImage() {
+        return ivImage;
     }
 
     public TextView getTvDescription() {
         return tvDescription;
+    }
+
+    public TextView getTvName() {
+        return tvName;
+    }
+
+    public TextView getTvPrice() {
+        return tvPrice;
     }
 }

@@ -24,7 +24,8 @@
             android:launchMode="singleTop"
             android:value="@string/google_map_key" />
 
-        <activity android:name=".activities.MainActivity">
+        <activity android:name=".activities.MainActivity"
+            android:screenOrientation="portrait">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
 

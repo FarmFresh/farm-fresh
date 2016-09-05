@@ -2,17 +2,17 @@ package com.farmfresh.farmfresh.activities;
 
 import android.Manifest;
 import android.content.Intent;
+import android.content.res.ColorStateList;
 import android.content.res.Configuration;
 import android.graphics.Color;
 import android.location.Location;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
-import android.support.design.widget.BottomSheetDialogFragment;
+import android.support.design.widget.BottomSheetBehavior;
 import android.support.design.widget.FloatingActionButton;
 import android.support.design.widget.NavigationView;
 import android.support.v4.app.Fragment;
-import android.support.v4.app.FragmentManager;
 import android.support.v4.app.FragmentTransaction;
 import android.support.v4.view.MenuItemCompat;
 import android.support.v4.widget.DrawerLayout;
@@ -29,6 +29,12 @@ import android.widget.EditText;
 import android.widget.ImageView;
 import android.widget.TextView;
 
+import com.android.volley.Request;
+import com.android.volley.RequestQueue;
+import com.android.volley.Response;
+import com.android.volley.VolleyError;
+import com.android.volley.toolbox.StringRequest;
+import com.android.volley.toolbox.Volley;
 import com.facebook.FacebookSdk;
 import com.facebook.appevents.AppEventsLogger;
 import com.farmfresh.farmfresh.R;
@@ -40,7 +46,7 @@ import com.farmfresh.farmfresh.action.TrackLocation;
 import com.farmfresh.farmfresh.auth.AddressResultReceiver;
 import com.farmfresh.farmfresh.auth.FireBaseAuthentication;
 import com.farmfresh.farmfresh.auth.GoogleAuthentication;
-import com.farmfresh.farmfresh.fragments.ListItemsBottomSheetFragment;
+import com.farmfresh.farmfresh.fragments.ListItemsFragment;
 import com.farmfresh.farmfresh.fragments.LoginFragment;
 import com.farmfresh.farmfresh.fragments.SellingFragment;
 import com.farmfresh.farmfresh.helper.OnActivity;
@@ -51,6 +57,7 @@ import com.farmfresh.farmfresh.helper.PlaceManager;
 import com.farmfresh.farmfresh.models.Product;
 import com.farmfresh.farmfresh.models.User;
 import com.farmfresh.farmfresh.utils.Helper;
+import com.farmfresh.farmfresh.utils.Keys;
 import com.firebase.geofire.GeoFire;
 import com.firebase.geofire.GeoLocation;
 import com.firebase.geofire.GeoQuery;
@@ -60,8 +67,12 @@ import com.google.android.gms.common.api.GoogleApiClient;
 import com.google.android.gms.location.LocationRequest;
 import com.google.android.gms.location.LocationServices;
 import com.google.android.gms.maps.GoogleMap;
+import com.google.android.gms.maps.MapFragment;
 import com.google.android.gms.maps.OnMapReadyCallback;
 import com.google.android.gms.maps.SupportMapFragment;
+import com.google.android.gms.maps.model.CameraPosition;
+import com.google.android.gms.maps.model.Circle;
+import com.google.android.gms.maps.model.CircleOptions;
 import com.google.android.gms.maps.model.LatLng;
 import com.google.android.gms.maps.model.Marker;
 import com.google.firebase.auth.FirebaseUser;
@@ -73,6 +84,8 @@ import com.google.firebase.database.ValueEventListener;
 import com.google.maps.android.ui.IconGenerator;
 import com.squareup.picasso.Picasso;
 
+import org.json.JSONException;
+import org.json.JSONObject;
 import org.parceler.Parcels;
 
 import java.util.ArrayList;
@@ -82,7 +95,7 @@ import butterknife.BindView;
 import butterknife.ButterKnife;
 
 public class MainActivity extends AppCompatActivity implements FireBaseAuthentication.LoginListener,
-        GoogleApiClient.OnConnectionFailedListener,TrackLocation.Listener, GeoQueryEventListener {
+        GoogleApiClient.OnConnectionFailedListener, TrackLocation.Listener, GeoQueryEventListener {
 
     public final static String TAG = MainActivity.class.getSimpleName();
     private DrawerLayout mDrawer;
@@ -103,22 +116,40 @@ public class MainActivity extends AppCompatActivity implements FireBaseAuthentic
     private TrackLocation track;
     private ReadyDisplayProduct displayProduct;
     private AddToMap adder;
-    private SupportMapFragment supportMapFragment;
+    private MapFragment supportMapFragment;
     private GeoFire geoFire;
     private GeoQuery geoQuery;
+    private Circle searchCircle;
 
-    private static final double EPSILON = 0.000000001;
+    private static final double EPSILON = 0.0001;
 
     private GoogleApiClient mGoogleClient;
     private DatabaseReference mFirebaseDatabaseReference;
+    private BottomSheetBehavior mBottomSheetBehavior;
 
     final ArrayList<Product> productList = new ArrayList<Product>();
-    HashMap<String,Product> productMap = new HashMap<String, Product>();
+    HashMap<String, Product> productMap = new HashMap<String, Product>();
     ArrayList<PlaceManager.Place> placeList = new ArrayList<PlaceManager.Place>();
     HashMap<String, Marker> markers = new HashMap<String, Marker>();
+    HashMap<Marker, Product> markersProductMap = new HashMap<Marker, Product>();
 
-    @BindView(R.id.fab)
-    FloatingActionButton fab;
+    @BindView(R.id.bottom_sheet)
+    View bottomSheet;
+
+    @BindView(R.id.ivProductImage)
+    ImageView ivProductImage;
+
+    @BindView(R.id.fabCar)
+    FloatingActionButton fabCar;
+
+    @BindView(R.id.tvAddress)
+    TextView tvAddress;
+
+    @BindView(R.id.tvDuration)
+    TextView tvDuration;
+
+    @BindView(R.id.tvDescription)
+    TextView tvDescription;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -133,6 +164,7 @@ public class MainActivity extends AppCompatActivity implements FireBaseAuthentic
         mDrawer = (DrawerLayout) findViewById(R.id.layout_main);
         mNvView = (NavigationView) findViewById(R.id.nvView);
         mNvView.setItemIconTintList(null);
+        mBottomSheetBehavior = BottomSheetBehavior.from(bottomSheet);
         updateNavigationMenuItems();
 
         View headerLayout = mNvView.getHeaderView(0);
@@ -177,12 +209,12 @@ public class MainActivity extends AppCompatActivity implements FireBaseAuthentic
         new OnActivity.Builder(this, manager, track).build();
 
         mNvView.getMenu().getItem(0).setChecked(true);
-        FragmentManager fragmentManager = getSupportFragmentManager();
-        supportMapFragment = new SupportMapFragment();
+        android.app.FragmentManager fragmentManager = getFragmentManager();
+        supportMapFragment = new MapFragment();
         if (supportMapFragment != null) {
             getMapAsync(supportMapFragment, new OnMap(manager, click, layer, move, track, displayProduct));
         }
-        fragmentManager.beginTransaction().replace(R.id.flContent, supportMapFragment).commit();
+        fragmentManager.beginTransaction().add(R.id.flContent, supportMapFragment).commit();
         setTitle("Home");
 
         mGoogleClient = getGoogleApiClient();
@@ -194,15 +226,38 @@ public class MainActivity extends AppCompatActivity implements FireBaseAuthentic
         OnPermission onPermission = new OnPermission.Builder(this).build();
         onPermission.beginRequest(location);
 
-        fab.setOnClickListener(new View.OnClickListener() {
+        mBottomSheetBehavior.setBottomSheetCallback(new BottomSheetBehavior.BottomSheetCallback() {
+            @Override
+            public void onStateChanged(View bottomSheet, int newState) {
+                if (newState == BottomSheetBehavior.STATE_COLLAPSED) {
+                    mBottomSheetBehavior.setPeekHeight(0);
+                    ivProductImage.setVisibility(View.GONE);
+                    fabCar.setVisibility(View.INVISIBLE);
+                    fabCar.setBackgroundTintList(ColorStateList.valueOf(Color.parseColor("#0084B4")));
+                    fabCar.setImageResource(R.drawable.car_collapsed);
+                } else if (newState == BottomSheetBehavior.STATE_EXPANDED) {
+                    ivProductImage.setVisibility(View.VISIBLE);
+                    fabCar.setVisibility(View.VISIBLE);
+                    fabCar.setBackgroundTintList(ColorStateList.valueOf(Color.parseColor("#FFFFFF")));
+                    fabCar.setImageResource(R.drawable.car_expanded);
+                }
+            }
+
+            @Override
+            public void onSlide(View bottomSheet, float slideOffset) {
+            }
+        });
+
+        /*fab.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
                 BottomSheetDialogFragment bottomSheetDialogFragment = new ListItemsBottomSheetFragment();
 
                 Bundle bundle = new Bundle();
                 productList.clear();
-                for(String key : productMap.keySet()){
-                    productList.add(productMap.get(key));
+                for (String key : productMap.keySet()) {
+                    if(markers.get(key).isVisible())
+                        productList.add(productMap.get(key));
                 }
                 bundle.putParcelable("productList", Parcels.wrap(productList));
 
@@ -210,7 +265,7 @@ public class MainActivity extends AppCompatActivity implements FireBaseAuthentic
                 bottomSheetDialogFragment.show(getSupportFragmentManager(), bottomSheetDialogFragment.getTag());
 
             }
-        });
+        });*/
     }
 
     @Override
@@ -250,10 +305,10 @@ public class MainActivity extends AppCompatActivity implements FireBaseAuthentic
                 searchView.clearFocus();
                 placeList.clear();
 
-                for(String key : productMap.keySet()){
+                for (String key : productMap.keySet()) {
                     Product product = productMap.get(key);
-                    if (product.getG()!=null && query.equalsIgnoreCase(product.getName()) ) {
-                        placeList.add(new PlaceManager.Place(product.getName(), new LatLng(product.getL().get(0),product.getL().get(1))));
+                    if (product.getG() != null && query.equalsIgnoreCase(product.getName())) {
+                        placeList.add(new PlaceManager.Place(product.getName(), new LatLng(product.getL().get(0), product.getL().get(1))));
                     }
                 }
 
@@ -329,7 +384,7 @@ public class MainActivity extends AppCompatActivity implements FireBaseAuthentic
                 break;
             case R.id.menuHome:
                 title = "Home";
-                fragment = supportMapFragment;
+//                fragment = supportMapFragment;
                 tag = SupportMapFragment.class.getSimpleName();
                 break;
             case R.id.menuProfile:
@@ -345,7 +400,7 @@ public class MainActivity extends AppCompatActivity implements FireBaseAuthentic
                 startActivity(intent);
                 break;
             case R.id.menuSelling:
-                Intent newProductIntent = new Intent(this,NewProductActivity.class);
+                Intent newProductIntent = new Intent(this, NewProductActivity.class);
                 startActivity(newProductIntent);
                 return;
             case R.id.menuLogout:
@@ -420,7 +475,7 @@ public class MainActivity extends AppCompatActivity implements FireBaseAuthentic
         return new GoogleApiClient.Builder(this).enableAutoManage(MainActivity.this, 1, null).addApi(LocationServices.API).build();
     }
 
-    private void getMapAsync(SupportMapFragment fragment, OnMapReadyCallback callback) {
+    private void getMapAsync(MapFragment fragment, OnMapReadyCallback callback) {
         fragment.getMapAsync(callback);
     }
 
@@ -428,12 +483,16 @@ public class MainActivity extends AppCompatActivity implements FireBaseAuthentic
         client.registerConnectionCallbacks(callbacks);
     }
 
-    class ReadyDisplayProduct implements OnMap.Listener {
+    class ReadyDisplayProduct implements OnMap.Listener, GoogleMap.OnCameraChangeListener, GoogleMap.OnMapClickListener, GoogleMap.OnMarkerClickListener {
         private GoogleMap map;
+        private double radius;
 
         @Override
         public void onMap(GoogleMap map) {
             this.map = map;
+            this.map.setOnCameraChangeListener(this);
+            this.map.setOnMapClickListener(this);
+            this.map.setOnMarkerClickListener(this);
         }
 
         public void populateMap(boolean clearMap) {
@@ -447,11 +506,107 @@ public class MainActivity extends AppCompatActivity implements FireBaseAuthentic
                 }
             }
         }
+
+        @Override
+        public void onCameraChange(CameraPosition cameraPosition) {
+//            Log.d("camerachange ", cameraPosition.toString());
+            // Update the search criteria for this geoQuery and the circle on the map
+            LatLng center = cameraPosition.target;
+            double radius = zoomLevelToRadius(cameraPosition.zoom);
+            this.radius = radius;
+            if (geoQuery != null && searchCircle != null) {
+                searchCircle.setCenter(center);
+                searchCircle.setRadius(radius);
+                geoQuery.setCenter(new GeoLocation(center.latitude, center.longitude));
+                geoQuery.setRadius(radius / 1000);
+            }
+        }
+
+        @Override
+        public void onMapClick(LatLng latLng) {
+            float[] results = new float[1];
+            Location.distanceBetween(geoQuery.getCenter().latitude, geoQuery.getCenter().longitude, latLng.latitude, latLng.longitude, results);
+            float distance = results[0];
+
+            if (distance < radius) {
+                Log.d("New User Location ", latLng + " distance " + distance);
+                ListItemsFragment listItemsFragment = new ListItemsFragment();
+                Bundle bundle = new Bundle();
+
+                productList.clear();
+                for (String key : productMap.keySet()) {
+                    if (markers.get(key).isVisible())
+                        productList.add(productMap.get(key));
+                }
+                bundle.putParcelable("productList", Parcels.wrap(productList));
+
+                listItemsFragment.setArguments(bundle);
+                android.app.FragmentTransaction ft = getFragmentManager().beginTransaction().setCustomAnimations(
+                        R.animator.card_flip_right_in,
+                        R.animator.card_flip_right_out,
+                        R.animator.card_flip_left_in,
+                        R.animator.card_flip_left_out);
+                ft.replace(R.id.flContent, listItemsFragment).addToBackStack("listItemsFragment");
+                ft.commit();
+            }
+        }
+
+        @Override
+        public boolean onMarkerClick(Marker marker) {
+            mBottomSheetBehavior.setPeekHeight(300);
+//            mBottomSheetBehavior.setState(BottomSheetBehavior.STATE_COLLAPSED);
+            fabCar.setVisibility(View.VISIBLE);
+            Product product = markersProductMap.get(marker);
+
+            ivProductImage.setImageResource(0);
+            if(product.getImageUrls() != null && product.getImageUrls().size() !=0){
+                Picasso.with(MainActivity.this)
+                        .load(product.getImageUrls().get(0))
+                        .into(ivProductImage);
+            }
+
+            Log.d("Markerclicked", product.getName() + "");
+
+//            String url = "https://maps.googleapis.com/maps/api/distancematrix/json?units=imperial&origins=40.6655101,-73.89188969999998&destinations=40.6905615,-73.9976592&mode=driving&key=AIzaSyCkmV63LtrA1HeGxmyr0QyXin7ia7U38wA";
+            String url = "https://maps.googleapis.com/maps/api/distancematrix/json?units=imperial&origins="+User.latLng.latitude+","+User.latLng.longitude+"&destinations="+product.getL().get(0)+","+product.getL().get(1)+"&mode=driving&key="+ Keys.GOOGLE_API_KEY;
+//            Log.d("volley-url",url);
+            updateDistance(url);
+
+            return false;
+        }
+
+        private void updateDistance(String url) {
+            RequestQueue queue = Volley.newRequestQueue(MainActivity.this);
+
+            StringRequest stringRequest = new StringRequest(Request.Method.GET, url,
+                    new Response.Listener<String>() {
+                        @Override
+                        public void onResponse(String response) {
+                            Log.d("volley",response);
+                            try {
+                                JSONObject jsonObject = new JSONObject(response);
+                                jsonObject = jsonObject.getJSONArray("rows").getJSONObject(0).getJSONArray("elements").getJSONObject(0);
+                                String duration = jsonObject.getJSONObject("duration").get("text").toString();
+                                String distance = jsonObject.getJSONObject("distance").get("text").toString();
+//                                Log.d("volley-duration",duration);
+                                tvDuration.setText(duration);
+                            } catch (JSONException e) {
+                                e.printStackTrace();
+                            }
+                        }
+                    }, new Response.ErrorListener() {
+                @Override
+                public void onErrorResponse(VolleyError error) {
+                    Log.d("volley-error",error.toString());
+                }
+            });
+            queue.add(stringRequest);
+        }
     }
 
     @Override
     public void accept(GoogleMap map, LatLng latlng) {
-        Log.d(MainActivity.TAG,"Location update "+latlng);
+//        Log.d(MainActivity.TAG, "Location update " + latlng + " mylocation " + map.getMyLocation() + "");
         AddressResultReceiver resultReceiver = new AddressResultReceiver(this, null);
         User.latLng = latlng;
         //fetch address for location
@@ -459,59 +614,88 @@ public class MainActivity extends AppCompatActivity implements FireBaseAuthentic
         location.setLatitude(latlng.latitude);
         location.setLongitude(latlng.longitude);
         hasUserLocationChanged(latlng);
-        Helper.startFetchAddressIntentService(this,resultReceiver, location);
+        Helper.startFetchAddressIntentService(this, resultReceiver, location);
     }
 
-    private void hasUserLocationChanged(LatLng latLng){
-        if(geoQuery == null){
+    private void hasUserLocationChanged(LatLng latLng) {
+        /*Log.d("isnull", (displayProduct.map.getMyLocation() == null) + "");
+        Double latitude = null;
+        Double longitude = null;
+
+        if (displayProduct.map.getMyLocation() != null) {
+            latitude = displayProduct.map.getMyLocation().getLatitude();
+            longitude = displayProduct.map.getMyLocation().getLongitude();
+            Log.d("location_ll", latitude + " " + longitude);
+        }*/
+
+        if (geoQuery == null) {
 //            geoQuery= geoFire.queryAtLocation(new GeoLocation(37.401025,-121.924067), 25);
-            geoQuery= geoFire.queryAtLocation(new GeoLocation(latLng.latitude, latLng.longitude), 10);
+            geoQuery = geoFire.queryAtLocation(new GeoLocation(latLng.latitude, latLng.longitude), 1);
             geoQuery.addGeoQueryEventListener(this);
-        }
-        float [] results = new float[10];
-        Location.distanceBetween(geoQuery.getCenter().latitude, geoQuery.getCenter().longitude , latLng.latitude, latLng.longitude, results);
-        float distance = -1;
-        if(results.length > 0 && results.length < 3) {
-            distance = results[results.length - 1];
-        }else if (results.length >= 3){
-            distance = results[2];
-        }
-        if(distance > 0.5){
-            Log.d("New User Location ", latLng+"");
-            geoQuery.setCenter(new GeoLocation(latLng.latitude,latLng.longitude));
-            geoQuery.setRadius(10);
-        }
+
+            searchCircle = displayProduct.map.addCircle(new CircleOptions().center(latLng).radius(1000));
+            searchCircle.setFillColor(Color.argb(66, 255, 0, 255));
+            searchCircle.setStrokeColor(Color.argb(66, 0, 0, 0));
+            searchCircle.setCenter(latLng);
+            searchCircle.setRadius(1000);
+
+        } /*else if(geoQuery != null && latitude != null && longitude != null){
+            float[] results = new float[1];
+            Location.distanceBetween(geoQuery.getCenter().latitude, geoQuery.getCenter().longitude, latitude, longitude, results);
+            float distance = (float) 0.0;
+            distance = results[0];
+
+            if (distance > (float) 500.0) {
+                Log.d("New User Location ", latLng + " distance "+distance);
+                geoQuery.setCenter(new GeoLocation(latitude, longitude));
+                geoQuery.setRadius(1);
+                this.searchCircle.setCenter(latLng);
+            }
+        }*/
+    }
+
+    private double zoomLevelToRadius(double zoomLevel) {
+        // Approximation to fit circle into view
+        return 16384000 / Math.pow(2, zoomLevel);
     }
 
     @Override
     public void onKeyEntered(final String key, GeoLocation location) {
         Log.d("entered", key + " " + location.latitude + " " + location.longitude);
-        mFirebaseDatabaseReference.child("products").child(key).addListenerForSingleValueEvent(new ValueEventListener() {
-            @Override
-            public void onDataChange(DataSnapshot dataSnapshot) {
-                Product product = (Product) dataSnapshot.getValue(Product.class);
-                product.setId(key);
-                productMap.put(key,product);
-                Marker marker = adder.addTo(displayProduct.map, product.getName(), new LatLng(product.getL().get(0),product.getL().get(1)), true);
-                markers.put(key, marker);
-                Log.d("key ",key+" "+product.getId()+" "+product.getG()+" "+product.getName()+" "+product.getL().get(0)+" "+product.getL().get(1));
-            }
+        if (!productMap.containsKey(key)) {
+            mFirebaseDatabaseReference.child("products").child(key).addListenerForSingleValueEvent(new ValueEventListener() {
+                @Override
+                public void onDataChange(DataSnapshot dataSnapshot) {
+                    Product product = (Product) dataSnapshot.getValue(Product.class);
+                    product.setId(key);
+                    productMap.put(key, product);
+                    Marker marker = adder.addTo(displayProduct.map, product.getName(), new LatLng(product.getL().get(0), product.getL().get(1)), true);
+                    markers.put(key, marker);
+                    markersProductMap.put(marker, product);
+                    marker.setVisible(true);
 
-            @Override
-            public void onCancelled(DatabaseError databaseError) {
+                    Log.d("key ", key + " " + product.getId() + " " + product.getG() + " " + product.getName() + " " + product.getL().get(0) + " " + product.getL().get(1));
+                }
 
-            }
-        });
+                @Override
+                public void onCancelled(DatabaseError databaseError) {
+
+                }
+            });
+        } else {
+            markers.get(key).setVisible(true);
+        }
     }
 
     @Override
     public void onKeyExited(String key) {
         Log.d("exited", key);
-        productMap.remove(key);
+//        productMap.remove(key);
         Marker marker = markers.get(key);
-        if(marker != null){
-            marker.remove();
-            markers.remove(key);
+        if (marker != null) {
+            marker.setVisible(false);
+//            marker.remove();
+//            markers.remove(key);
         }
     }
 
@@ -523,14 +707,15 @@ public class MainActivity extends AppCompatActivity implements FireBaseAuthentic
             public void onDataChange(DataSnapshot dataSnapshot) {
                 Product product = (Product) dataSnapshot.getValue(Product.class);
                 product.setId(key);
-                productMap.put(key,product);
+                productMap.put(key, product);
                 Marker marker = markers.get(key);
-                if(marker != null){
+                if (marker != null) {
                     marker.remove();
-//                            markers.remove(key);
+                    markers.remove(key);
                 }
-                marker = adder.addTo(displayProduct.map, product.getName(), new LatLng(product.getL().get(0),product.getL().get(1)), true);
+                marker = adder.addTo(displayProduct.map, product.getName(), new LatLng(product.getL().get(0), product.getL().get(1)), true);
                 markers.put(key, marker);
+                markersProductMap.put(marker, product);
             }
 
             @Override

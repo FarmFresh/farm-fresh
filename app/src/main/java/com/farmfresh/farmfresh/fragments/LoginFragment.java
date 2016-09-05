@@ -19,7 +19,6 @@ import com.farmfresh.farmfresh.auth.FireBaseAuthentication;
 import com.farmfresh.farmfresh.auth.GoogleAuthentication;
 import com.farmfresh.farmfresh.utils.Constants;
 import com.google.android.gms.common.SignInButton;
-import com.google.firebase.auth.FirebaseUser;
 import com.jpardogo.android.googleprogressbar.library.GoogleProgressBar;
 
 import java.util.Arrays;
@@ -32,7 +31,6 @@ public class LoginFragment extends Fragment {
     public static final String TAG = LoginFragment.class.getSimpleName();
     private GoogleAuthentication mGoogleAuthentication;
     private FacebookAuthentication mFacebookAuthentication;
-    private FirebaseUser mCurrentUser;
     private FireBaseAuthentication mFireBaseAuthentication;
     private LoginButton mFacebookSignInButton;
     private FireBaseAuthentication.LoginListener mFireBaseLoginListener;

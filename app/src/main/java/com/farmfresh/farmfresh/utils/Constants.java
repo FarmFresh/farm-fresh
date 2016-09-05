@@ -43,4 +43,10 @@ public class Constants {
     public static final int FETCH_ADDRESS_SUCCESS_RESULT = 0;
     public static final int FETCH_ADDRESS_FAILURE_RESULT = 1;
 
+
+    //Email and Password signup related constants
+    public static final int USER_FULL_NAME_MIN_LENGTH = 3;
+    public static final int USER_PASSWORD_MIN_LENGTH = 8;
+    public static final String USER_EMAIL_PATTERN = "^[_A-Za-z0-9-\\+]+(\\.[_A-Za-z0-9-]+)*@"
+            + "[A-Za-z0-9-]+(\\.[A-Za-z0-9]+)*(\\.[A-Za-z]{2,})$";
 }

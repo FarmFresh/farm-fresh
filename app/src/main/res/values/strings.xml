@@ -25,6 +25,12 @@
     <string name="btn_next_text">Next:Add Images</string>
     <string name="btn_cancel">Cancel</string>
 
+    <!-- email password sign up and sign in constants -->
+    <string name="user_full_name">Your Full Name</string>
+    <string name="user_email">Email</string>
+    <string name="user_password">Password</string>
+    <string name="btn_submit">Submit</string>
+
     <!-- TODO: Remove or change this placeholder text -->
     <string name="hello_blank_fragment">Hello blank fragment</string>
     <string name="placeholder_address_price">Product Address</string>

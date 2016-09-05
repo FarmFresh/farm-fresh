@@ -13,12 +13,12 @@
        layout="@layout/layout_google_login"
        android:id="@+id/google_login_in" />
 
-    <!--<include
+    <include
         android:layout_gravity="center_horizontal"
         android:id="@+id/facebook_login_in"
         android:layout_height="wrap_content"
         android:layout_width="wrap_content"
-        layout="@layout/layout_facebook_login" />-->
+        layout="@layout/layout_facebook_login" />
 
    <com.jpardogo.android.googleprogressbar.library.GoogleProgressBar
        android:id="@+id/google_progress"

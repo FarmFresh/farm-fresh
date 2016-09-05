@@ -44,6 +44,7 @@ import com.farmfresh.farmfresh.action.AddToMap;
 import com.farmfresh.farmfresh.action.MoveToLocationFirstTime;
 import com.farmfresh.farmfresh.action.TrackLocation;
 import com.farmfresh.farmfresh.auth.AddressResultReceiver;
+import com.farmfresh.farmfresh.auth.FacebookAuthentication;
 import com.farmfresh.farmfresh.auth.FireBaseAuthentication;
 import com.farmfresh.farmfresh.auth.GoogleAuthentication;
 import com.farmfresh.farmfresh.fragments.ListItemsFragment;
@@ -56,6 +57,7 @@ import com.farmfresh.farmfresh.helper.OnPermission;
 import com.farmfresh.farmfresh.helper.PlaceManager;
 import com.farmfresh.farmfresh.models.Product;
 import com.farmfresh.farmfresh.models.User;
+import com.farmfresh.farmfresh.utils.Constants;
 import com.farmfresh.farmfresh.utils.Helper;
 import com.farmfresh.farmfresh.utils.Keys;
 import com.firebase.geofire.GeoFire;
@@ -105,6 +107,7 @@ public class MainActivity extends AppCompatActivity implements FireBaseAuthentic
     private FirebaseUser mCurrentUser;
     private FireBaseAuthentication mFireBaseAuthentication;
     private GoogleAuthentication mGoogleAuthentication;
+    private FacebookAuthentication mFacebookAuthentication;
     private de.hdodenhof.circleimageview.CircleImageView mProfileImage;
     private TextView mUserDisplayName;
     private TextView mUserEmail;
@@ -182,7 +185,7 @@ public class MainActivity extends AppCompatActivity implements FireBaseAuthentic
         mDrawer.addDrawerListener(mDrawerToggle);
 
         //facebook SDK initialization
-        FacebookSdk.sdkInitialize(getApplicationContext());
+        FacebookSdk.sdkInitialize(getApplicationContext(), Constants.RC_FACEBOOK_REQUEST_OFFSET);
         //Facebook app event registration
         AppEventsLogger.activateApp(getApplication());
 
@@ -191,6 +194,7 @@ public class MainActivity extends AppCompatActivity implements FireBaseAuthentic
 
         mFireBaseAuthentication = new FireBaseAuthentication(this, this);
         mGoogleAuthentication = new GoogleAuthentication(mFireBaseAuthentication, this, this);
+        mFacebookAuthentication = new FacebookAuthentication(mFireBaseAuthentication, this);
 
         mFirebaseDatabaseReference = FirebaseDatabase.getInstance().getReference();
 
@@ -356,6 +360,8 @@ public class MainActivity extends AppCompatActivity implements FireBaseAuthentic
 
     public void logout() {
         mFireBaseAuthentication.signOut();
+        //logout from facebook
+        mFacebookAuthentication.logout();
         mCurrentUser = null;
         updateNavigationHeader();
         updateNavigationMenuItems();
@@ -379,7 +385,7 @@ public class MainActivity extends AppCompatActivity implements FireBaseAuthentic
         switch (item.getItemId()) {
             case R.id.menuLogin:
                 title = "Login into your account";
-                fragment = LoginFragment.newInstance(mGoogleAuthentication);
+                fragment = LoginFragment.newInstance(mGoogleAuthentication, mFacebookAuthentication);
                 tag = LoginFragment.TAG;
                 break;
             case R.id.menuHome:

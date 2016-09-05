@@ -10,8 +10,11 @@ import android.view.View;
 import android.view.ViewGroup;
 
 import com.facebook.AccessToken;
+import com.facebook.FacebookSdk;
 import com.facebook.login.LoginManager;
+import com.facebook.login.widget.LoginButton;
 import com.farmfresh.farmfresh.R;
+import com.farmfresh.farmfresh.auth.FacebookAuthentication;
 import com.farmfresh.farmfresh.auth.FireBaseAuthentication;
 import com.farmfresh.farmfresh.auth.GoogleAuthentication;
 import com.farmfresh.farmfresh.utils.Constants;
@@ -28,26 +31,21 @@ public class LoginFragment extends Fragment {
 
     public static final String TAG = LoginFragment.class.getSimpleName();
     private GoogleAuthentication mGoogleAuthentication;
-    //private FacebookAuthentication mFacebookAuthentication;
+    private FacebookAuthentication mFacebookAuthentication;
     private FirebaseUser mCurrentUser;
     private FireBaseAuthentication mFireBaseAuthentication;
-    //private LoginButton mLoginButton;
+    private LoginButton mFacebookSignInButton;
     private FireBaseAuthentication.LoginListener mFireBaseLoginListener;
     private GoogleProgressBar mProgressBar;
     private SignInButton mGoogleSignInButton;
-    public static LoginFragment newInstance(GoogleAuthentication googleAuthentication) {
+    public static LoginFragment newInstance(GoogleAuthentication googleAuthentication, FacebookAuthentication facebookAuthentication) {
         Bundle args = new Bundle();
         LoginFragment fragment = new LoginFragment();
         fragment.mGoogleAuthentication = googleAuthentication;
         fragment.mFireBaseAuthentication = googleAuthentication.getMFireBaseAuthentication();
+        fragment.mFacebookAuthentication = facebookAuthentication;
         fragment.setArguments(args);
         return fragment;
-    }
-
-    @Override
-    public void onCreate(@Nullable Bundle savedInstanceState) {
-        super.onCreate(savedInstanceState);
-        //mFacebookAuthentication = new FacebookAuthentication(mFireBaseAuthentication, getActivity());
     }
 
     @Nullable
@@ -63,17 +61,17 @@ public class LoginFragment extends Fragment {
                 LoginFragment.this.googleSignIn();
             }
         });
-        /*
-        mLoginButton = (LoginButton) view.findViewById(R.id.btnFacebookSignIn);
-        mLoginButton.setFragment(this);
+        mFacebookSignInButton = (LoginButton) view.findViewById(R.id.btnFacebookSignIn);
+        mFacebookSignInButton.setReadPermissions("email");
+        mFacebookSignInButton.setFragment(this);
         LoginManager.getInstance().registerCallback(mFacebookAuthentication.getMCallbackManager(),
                 mFacebookAuthentication.getFacebookCallback());
-        mLoginButton.setOnClickListener(new View.OnClickListener() {
+        mFacebookSignInButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
                 facebookSignIn();
             }
-        });*/
+        });
 
         mProgressBar = (GoogleProgressBar)view.findViewById(R.id.google_progress);
         return view;
@@ -114,9 +112,9 @@ public class LoginFragment extends Fragment {
         super.onActivityResult(requestCode, resultCode, data);
         if (requestCode == Constants.RC_GOOGLE_SIGN_IN) {
             mGoogleAuthentication.onActivityResult(requestCode, resultCode, data);
-        } /*else if (requestCode == Constants.RC_FACEBOOK_SIGN_IN) {
+        } else if (FacebookSdk.isFacebookRequestCode(requestCode)) {
             mFacebookAuthentication.onActivityResult(requestCode, resultCode, data);
-        }*/
+        }
     }
 
     public void googleSignIn() {
@@ -126,6 +124,7 @@ public class LoginFragment extends Fragment {
     }
 
     public void facebookSignIn() {
+        showProgressBar();
         final AccessToken currentAccessToken = AccessToken.getCurrentAccessToken();
         if (currentAccessToken != null && !currentAccessToken.isExpired()) {
             mFireBaseAuthentication.fireBaseAuthWithFacebook(currentAccessToken,
@@ -137,7 +136,8 @@ public class LoginFragment extends Fragment {
     }
 
     private void showProgressBar() {
-        mGoogleSignInButton.setVisibility(View.GONE);
+        mGoogleSignInButton.setVisibility(View.INVISIBLE);
+        mFacebookSignInButton.setVisibility(View.INVISIBLE);
         mProgressBar.setVisibility(View.VISIBLE);
     }
 }

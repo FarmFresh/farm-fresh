@@ -5,7 +5,14 @@ package com.farmfresh.farmfresh.utils;
  */
 public class Constants {
     public static final int RC_GOOGLE_SIGN_IN = 10001;
-    public static final int RC_FACEBOOK_SIGN_IN = 10002;
+
+    /**
+     * Please do not use the range between the
+     * value you set and another 100 entries after it in your
+     * other requests.
+     **/
+
+    public static final int RC_FACEBOOK_REQUEST_OFFSET = 20000;
 
     public static final int PRODUCT_ONLY=1;
     public static final int PRODUCT_IMAGE=2;

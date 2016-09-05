@@ -44,9 +44,13 @@ import com.farmfresh.farmfresh.action.AddToMap;
 import com.farmfresh.farmfresh.action.MoveToLocationFirstTime;
 import com.farmfresh.farmfresh.action.TrackLocation;
 import com.farmfresh.farmfresh.auth.AddressResultReceiver;
+import com.farmfresh.farmfresh.auth.EmailPasswordAuthentication;
+import com.farmfresh.farmfresh.auth.FacebookAuthentication;
 import com.farmfresh.farmfresh.auth.FireBaseAuthentication;
 import com.farmfresh.farmfresh.auth.GoogleAuthentication;
 import com.farmfresh.farmfresh.fragments.ListItemsFragment;
+import com.farmfresh.farmfresh.fragments.EmailPasswordSignUpFragment;
+import com.farmfresh.farmfresh.fragments.ListItemsBottomSheetFragment;
 import com.farmfresh.farmfresh.fragments.LoginFragment;
 import com.farmfresh.farmfresh.fragments.SellingFragment;
 import com.farmfresh.farmfresh.helper.OnActivity;
@@ -56,6 +60,7 @@ import com.farmfresh.farmfresh.helper.OnPermission;
 import com.farmfresh.farmfresh.helper.PlaceManager;
 import com.farmfresh.farmfresh.models.Product;
 import com.farmfresh.farmfresh.models.User;
+import com.farmfresh.farmfresh.utils.Constants;
 import com.farmfresh.farmfresh.utils.Helper;
 import com.farmfresh.farmfresh.utils.Keys;
 import com.firebase.geofire.GeoFire;
@@ -95,7 +100,7 @@ import butterknife.BindView;
 import butterknife.ButterKnife;
 
 public class MainActivity extends AppCompatActivity implements FireBaseAuthentication.LoginListener,
-        GoogleApiClient.OnConnectionFailedListener, TrackLocation.Listener, GeoQueryEventListener {
+        GoogleApiClient.OnConnectionFailedListener,TrackLocation.Listener, GeoQueryEventListener, LoginFragment.SignUpListener {
 
     public final static String TAG = MainActivity.class.getSimpleName();
     private DrawerLayout mDrawer;
@@ -105,6 +110,8 @@ public class MainActivity extends AppCompatActivity implements FireBaseAuthentic
     private FirebaseUser mCurrentUser;
     private FireBaseAuthentication mFireBaseAuthentication;
     private GoogleAuthentication mGoogleAuthentication;
+    private FacebookAuthentication mFacebookAuthentication;
+    private EmailPasswordAuthentication emailPasswordAuthentication;
     private de.hdodenhof.circleimageview.CircleImageView mProfileImage;
     private TextView mUserDisplayName;
     private TextView mUserEmail;
@@ -182,7 +189,7 @@ public class MainActivity extends AppCompatActivity implements FireBaseAuthentic
         mDrawer.addDrawerListener(mDrawerToggle);
 
         //facebook SDK initialization
-        FacebookSdk.sdkInitialize(getApplicationContext());
+        FacebookSdk.sdkInitialize(getApplicationContext(), Constants.RC_FACEBOOK_REQUEST_OFFSET);
         //Facebook app event registration
         AppEventsLogger.activateApp(getApplication());
 
@@ -191,7 +198,8 @@ public class MainActivity extends AppCompatActivity implements FireBaseAuthentic
 
         mFireBaseAuthentication = new FireBaseAuthentication(this, this);
         mGoogleAuthentication = new GoogleAuthentication(mFireBaseAuthentication, this, this);
-
+        mFacebookAuthentication = new FacebookAuthentication(mFireBaseAuthentication, this);
+        emailPasswordAuthentication = new EmailPasswordAuthentication(mFireBaseAuthentication, this);
         mFirebaseDatabaseReference = FirebaseDatabase.getInstance().getReference();
 
         geoFire = new GeoFire(mFirebaseDatabaseReference.child("products"));
@@ -344,9 +352,8 @@ public class MainActivity extends AppCompatActivity implements FireBaseAuthentic
         updateNavigationHeader();
         updateNavigationMenuItems();
         //goto home page after successful login
-
-        selectDrawerItem(mNvView.getMenu().findItem(R.id.menuHome));
-        //TODO: go to state before login
+        getSupportFragmentManager().popBackStack();
+        setTitle("Home");
     }
 
     @Override
@@ -356,6 +363,8 @@ public class MainActivity extends AppCompatActivity implements FireBaseAuthentic
 
     public void logout() {
         mFireBaseAuthentication.signOut();
+        //logout from facebook
+        mFacebookAuthentication.logout();
         mCurrentUser = null;
         updateNavigationHeader();
         updateNavigationMenuItems();
@@ -379,7 +388,7 @@ public class MainActivity extends AppCompatActivity implements FireBaseAuthentic
         switch (item.getItemId()) {
             case R.id.menuLogin:
                 title = "Login into your account";
-                fragment = LoginFragment.newInstance(mGoogleAuthentication);
+                fragment = LoginFragment.newInstance(mGoogleAuthentication, mFacebookAuthentication, emailPasswordAuthentication);
                 tag = LoginFragment.TAG;
                 break;
             case R.id.menuHome:
@@ -411,8 +420,8 @@ public class MainActivity extends AppCompatActivity implements FireBaseAuthentic
         final FragmentTransaction fragmentTransaction = getSupportFragmentManager().beginTransaction();
         if (fragment != null) {
             fragmentTransaction
-                    .replace(R.id.flContent, fragment, tag);
-            fragmentTransaction.commit();
+                    .replace(R.id.flContent, fragment, tag).
+                    addToBackStack(tag).commit();
             getSupportFragmentManager().executePendingTransactions();
             //Highlight the selected item
             item.setChecked(true);
@@ -527,6 +536,7 @@ public class MainActivity extends AppCompatActivity implements FireBaseAuthentic
             float[] results = new float[1];
             Location.distanceBetween(geoQuery.getCenter().latitude, geoQuery.getCenter().longitude, latLng.latitude, latLng.longitude, results);
             float distance = results[0];
+            float[] productDistance = new float[1];
 
             if (distance < radius) {
                 Log.d("New User Location ", latLng + " distance " + distance);
@@ -535,10 +545,18 @@ public class MainActivity extends AppCompatActivity implements FireBaseAuthentic
 
                 productList.clear();
                 for (String key : productMap.keySet()) {
-                    if (markers.get(key).isVisible())
+                    if (markers.get(key).isVisible()){
+                        Product product = productMap.get(key);
+                        float dist = getProductDistance(product, productDistance);
+                        product.setDistance(String.format("%.2f",dist)+" mi");
                         productList.add(productMap.get(key));
+                    }
                 }
                 bundle.putParcelable("productList", Parcels.wrap(productList));
+
+                mBottomSheetBehavior.setState(BottomSheetBehavior.STATE_COLLAPSED);
+                mBottomSheetBehavior.setPeekHeight(1);
+                Log.d("bottomsheetstate",mBottomSheetBehavior.getState()+"");
 
                 listItemsFragment.setArguments(bundle);
                 android.app.FragmentTransaction ft = getFragmentManager().beginTransaction().setCustomAnimations(
@@ -567,9 +585,13 @@ public class MainActivity extends AppCompatActivity implements FireBaseAuthentic
 
             Log.d("Markerclicked", product.getName() + "");
 
-//            String url = "https://maps.googleapis.com/maps/api/distancematrix/json?units=imperial&origins=40.6655101,-73.89188969999998&destinations=40.6905615,-73.9976592&mode=driving&key=AIzaSyCkmV63LtrA1HeGxmyr0QyXin7ia7U38wA";
-            String url = "https://maps.googleapis.com/maps/api/distancematrix/json?units=imperial&origins="+User.latLng.latitude+","+User.latLng.longitude+"&destinations="+product.getL().get(0)+","+product.getL().get(1)+"&mode=driving&key="+ Keys.GOOGLE_API_KEY;
+
+
+//            String url = "https://maps.googleapis.com/maps/api/distancematrix/json?units=imperial&origins="+User.latLng.latitude+","+User.latLng.longitude+"&destinations="+product.getL().get(0)+","+product.getL().get(1)+"&mode=driving&key="+ Keys.GOOGLE_API_KEY;
 //            Log.d("volley-url",url);
+
+            String url = Constants.GOOGLE_DISTANCE.replace(Constants.USER_LATITUDE,User.latLng.latitude+"").replace(Constants.USER_LONGITUDE,User.latLng.longitude+"").replace(Constants.DESTINATION_LATITUDE,product.getL().get(0)+"").replace(Constants.DESTINATION_LONGITUDE,product.getL().get(1)+"").replace(Constants.GOOGLE_API_KEY,Keys.GOOGLE_API_KEY);
+
             updateDistance(url);
 
             return false;
@@ -582,7 +604,7 @@ public class MainActivity extends AppCompatActivity implements FireBaseAuthentic
                     new Response.Listener<String>() {
                         @Override
                         public void onResponse(String response) {
-                            Log.d("volley",response);
+//                            Log.d("volley",response);
                             try {
                                 JSONObject jsonObject = new JSONObject(response);
                                 jsonObject = jsonObject.getJSONArray("rows").getJSONObject(0).getJSONArray("elements").getJSONObject(0);
@@ -652,6 +674,11 @@ public class MainActivity extends AppCompatActivity implements FireBaseAuthentic
                 this.searchCircle.setCenter(latLng);
             }
         }*/
+    }
+
+    private float getProductDistance(Product product, float [] results){
+        Location.distanceBetween(User.latLng.latitude, User.latLng.longitude, product.getL().get(0), product.getL().get(1), results);
+        return(float) (results[0]/1600.00);
     }
 
     private double zoomLevelToRadius(double zoomLevel) {
@@ -732,5 +759,12 @@ public class MainActivity extends AppCompatActivity implements FireBaseAuthentic
     @Override
     public void onGeoQueryError(DatabaseError error) {
         Log.d("GeoQueryError", error.toString());
+    }
+
+    @Override
+    public void onSignup() {
+        getSupportFragmentManager().beginTransaction()
+                .replace(R.id.flContent, EmailPasswordSignUpFragment.newInstance(this))
+                .commit();
     }
 }

@@ -3,6 +3,7 @@ package com.farmfresh.farmfresh.auth;
 import android.app.Activity;
 import android.content.Context;
 import android.location.Location;
+import android.net.Uri;
 import android.support.annotation.NonNull;
 import android.util.Log;
 import android.widget.Toast;
@@ -115,6 +116,21 @@ public class FireBaseAuthentication {
         });
     }
 
+    public void fireBaseWithPasswordAuthentication(String email, String password, final Activity activity){
+        mAuth.signInWithEmailAndPassword(email, password).addOnCompleteListener(activity, new OnCompleteListener<AuthResult>() {
+            @Override
+            public void onComplete(@NonNull Task<AuthResult> task) {
+                Log.d(TAG, "signInWithEmail:onComplete:" + task.isSuccessful());
+                if (!task.isSuccessful()) {
+                    Log.w(TAG, "signInWithEmail:failed", task.getException());
+                    Toast.makeText(activity, "FireBase authentication failed",
+                            Toast.LENGTH_SHORT).show();
+                }
+
+            }
+        });
+    }
+
     public void signOut() {
         Log.d(TAG, "FireBase signing out....");
         mAuth.signOut();
@@ -124,12 +140,12 @@ public class FireBaseAuthentication {
         User user = new User();
         user.setEmail(userInfo.getEmail());
         user.setDisplayName(userInfo.getDisplayName());
-        user.setProfileImageUrl(userInfo.getPhotoUrl().toString());
+        final Uri photoUrl = userInfo.getPhotoUrl();
+        if(photoUrl != null){
+            user.setProfileImageUrl(photoUrl.toString());
+        }
         return user;
     }
-
-
-
 
     public interface LoginListener {
         void onLoginSuccess(FirebaseUser currentUser);

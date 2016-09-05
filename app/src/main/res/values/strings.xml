@@ -5,7 +5,7 @@
     <string name="google_sign_in">Google</string>
     <string name="facebook_sign_in">Facebook</string>
     <string name="menu_sign_in">Sign In</string>
-    <string name="facebook_app_id">1562008457441280</string>
+    <string name="facebook_app_id">500631840134850</string>
     <string name="fb_login_protocol_scheme">fb1562008457441280</string>
     <string name="menu_home">Home</string>
     <string name="menu_profile">Profile</string>
@@ -24,6 +24,12 @@
     <string name="placeholder_product_price">Asking Price</string>
     <string name="btn_next_text">Next:Add Images</string>
     <string name="btn_cancel">Cancel</string>
+
+    <!-- email password sign up and sign in constants -->
+    <string name="user_full_name">Your Full Name</string>
+    <string name="user_email">Email</string>
+    <string name="user_password">Password</string>
+    <string name="btn_submit">Submit</string>
 
     <!-- TODO: Remove or change this placeholder text -->
     <string name="hello_blank_fragment">Hello blank fragment</string>

@@ -24,6 +24,8 @@ public class Product implements Parcelable {
     private ArrayList<Double> l;
     private Bitmap icon;
     private String address;
+    private String duration;
+    private String distance;
 
     public void setId(String id) {
         this.id = id;
@@ -119,6 +121,21 @@ public class Product implements Parcelable {
         this.address = address;
     }
 
+    public String getDuration() {
+        return duration;
+    }
+
+    public void setDuration(String duration) {
+        this.duration = duration;
+    }
+
+    public String getDistance() {
+        return distance;
+    }
+
+    public void setDistance(String distance) {
+        this.distance = distance;
+    }
 
     @Override
     public int describeContents() {

@@ -47,6 +47,8 @@ dependencies {
     // Picasso for remote image loading
     compile 'com.squareup.picasso:picasso:2.5.2'
     //custom google progress bar
+    //Picasso Transformations
+    compile 'jp.wasabeef:picasso-transformations:2.1.0'
     compile 'com.jpardogo.googleprogressbar:library:1.2.0'
 
     compile 'com.android.support:appcompat-v7:23.1.1'

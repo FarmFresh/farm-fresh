@@ -14,6 +14,9 @@ import com.farmfresh.farmfresh.viewholder.ViewHolderProductOnly;
 import com.squareup.picasso.Picasso;
 
 import java.util.List;
+
+import jp.wasabeef.picasso.transformations.RoundedCornersTransformation;
+
 /**
  * Created by bhaskarjaiswal on 8/21/16.
  */
@@ -87,7 +90,8 @@ public class ProductsAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolde
         viewProduct.getTvName().setText(product.getName());
         viewProduct.getTvDescription().setText(product.getDescription());
         viewProduct.getTvPrice().setText(product.getPrice());
-        Picasso.with(context).load(product.getImageUrls().get(0)).into(viewProduct.getIvImage());
+        viewProduct.getTvDistance().setText(product.getDistance());
+        Picasso.with(context).load(product.getImageUrls().get(0)).transform(new RoundedCornersTransformation(10, 10)).into(viewProduct.getIvImage());
     }
 
     @Override

@@ -3,4 +3,7 @@
     <dimen name="activity_horizontal_margin">16dp</dimen>
     <dimen name="activity_vertical_margin">16dp</dimen>
     <dimen name="product_info_margin">8dp</dimen>
+
+    <dimen name="seller_name">16sp</dimen>
+    <dimen name="product_name">16sp</dimen>
 </resources>

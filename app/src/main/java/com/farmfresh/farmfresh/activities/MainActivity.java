@@ -398,12 +398,6 @@ public class MainActivity extends AppCompatActivity implements FireBaseAuthentic
                 break;
             case R.id.menuProfile:
                 title = "Profile";
-                fragment = new SellingFragment();
-                tag = SellingFragment.class.getSimpleName();
-//                fragment = SellingFragment.newInstance();
-//                tag = SellingFragment.class.getSimpleName();
-//                fragment = ProfileFragment.newInstance(mCurrentUser.getUid());
-//                tag = ProfileFragment.class.getSimpleName();
                 Intent intent = new Intent(this, SellerProfileActivity.class);
                 intent.putExtra("userId", Parcels.wrap(mCurrentUser.getUid()));
                 startActivity(intent);

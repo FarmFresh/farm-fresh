@@ -1,17 +1,21 @@
 package com.farmfresh.farmfresh.activities;
 
+import android.content.Intent;
 import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
-import android.widget.ImageView;
+import android.util.Log;
+import android.view.View;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import com.farmfresh.farmfresh.R;
 import com.farmfresh.farmfresh.adapter.SellerProductsAdapter;
 import com.farmfresh.farmfresh.models.Product;
 import com.farmfresh.farmfresh.models.User;
 import com.farmfresh.farmfresh.utils.Constants;
+import com.farmfresh.farmfresh.utils.ItemClickSupport;
 import com.google.firebase.database.ChildEventListener;
 import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
@@ -25,6 +29,8 @@ import org.parceler.Parcels;
 
 import java.util.ArrayList;
 
+import de.hdodenhof.circleimageview.CircleImageView;
+
 public class SellerProfileActivity extends AppCompatActivity {
     ArrayList<Product> products;
     SellerProductsAdapter adapter;
@@ -32,6 +38,8 @@ public class SellerProfileActivity extends AppCompatActivity {
     private String productKey;
     private FirebaseDatabase database;
     private DatabaseReference productsRef;
+
+    private Product product;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -57,16 +65,34 @@ public class SellerProfileActivity extends AppCompatActivity {
         User user = (User) Parcels.unwrap(getIntent().getParcelableExtra("user"));
         String userId = (String) Parcels.unwrap(getIntent().getParcelableExtra("userId"));
 
-        // from ProductDetailActivity
-        if (user != null) {
-            getSellerListing(user);
-            displaySellerInfo(user);
-        }
-        // from MainActivity
-        else{
-            getSellerInfo(userId);
-        }
+//        // from ProductDetailActivity
+//        if (user != null) {
+//            displaySellerInfo(user);
+//        }
+//        // from MainActivity
+//        else{
+//            getSellerInfo(userId);
+//        }
+//
+        getSellerInfo(userId);
 
+        Log.d("DEBUG:", "getSellerListing");
+        System.out.println("userId: " + userId);
+        getSellerListing(userId);
+
+
+        ItemClickSupport.addTo(rvProducts).setOnItemClickListener(
+                new ItemClickSupport.OnItemClickListener() {
+                    @Override
+                    public void onItemClicked(RecyclerView recyclerView, int position, View v) {
+                        // do it
+                        Toast.makeText(getApplicationContext(), "some message", Toast.LENGTH_SHORT).show();
+                        Intent intent = new Intent(getBaseContext(), ProductDetailActivity.class);
+                        intent.putExtra(Constants.PRODUCT_KEY, product.getId());
+                        startActivity(intent);
+                    }
+                }
+        );
     }
 
     // Get seller information who is associated with this product
@@ -79,6 +105,7 @@ public class SellerProfileActivity extends AppCompatActivity {
                         // Get user value
                         User user = dataSnapshot.getValue(User.class);
                         user.toString();
+                        Log.d("DEBUG: user", user.toString());
 
                         displaySellerInfo(user);
                     }
@@ -94,7 +121,7 @@ public class SellerProfileActivity extends AppCompatActivity {
         tvUserName.setText(user.getDisplayName());
 
         // get image from facebook profile
-        ImageView ivProfileImage = (ImageView) findViewById(R.id.ivProfileImage);
+        CircleImageView ivProfileImage = (CircleImageView) findViewById(R.id.ivProfileImage);
 
         Picasso.with(SellerProfileActivity.this)
                 .load(user.getProfileImageUrl())
@@ -103,17 +130,21 @@ public class SellerProfileActivity extends AppCompatActivity {
 
 
     // Get list of products from product ids
-    void getSellerListing(User user) {
+    void getSellerListing(String userId) {
+
+        Log.d("DEBUG: userId", userId);
 
         Query queryRef = productsRef.orderByChild("sellerId")
-                .startAt("pMfeFjNSp6eIXsoao3JkbkjoC9b2")
-                .endAt("pMfeFjNSp6eIXsoao3JkbkjoC9b2");
+                .startAt(userId)
+                .endAt(userId);
 
         queryRef.addChildEventListener(new ChildEventListener() {
             @Override
             public void onChildAdded(DataSnapshot snapshot, String previousChild) {
-                Product product = snapshot.getValue(Product.class);
-                products.add(product);
+                Product p = snapshot.getValue(Product.class);
+                p.setId(snapshot.getKey());
+                products.add(p);
+                product = p;
                 adapter.notifyItemInserted(products.size()-1);
             }
 
@@ -146,4 +177,10 @@ public class SellerProfileActivity extends AppCompatActivity {
         products.add(product);
         adapter.notifyItemInserted(products.size()-1);
     }
+
+    void onClickProduct(View view){
+        Toast.makeText(getApplicationContext(), "some message", Toast.LENGTH_SHORT).show();
+    }
+
+
 }

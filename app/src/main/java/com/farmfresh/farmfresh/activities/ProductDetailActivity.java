@@ -1,5 +1,6 @@
 package com.farmfresh.farmfresh.activities;
 
+
 import android.content.Intent;
 import android.graphics.Bitmap;
 import android.net.Uri;
@@ -27,6 +28,8 @@ import org.parceler.Parcels;
 
 import java.util.ArrayList;
 
+import de.hdodenhof.circleimageview.CircleImageView;
+
 public class ProductDetailActivity extends AppCompatActivity {
     CarouselView carouselView;
     GetFirebase firebase;
@@ -42,6 +45,7 @@ public class ProductDetailActivity extends AppCompatActivity {
         this.productKey = getIntent().getStringExtra(Constants.PRODUCT_KEY);
         database = FirebaseDatabase.getInstance();
         productsRef = database.getReference().child(Constants.NODE_PRODUCTS);
+
         productsRef.child(this.productKey).addValueEventListener(new ValueEventListener() {
             @Override
             public void onDataChange(DataSnapshot dataSnapshot) {
@@ -89,20 +93,20 @@ public class ProductDetailActivity extends AppCompatActivity {
     void getSellerInfo(String id){
 
         database.getReference().child("users").child(id).addListenerForSingleValueEvent(
-            new ValueEventListener() {
-                @Override
-                public void onDataChange(DataSnapshot dataSnapshot) {
-                    // Get user value
-                    User user = dataSnapshot.getValue(User.class);
-                    user.toString();
+                new ValueEventListener() {
+                    @Override
+                    public void onDataChange(DataSnapshot dataSnapshot) {
+                        // Get user value
+                        User user = dataSnapshot.getValue(User.class);
+                        user.toString();
 
-                    displayUserInfo(user);
-                }
+                        displayUserInfo(user);
+                    }
 
-                @Override
-                public void onCancelled(DatabaseError databaseError) {
-                }
-            });
+                    @Override
+                    public void onCancelled(DatabaseError databaseError) {
+                    }
+                });
     }
 
     // display seller information
@@ -113,7 +117,7 @@ public class ProductDetailActivity extends AppCompatActivity {
         TextView tvSellerName = (TextView) findViewById(R.id.tvSellerName);
         tvSellerName.setText(user.getDisplayName());
 
-        ImageView ivProfileImage = (ImageView) findViewById(R.id.ivProfileImage);
+        CircleImageView ivProfileImage = (CircleImageView) findViewById(R.id.ivProfileImage);
         ivProfileImage.setTag(user);
 
         Picasso.with(ProductDetailActivity.this)
@@ -176,6 +180,9 @@ public class ProductDetailActivity extends AppCompatActivity {
         ImageView ivProfileImage = (ImageView) findViewById(R.id.ivProfileImage);
         User u = (User) ivProfileImage.getTag();
         intent.putExtra("user", Parcels.wrap(u));
+        intent.putExtra("userId", Parcels.wrap(product.getSellerId()));
         startActivity(intent);
     }
+
+
 }

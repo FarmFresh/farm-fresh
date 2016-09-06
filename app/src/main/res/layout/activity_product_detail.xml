@@ -2,7 +2,8 @@
 <ScrollView android:layout_width="match_parent"
     android:layout_height="match_parent"
     xmlns:android="http://schemas.android.com/apk/res/android"
-    xmlns:tools="http://schemas.android.com/tools">
+    xmlns:tools="http://schemas.android.com/tools"
+    android:fitsSystemWindows="true">
 
     <RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
         android:layout_width="match_parent"
@@ -15,6 +16,7 @@
             android:layout_height="wrap_content"
             android:id="@+id/tvSellerName"
             android:text="Seller Name"
+            android:textSize="@dimen/seller_name"
             android:layout_centerHorizontal="true"/>
 
         <com.synnapps.carouselview.CarouselView
@@ -30,11 +32,11 @@
             app:autoPlay="false"
             android:layout_below="@+id/tvSellerName"/>
 
-        <ImageView
+        <de.hdodenhof.circleimageview.CircleImageView
             android:layout_width="50dp"
             android:layout_height="50dp"
             android:id="@+id/ivProfileImage"
-            android:src="@drawable/tweet_compose"
+            android:src="@drawable/user_profile_placeholder"
             android:layout_alignParentTop="true"
             android:layout_alignParentLeft="true"
             android:layout_alignParentStart="true"
@@ -61,38 +63,44 @@
 
         <!--</android.support.design.widget.CoordinatorLayout>-->
 
-        <TextView
+        <android.support.v7.widget.LinearLayoutCompat
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:id="@+id/tvProductName"
-            android:text="Product Name"
+            android:orientation="vertical"
+            android:id="@+id/lvProductInfo"
             android:layout_below="@+id/carouselView"
-            android:layout_centerHorizontal="true" />
+            android:layout_margin="20dp">
 
-        <TextView
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:text="price"
-            android:id="@+id/tvPrice"
-            android:layout_below="@+id/tvProductName"
-            android:layout_alignParentLeft="true"
-            android:layout_alignParentStart="true" />
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:id="@+id/tvProductName"
+                android:text="Product Name"
+                android:layout_centerHorizontal="true" />
 
-        <include android:id="@+id/XMLratings"
-            android:layout_width="match_parent"
-            android:layout_height="match_parent"
-            layout="@layout/product_rating"
-            android:layout_below="@+id/tvProductName"/>
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="price"
+                android:id="@+id/tvPrice"
+                android:layout_alignParentLeft="true"
+                android:layout_alignParentStart="true" />
 
-        <TextView
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:id="@+id/tvDescription"
-            android:text="Description"
-            android:layout_below="@+id/XMLratings"
-            android:layout_centerVertical="true"
-            android:layout_alignParentLeft="true"
-            android:layout_alignParentStart="true" />
+            <include android:id="@+id/XMLratings"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                layout="@layout/product_rating"/>
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:id="@+id/tvDescription"
+                android:text="Description"
+                android:layout_centerVertical="true"
+                android:layout_alignParentLeft="true"
+                android:layout_alignParentStart="true" />
+
+        </android.support.v7.widget.LinearLayoutCompat>
 
         <android.support.v7.widget.LinearLayoutCompat
             android:layout_width="wrap_content"
@@ -101,35 +109,38 @@
             android:layout_alignParentRight="true"
             android:layout_alignParentEnd="true"
             android:orientation="vertical"
-            android:id="@+id/lvContact">
+            android:id="@+id/lvContact"
+            android:layout_margin="10dp">
 
             <ImageView
-                android:layout_width="50dp"
-                android:layout_height="50dp"
+                android:layout_width="40dp"
+                android:layout_height="40dp"
                 android:id="@+id/ivHeart"
-                android:src="@drawable/tweet_compose"
-                android:layout_marginTop="20dp" />
+                android:src="@drawable/pink_heart_icon"
+                android:layout_marginTop="20dp"/>
 
             <ImageView
-                android:layout_width="50dp"
-                android:layout_height="50dp"
+                android:layout_width="40dp"
+                android:layout_height="40dp"
                 android:id="@+id/ivSellerEmail"
-                android:src="@drawable/mentions_icon"
-                android:alpha="1"/>
+                android:src="@drawable/pink_email_icon"
+                android:layout_marginTop="10dp"/>
 
             <ImageView
-                android:layout_width="50dp"
-                android:layout_height="50dp"
+                android:layout_width="40dp"
+                android:layout_height="40dp"
                 android:id="@+id/ivSellerPhone"
                 android:onClick="onSellerPhone"
-                android:src="@drawable/mentions_icon" />
+                android:src="@drawable/pink_phone_icon"
+                android:layout_marginTop="10dp"/>
 
             <ImageView
-                android:layout_width="50dp"
-                android:layout_height="50dp"
+                android:layout_width="40dp"
+                android:layout_height="40dp"
                 android:id="@+id/ivSellerSMS"
                 android:onClick="onSellerSMS"
-                android:src="@drawable/mentions_icon" />
+                android:src="@drawable/pink_sms_icon"
+                android:layout_marginTop="10dp"/>
         </android.support.v7.widget.LinearLayoutCompat>
 
 

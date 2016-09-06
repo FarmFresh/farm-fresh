@@ -86,18 +86,6 @@ public class LoginFragment extends Fragment {
     }
 
     @Override
-    public void onStart() {
-        super.onStart();
-        mFireBaseAuthentication.addAuthListener();
-    }
-
-    @Override
-    public void onStop() {
-        super.onStop();
-        mFireBaseAuthentication.removeAuthListener();
-    }
-
-    @Override
     public void onPause() {
         super.onPause();
         mGoogleAuthentication.getmGoogleApiClient().stopAutoManage(getActivity());

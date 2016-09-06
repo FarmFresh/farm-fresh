@@ -48,9 +48,8 @@ import com.farmfresh.farmfresh.auth.EmailPasswordAuthentication;
 import com.farmfresh.farmfresh.auth.FacebookAuthentication;
 import com.farmfresh.farmfresh.auth.FireBaseAuthentication;
 import com.farmfresh.farmfresh.auth.GoogleAuthentication;
-import com.farmfresh.farmfresh.fragments.ListItemsFragment;
 import com.farmfresh.farmfresh.fragments.EmailPasswordSignUpFragment;
-import com.farmfresh.farmfresh.fragments.ListItemsBottomSheetFragment;
+import com.farmfresh.farmfresh.fragments.ListItemsFragment;
 import com.farmfresh.farmfresh.fragments.LoginFragment;
 import com.farmfresh.farmfresh.fragments.ProfileFragment;
 import com.farmfresh.farmfresh.helper.OnActivity;
@@ -138,7 +137,6 @@ public class MainActivity extends AppCompatActivity implements FireBaseAuthentic
     HashMap<String, Product> productMap = new HashMap<String, Product>();
     ArrayList<PlaceManager.Place> placeList = new ArrayList<PlaceManager.Place>();
     HashMap<String, Marker> markers = new HashMap<String, Marker>();
-    HashMap<Marker, Product> markersProductMap = new HashMap<Marker, Product>();
 
     @BindView(R.id.bottom_sheet)
     View bottomSheet;
@@ -567,7 +565,7 @@ public class MainActivity extends AppCompatActivity implements FireBaseAuthentic
             mBottomSheetBehavior.setPeekHeight(300);
 //            mBottomSheetBehavior.setState(BottomSheetBehavior.STATE_COLLAPSED);
             fabCar.setVisibility(View.VISIBLE);
-            Product product = markersProductMap.get(marker);
+            Product product = (Product) marker.getTag();
 
             ivProductImage.setImageResource(0);
             if(product.getImageUrls() != null && product.getImageUrls().size() !=0){
@@ -628,11 +626,11 @@ public class MainActivity extends AppCompatActivity implements FireBaseAuthentic
         Location location = new Location("");
         location.setLatitude(latlng.latitude);
         location.setLongitude(latlng.longitude);
-        hasUserLocationChanged(latlng);
+        hasUserLocationChanged(map, latlng);
         Helper.startFetchAddressIntentService(this, resultReceiver, location);
     }
 
-    private void hasUserLocationChanged(LatLng latLng) {
+    private void hasUserLocationChanged(GoogleMap map, LatLng latLng) {
         /*Log.d("isnull", (displayProduct.map.getMyLocation() == null) + "");
         Double latitude = null;
         Double longitude = null;
@@ -667,6 +665,15 @@ public class MainActivity extends AppCompatActivity implements FireBaseAuthentic
                 this.searchCircle.setCenter(latLng);
             }
         }*/
+        /*
+//        When user is on move, set the cicle's center to user's latlng.
+//        Also move the camera to user's location
+        this.searchCircle.setCenter(latLng);
+        map.moveCamera(CameraUpdateFactory.newCameraPosition(getCameraPosition(latLng)));*/
+    }
+
+    private CameraPosition getCameraPosition(LatLng latLng) {
+        return new CameraPosition.Builder().target(latLng).zoom(14).build();
     }
 
     private float getProductDistance(Product product, float [] results){
@@ -686,12 +693,12 @@ public class MainActivity extends AppCompatActivity implements FireBaseAuthentic
             mFirebaseDatabaseReference.child("products").child(key).addListenerForSingleValueEvent(new ValueEventListener() {
                 @Override
                 public void onDataChange(DataSnapshot dataSnapshot) {
-                    Product product = (Product) dataSnapshot.getValue(Product.class);
+                    Product product = dataSnapshot.getValue(Product.class);
                     product.setId(key);
                     productMap.put(key, product);
                     Marker marker = adder.addTo(displayProduct.map, product.getName(), new LatLng(product.getL().get(0), product.getL().get(1)), true);
                     markers.put(key, marker);
-                    markersProductMap.put(marker, product);
+                    marker.setTag(product);
                     marker.setVisible(true);
 
                     Log.d("key ", key + " " + product.getId() + " " + product.getG() + " " + product.getName() + " " + product.getL().get(0) + " " + product.getL().get(1));
@@ -735,7 +742,7 @@ public class MainActivity extends AppCompatActivity implements FireBaseAuthentic
                 }
                 marker = adder.addTo(displayProduct.map, product.getName(), new LatLng(product.getL().get(0), product.getL().get(1)), true);
                 markers.put(key, marker);
-                markersProductMap.put(marker, product);
+                marker.setTag(product);
             }
 
             @Override

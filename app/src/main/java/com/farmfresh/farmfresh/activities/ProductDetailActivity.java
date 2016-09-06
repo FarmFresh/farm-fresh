@@ -160,9 +160,9 @@ public class ProductDetailActivity extends AppCompatActivity {
         }
     }
 
-    void onSellerProfile(){
+    void onSellerProfile(View view){
         Intent intent = new Intent(this, SellerProfileActivity.class);
-        ImageView ivProfileImage = (ImageView) findViewById(R.id.ivProfileImage);
+        CircleImageView ivProfileImage = (CircleImageView) findViewById(R.id.ivProfileImage);
         User u = (User) ivProfileImage.getTag();
         intent.putExtra("user", Parcels.wrap(u));
         intent.putExtra("userId", Parcels.wrap(product.getSellerId()));

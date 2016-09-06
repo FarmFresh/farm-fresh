@@ -12,7 +12,7 @@
         xmlns:app="http://schemas.android.com/apk/res-auto">
 
         <include
-            android:id="@+id/toolbar"
+            android:id="@+id/detailed_product_toolbar"
             layout="@layout/toolbar"
             android:layout_width="match_parent"
             android:layout_height="wrap_content" />
@@ -20,10 +20,20 @@
         <TextView
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
+            android:text="Item"
+            android:textColor="#FFFFFF"
+            android:layout_centerHorizontal="true"
+            android:textSize="25dp"
+            android:layout_margin="10dp"
+            />
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
             android:id="@+id/tvSellerName"
             android:text="Seller Name"
             android:textSize="@dimen/seller_name"
-            android:layout_below="@+id/toolbar"
+            android:layout_below="@+id/detailed_product_toolbar"
             android:layout_toEndOf="@+id/ivProfileImage"
             android:textStyle="bold"
             android:layout_margin="8dp"
@@ -50,7 +60,7 @@
             android:layout_alignParentLeft="true"
             android:layout_alignParentStart="true"
             android:onClick="onSellerProfile"
-            android:layout_below="@id/toolbar"
+            android:layout_below="@id/detailed_product_toolbar"
             android:layout_marginLeft="5dp"/>
 
         <!--<android.support.design.widget.CoordinatorLayout-->

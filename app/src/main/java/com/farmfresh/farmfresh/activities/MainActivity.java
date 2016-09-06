@@ -48,11 +48,9 @@ import com.farmfresh.farmfresh.auth.EmailPasswordAuthentication;
 import com.farmfresh.farmfresh.auth.FacebookAuthentication;
 import com.farmfresh.farmfresh.auth.FireBaseAuthentication;
 import com.farmfresh.farmfresh.auth.GoogleAuthentication;
-import com.farmfresh.farmfresh.fragments.ListItemsFragment;
 import com.farmfresh.farmfresh.fragments.EmailPasswordSignUpFragment;
-import com.farmfresh.farmfresh.fragments.ListItemsBottomSheetFragment;
+import com.farmfresh.farmfresh.fragments.ListItemsFragment;
 import com.farmfresh.farmfresh.fragments.LoginFragment;
-import com.farmfresh.farmfresh.fragments.SellingFragment;
 import com.farmfresh.farmfresh.helper.OnActivity;
 import com.farmfresh.farmfresh.helper.OnClient;
 import com.farmfresh.farmfresh.helper.OnMap;
@@ -274,6 +272,18 @@ public class MainActivity extends AppCompatActivity implements FireBaseAuthentic
 
             }
         });*/
+    }
+
+    @Override
+    public void onStart() {
+        super.onStart();
+        mFireBaseAuthentication.addAuthListener();
+    }
+
+    @Override
+    public void onStop() {
+        super.onStop();
+        mFireBaseAuthentication.removeAuthListener();
     }
 
     @Override

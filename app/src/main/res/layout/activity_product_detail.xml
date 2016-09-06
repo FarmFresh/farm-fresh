@@ -105,44 +105,49 @@
         <android.support.v7.widget.LinearLayoutCompat
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_alignParentTop="true"
-            android:layout_alignParentRight="true"
-            android:layout_alignParentEnd="true"
-            android:orientation="vertical"
+            android:orientation="horizontal"
             android:id="@+id/lvContact"
-            android:layout_margin="10dp">
+            android:layout_below="@+id/lvProductInfo"
+            android:layout_centerHorizontal="true">
 
-            <ImageView
-                android:layout_width="40dp"
-                android:layout_height="40dp"
-                android:id="@+id/ivHeart"
-                android:src="@drawable/pink_heart_icon"
-                android:layout_marginTop="20dp"/>
+        <ImageView
+            android:layout_width="40dp"
+            android:layout_height="40dp"
+            android:id="@+id/ivSellerSMS"
+            android:onClick="onSellerSMS"
+            android:src="@drawable/pink_sms_icon"
+            android:layout_alignTop="@+id/lvContact"/>
 
-            <ImageView
-                android:layout_width="40dp"
-                android:layout_height="40dp"
-                android:id="@+id/ivSellerEmail"
-                android:src="@drawable/pink_email_icon"
-                android:layout_marginTop="10dp"/>
+        <ImageView
+            android:layout_width="40dp"
+            android:layout_height="40dp"
+            android:id="@+id/ivSellerPhone"
+            android:onClick="onSellerPhone"
+            android:src="@drawable/pink_phone_icon"
+            android:layout_alignTop="@+id/ivSellerSMS"
+            android:layout_centerHorizontal="true"
+            android:layout_marginLeft="20dp"/>
 
-            <ImageView
-                android:layout_width="40dp"
-                android:layout_height="40dp"
-                android:id="@+id/ivSellerPhone"
-                android:onClick="onSellerPhone"
-                android:src="@drawable/pink_phone_icon"
-                android:layout_marginTop="10dp"/>
+        <ImageView
+            android:layout_width="40dp"
+            android:layout_height="40dp"
+            android:id="@+id/ivSellerEmail"
+            android:src="@drawable/pink_email_icon"
+            android:layout_alignTop="@+id/lvContact"
+            android:layout_toStartOf="@+id/tvSellerName"
+            android:layout_marginLeft="20dp"/>
 
-            <ImageView
-                android:layout_width="40dp"
-                android:layout_height="40dp"
-                android:id="@+id/ivSellerSMS"
-                android:onClick="onSellerSMS"
-                android:src="@drawable/pink_sms_icon"
-                android:layout_marginTop="10dp"/>
+        <ImageView
+            android:layout_width="40dp"
+            android:layout_height="40dp"
+            android:id="@+id/ivHeart"
+            android:src="@drawable/pink_heart_icon"
+            android:layout_alignParentBottom="true"
+            android:layout_toEndOf="@+id/ivProfileImage"
+            android:layout_marginLeft="20dp"/>
+
+
         </android.support.v7.widget.LinearLayoutCompat>
-
 
     </RelativeLayout>
 </ScrollView>

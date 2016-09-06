@@ -20,6 +20,7 @@ public class User {
     private ArrayList<String> productSold;
     private String userCurrentAddress;
     public static LatLng latLng;
+    private String phone;
 
     public User() {};
 
@@ -30,7 +31,6 @@ public class User {
     public void setDisplayName(String displayName) {
         this.displayName = displayName;
     }
-
 
     public void setEmail(String email) {
         this.email = email;
@@ -86,5 +86,13 @@ public class User {
 
     public void setUserCurrentAddress(String userCurrentAddress) {
         this.userCurrentAddress = userCurrentAddress;
+    }
+
+    public String getPhone() {
+        return phone;
+    }
+
+    public void setPhone(String phone) {
+        this.phone = phone;
     }
 }

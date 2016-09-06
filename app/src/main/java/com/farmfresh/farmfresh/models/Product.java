@@ -187,6 +187,7 @@ public class Product implements Parcelable {
         map.put("imageUrls", imageUrls);
         map.put("sellerId", sellerId);
         map.put("price", price);
+        map.put("address", address);
         return map;
     }
 }

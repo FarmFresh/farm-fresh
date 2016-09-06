@@ -85,10 +85,11 @@ public class SellerProfileActivity extends AppCompatActivity {
                 new ItemClickSupport.OnItemClickListener() {
                     @Override
                     public void onItemClicked(RecyclerView recyclerView, int position, View v) {
+                        Product p = products.get(position);
                         // do it
                         Toast.makeText(getApplicationContext(), "some message", Toast.LENGTH_SHORT).show();
                         Intent intent = new Intent(getBaseContext(), ProductDetailActivity.class);
-                        intent.putExtra(Constants.PRODUCT_KEY, product.getId());
+                        intent.putExtra(Constants.PRODUCT_KEY, p.getId());
                         startActivity(intent);
                     }
                 }

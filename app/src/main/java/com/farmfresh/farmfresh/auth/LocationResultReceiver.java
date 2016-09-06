@@ -1,16 +1,21 @@
 package com.farmfresh.farmfresh.auth;
 
+import android.content.Intent;
 import android.location.Location;
 import android.os.Bundle;
+import android.os.Handler;
+import android.support.annotation.NonNull;
 import android.support.v4.os.ResultReceiver;
 
+import com.farmfresh.farmfresh.activities.ProductDetailActivity;
 import com.farmfresh.farmfresh.fragments.UploadProductFragment;
 import com.farmfresh.farmfresh.models.Product;
 import com.farmfresh.farmfresh.utils.Constants;
 import com.farmfresh.farmfresh.utils.Helper;
 import com.firebase.geofire.GeoFire;
 import com.firebase.geofire.GeoLocation;
-import com.google.android.gms.tasks.OnSuccessListener;
+import com.google.android.gms.tasks.OnCompleteListener;
+import com.google.android.gms.tasks.Task;
 import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
@@ -47,10 +52,11 @@ public class LocationResultReceiver extends ResultReceiver {
                         @Override
                         public void onComplete(String key, DatabaseError error) {
                             Map<String,Object> productMap = LocationResultReceiver.this.product.toMap();
-                            productsRef.child(productKey).updateChildren(productMap).addOnSuccessListener(new OnSuccessListener<Void>() {
+                            productsRef.child(productKey).updateChildren(productMap).addOnCompleteListener(new OnCompleteListener<Void>() {
                                 @Override
-                                public void onSuccess(Void aVoid) {
+                                public void onComplete(@NonNull Task<Void> task) {
                                     uploadProductFragment.showSnackBar();
+                                    openProductDetailActivity();
                                 }
                             });
                         }
@@ -59,6 +65,19 @@ public class LocationResultReceiver extends ResultReceiver {
             Helper.showToast(uploadProductFragment.getContext(),
                     resultData.getString(Constants.ADDRESS_DATA_EXTRA));
         }
+    }
+
+    private void openProductDetailActivity() {
+        new Handler().postDelayed(new Runnable() {
+            @Override
+            public void run() {
+                Intent intent = new Intent(LocationResultReceiver.this.uploadProductFragment.getActivity(),
+                        ProductDetailActivity.class);
+                intent.putExtra(Constants.PRODUCT_KEY,
+                        LocationResultReceiver.this.productKey);
+                LocationResultReceiver.this.uploadProductFragment.getActivity().startActivity(intent);
+            }
+        }, 2000);
     }
 
 }

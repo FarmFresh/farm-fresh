@@ -3,7 +3,8 @@
     android:layout_height="match_parent"
     xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:tools="http://schemas.android.com/tools"
-    android:fitsSystemWindows="true">
+    android:fitsSystemWindows="true"
+    tools:context=".activities.ProductDetailActivity">
 
     <RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
         android:layout_width="match_parent"
@@ -130,7 +131,6 @@
                 android:layout_width="40dp"
                 android:layout_height="40dp"
                 android:id="@+id/ivSellerPhone"
-                android:onClick="onSellerPhone"
                 android:src="@drawable/pink_phone_icon"
                 android:layout_marginTop="10dp"/>
 
@@ -138,7 +138,6 @@
                 android:layout_width="40dp"
                 android:layout_height="40dp"
                 android:id="@+id/ivSellerSMS"
-                android:onClick="onSellerSMS"
                 android:src="@drawable/pink_sms_icon"
                 android:layout_marginTop="10dp"/>
         </android.support.v7.widget.LinearLayoutCompat>

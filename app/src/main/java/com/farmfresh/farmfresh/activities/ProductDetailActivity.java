@@ -38,6 +38,12 @@ public class ProductDetailActivity extends AppCompatActivity {
     private String productKey;
     private FirebaseDatabase database;
     private DatabaseReference productsRef;
+
+    private ImageView ivSellerEmail;
+    private ImageView ivSellerPhone;
+    private ImageView ivSellerSMS;
+
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -45,6 +51,9 @@ public class ProductDetailActivity extends AppCompatActivity {
         this.productKey = getIntent().getStringExtra(Constants.PRODUCT_KEY);
         database = FirebaseDatabase.getInstance();
         productsRef = database.getReference().child(Constants.NODE_PRODUCTS);
+        ivSellerEmail = (ImageView)findViewById(R.id.ivSellerEmail);
+        ivSellerPhone = (ImageView)findViewById(R.id.ivSellerPhone);
+        ivSellerSMS = (ImageView)findViewById(R.id.ivSellerSMS);
 
         productsRef.child(this.productKey).addValueEventListener(new ValueEventListener() {
             @Override
@@ -61,6 +70,8 @@ public class ProductDetailActivity extends AppCompatActivity {
 
             }
         });
+
+        setOnClickListenersForImageView();
 
         list_images = new ArrayList<>();
 
@@ -128,8 +139,58 @@ public class ProductDetailActivity extends AppCompatActivity {
     @Override
     protected void onStart(){
         super.onStart();
+    }
 
-        final ImageView ivSellerEmail = (ImageView) findViewById(R.id.ivSellerEmail);
+    void onSellerPhone(){
+        Intent callIntent = new Intent(Intent.ACTION_CALL);
+        callIntent.setData(Uri.parse("tel:0377778888"));
+        if (callIntent.resolveActivity(getPackageManager()) != null) {
+            startActivity(callIntent);
+        }
+    }
+
+    void onSellerSMS(){
+        Uri smsUri = Uri.parse("tel:" + "0377778888");
+        Intent intent = new Intent(Intent.ACTION_VIEW, smsUri);
+        intent.putExtra("address", "0377778888");
+        intent.putExtra("sms_body", "");
+        intent.setType("vnd.android-dir/mms-sms");//here setType will set the previous data null.
+        if (intent.resolveActivity(getPackageManager()) != null) {
+            startActivity(intent);
+        }
+    }
+
+    void onSellerProfile(){
+        Intent intent = new Intent(this, SellerProfileActivity.class);
+        ImageView ivProfileImage = (ImageView) findViewById(R.id.ivProfileImage);
+        User u = (User) ivProfileImage.getTag();
+        intent.putExtra("user", Parcels.wrap(u));
+        intent.putExtra("userId", Parcels.wrap(product.getSellerId()));
+        startActivity(intent);
+    }
+
+    private void setOnClickListenersForImageView() {
+        ivSellerPhone.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                onSellerPhone();
+            }
+        });
+
+        ivSellerSMS.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                onSellerSMS();
+            }
+        });
+
+        ivSellerEmail.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+
+            }
+        });
+
         ivSellerEmail.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -155,34 +216,5 @@ public class ProductDetailActivity extends AppCompatActivity {
             }
         });
     }
-
-    void onSellerPhone(View view){
-        Intent callIntent = new Intent(Intent.ACTION_CALL);
-        callIntent.setData(Uri.parse("tel:0377778888"));
-        if (callIntent.resolveActivity(getPackageManager()) != null) {
-            startActivity(callIntent);
-        }
-    }
-
-    void onSellerSMS(View view){
-        Uri smsUri = Uri.parse("tel:" + "0377778888");
-        Intent intent = new Intent(Intent.ACTION_VIEW, smsUri);
-        intent.putExtra("address", "0377778888");
-        intent.putExtra("sms_body", "");
-        intent.setType("vnd.android-dir/mms-sms");//here setType will set the previous data null.
-        if (intent.resolveActivity(getPackageManager()) != null) {
-            startActivity(intent);
-        }
-    }
-
-    void onSellerProfile(View view){
-        Intent intent = new Intent(this, SellerProfileActivity.class);
-        ImageView ivProfileImage = (ImageView) findViewById(R.id.ivProfileImage);
-        User u = (User) ivProfileImage.getTag();
-        intent.putExtra("user", Parcels.wrap(u));
-        intent.putExtra("userId", Parcels.wrap(product.getSellerId()));
-        startActivity(intent);
-    }
-
 
 }

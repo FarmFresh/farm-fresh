@@ -3,13 +3,19 @@
     android:layout_height="match_parent"
     xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:tools="http://schemas.android.com/tools"
-    android:fitsSystemWindows="true">
+    android:fitsSystemWindows="true"
+    tools:context=".activities.ProductDetailActivity">
 
     <RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         xmlns:app="http://schemas.android.com/apk/res-auto">
 
+        <include
+            android:id="@+id/toolbar"
+            layout="@layout/toolbar"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content" />
 
         <TextView
             android:layout_width="wrap_content"
@@ -17,7 +23,11 @@
             android:id="@+id/tvSellerName"
             android:text="Seller Name"
             android:textSize="@dimen/seller_name"
-            android:layout_centerHorizontal="true"/>
+            android:layout_below="@+id/toolbar"
+            android:layout_toEndOf="@+id/ivProfileImage"
+            android:textStyle="bold"
+            android:layout_margin="8dp"
+            android:layout_marginLeft="10dp"/>
 
         <com.synnapps.carouselview.CarouselView
             android:id="@+id/carouselView"
@@ -37,10 +47,11 @@
             android:layout_height="50dp"
             android:id="@+id/ivProfileImage"
             android:src="@drawable/user_profile_placeholder"
-            android:layout_alignParentTop="true"
             android:layout_alignParentLeft="true"
             android:layout_alignParentStart="true"
-            android:onClick="onSellerProfile"/>
+            android:onClick="onSellerProfile"
+            android:layout_below="@id/toolbar"
+            android:layout_marginLeft="5dp"/>
 
         <!--<android.support.design.widget.CoordinatorLayout-->
         <!--android:layout_width="match_parent"-->
@@ -68,8 +79,10 @@
             android:layout_height="wrap_content"
             android:orientation="vertical"
             android:id="@+id/lvProductInfo"
+            android:layout_marginLeft="20dp"
+            android:layout_marginRight="20dp"
             android:layout_below="@+id/carouselView"
-            android:layout_margin="20dp">
+            android:layout_alignParentStart="true">
 
             <TextView
                 android:layout_width="wrap_content"

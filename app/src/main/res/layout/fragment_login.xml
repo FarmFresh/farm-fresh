@@ -133,7 +133,7 @@
             android:id="@+id/google_progress"
             android:layout_width="50dp"
             android:layout_height="50dp"
-            android:layout_gravity="center"
+            android:layout_centerInParent="true"
             android:visibility="gone"
             gpb:type="chrome_floating_circles"/>
 

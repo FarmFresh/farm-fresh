@@ -68,13 +68,16 @@
             app:siSquare="true"/>
     </LinearLayout>
     <Button
-        android:paddingTop="20dp"
-        android:layout_width="wrap_content"
+        android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:text="I'm Done"
         android:id="@+id/btnDone"
         android:layout_below="@+id/llImagesRow2"
         android:layout_centerHorizontal="true"
+        android:textAlignment="center"
+        android:textAllCaps="false"
+        android:theme="@style/ThemeOverlay.AppCompat.Dark.ActionBar"
+        android:textSize="16sp"
         android:layout_marginTop="38dp" />
 
 

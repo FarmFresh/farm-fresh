@@ -1,6 +1,5 @@
 package com.farmfresh.farmfresh.fragments;
 
-import android.content.Intent;
 import android.databinding.DataBindingUtil;
 import android.graphics.Bitmap;
 import android.graphics.Color;
@@ -19,7 +18,6 @@ import android.widget.RelativeLayout;
 import android.widget.TextView;
 
 import com.farmfresh.farmfresh.R;
-import com.farmfresh.farmfresh.activities.MainActivity;
 import com.farmfresh.farmfresh.auth.LocationResultReceiver;
 import com.farmfresh.farmfresh.databinding.FragmentUploadProductBinding;
 import com.farmfresh.farmfresh.fragments.ui.models.ImageViewWithProgressBar;
@@ -138,15 +136,7 @@ public class UploadProductFragment extends Fragment {
 
     private void toolBarSetup() {
         Button cancelButton = (Button) getActivity().findViewById(R.id.btnToolBar);
-        cancelButton.setText("Cancel");
-        cancelButton.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                //go to home activity
-                Intent homeActivityIntent = new Intent(getActivity(), MainActivity.class);
-                startActivity(homeActivityIntent);
-            }
-        });
+        cancelButton.setVisibility(View.INVISIBLE);
     }
 
     /**

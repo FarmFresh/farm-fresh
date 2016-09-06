@@ -275,6 +275,18 @@ public class MainActivity extends AppCompatActivity implements FireBaseAuthentic
     }
 
     @Override
+    public void onStart() {
+        super.onStart();
+        mFireBaseAuthentication.addAuthListener();
+    }
+
+    @Override
+    public void onStop() {
+        super.onStop();
+        mFireBaseAuthentication.removeAuthListener();
+    }
+
+    @Override
     protected void onPostCreate(@Nullable Bundle savedInstanceState) {
         super.onPostCreate(savedInstanceState);
         mDrawerToggle.syncState();

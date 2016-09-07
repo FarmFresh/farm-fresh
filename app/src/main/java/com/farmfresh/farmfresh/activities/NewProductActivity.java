@@ -28,7 +28,7 @@ public class NewProductActivity extends AppCompatActivity implements
         getSupportActionBar().setTitle("Add Product Basic Info");
         this.product = new Product();
         ProductInfoFragment profileHeaderFragment = ProductInfoFragment.newInstance(product);
-        getSupportFragmentManager()
+        getFragmentManager()
                 .beginTransaction()
                 .add(R.id.svNewProduct, profileHeaderFragment)
                 .commit();
@@ -47,7 +47,7 @@ public class NewProductActivity extends AppCompatActivity implements
         //load product images fragment
         getSupportActionBar().setTitle("Add Product Images");
         ProductImagesFragment productImagesFragment = ProductImagesFragment.newInstance(product);
-        getSupportFragmentManager()
+        getFragmentManager()
                 .beginTransaction()
                 .replace(R.id.svNewProduct, productImagesFragment)
                 .commit();
@@ -58,7 +58,7 @@ public class NewProductActivity extends AppCompatActivity implements
         this.product = product;
         getSupportActionBar().setTitle("Add New Product");
         UploadProductFragment uploadFragment = UploadProductFragment.newInstance(product);
-        getSupportFragmentManager()
+        getFragmentManager()
                 .beginTransaction()
                 .replace(R.id.svNewProduct, uploadFragment)
                 .commit();

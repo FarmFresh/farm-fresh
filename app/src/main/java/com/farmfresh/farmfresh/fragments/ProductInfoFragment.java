@@ -1,12 +1,12 @@
 package com.farmfresh.farmfresh.fragments;
 
 import android.app.Activity;
+import android.app.Fragment;
 import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.support.design.widget.TextInputEditText;
-import android.support.v4.app.Fragment;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -75,7 +75,7 @@ public class ProductInfoFragment extends Fragment {
         final View view = inflater.inflate(R.layout.fragment_product_info, container, false);
         etName = (TextInputEditText)view.findViewById(R.id.etProductName);
         etName.requestFocus();
-        Helper.showSoftKeyboard(etName, getContext());
+        Helper.showSoftKeyboard(etName, getActivity());
         etDescription = (TextInputEditText)view.findViewById(R.id.etProductDescription);
         etPrice = (TextInputEditText)view.findViewById(R.id.etProductPrice);
         etAddress = (TextInputEditText)view.findViewById(R.id.etProductAddress);

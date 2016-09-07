@@ -6,7 +6,7 @@
     android:background="@color/cardview_light_background">
 
     <ImageView
-        android:id="@+id/ivProductImage"
+        android:id="@+id/ivBottomProductImage"
         android:layout_width="match_parent"
         android:layout_height="200dp"
         android:layout_alignParentStart="true"
@@ -23,19 +23,39 @@
         android:background="@android:color/transparent"/>-->
 
     <TextView
-        android:id="@+id/tvAddress"
+        android:id="@+id/tvProductName"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_below="@+id/ivCar"
         android:layout_marginLeft="10dp"
-        tools:text="Large Text"
-        android:textAppearance="?android:attr/textAppearanceLarge" />
+        tools:text="Product Name"
+        android:textAppearance="?android:attr/textAppearanceMedium" />
+
+    <TextView
+        android:id="@+id/tvStreetAddress"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_below="@+id/tvProductName"
+        android:layout_alignLeft="@+id/tvProductName"
+        android:layout_marginTop="5dp"
+        tools:text="Street Address"
+        android:textAppearance="?android:attr/textAppearanceSmall" />
+
+    <TextView
+        android:id="@+id/tvCityAddress"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_below="@+id/tvStreetAddress"
+        android:layout_alignLeft="@+id/tvStreetAddress"
+        android:layout_marginTop="5dp"
+        tools:text="City Address"
+        android:textAppearance="?android:attr/textAppearanceSmall" />
 
     <ImageView
         android:id="@+id/ivCar"
         android:layout_width="48dp"
         android:layout_height="48dp"
-        android:layout_below="@id/ivProductImage"
+        android:layout_below="@id/ivBottomProductImage"
         android:layout_alignParentEnd="true"
         android:layout_alignParentRight="true"
         android:layout_marginRight="15dp"
@@ -57,9 +77,10 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:textAppearance="?android:attr/textAppearanceMedium"
-        android:text="Medium Text"
+        android:visibility="gone"
+        tools:text="Medium Text"
         android:layout_below="@+id/tvAddress"
         android:layout_alignLeft="@+id/tvAddress"
         android:layout_alignStart="@+id/tvAddress"
-        android:layout_marginTop="10dp" />
+        android:layout_marginTop="5dp" />
 </RelativeLayout>

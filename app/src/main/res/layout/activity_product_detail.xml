@@ -8,7 +8,7 @@
 
     <RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
         android:layout_width="match_parent"
-        android:layout_height="wrap_content"
+        android:layout_height="match_parent"
         xmlns:app="http://schemas.android.com/apk/res-auto">
 
         <include
@@ -76,9 +76,10 @@
             <RelativeLayout
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:layout_centerHorizontal="true" >
+                android:layout_centerHorizontal="true"
+                android:layout_below="@id/tvProductName">
 
-                <EditText
+                <TextView
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:text="$ "
@@ -91,11 +92,12 @@
                 android:text="price"
                 android:id="@+id/tvPrice"
                 android:textSize="15sp"
-                android:layout_margin="10dp"
-                android:layout_toRightOf="@+id/etDollar"/>
+                android:layout_marginLeft="10dp"
+                android:layout_marginRight="10dp"
+                android:layout_centerHorizontal="true" />
 
 
-                <EditText
+                <TextView
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:text="/lb"
@@ -105,14 +107,30 @@
 
             </RelativeLayout>
 
+            <RelativeLayout
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_centerVertical="true"
+                android:layout_margin="10dp">
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Description: "
+                android:id="@+id/tvDes"
+                android:textSize="15sp"/>
+
+
             <TextView
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:id="@+id/tvDescription"
                 android:text="Description"
                 android:textSize="15sp"
-                android:layout_margin="10dp"
-                android:layout_centerVertical="true" />
+                android:layout_marginLeft="10dp"
+                android:layout_alignLeft="@id/tvDes"/>
+
+            </RelativeLayout>
 
         </android.support.v7.widget.LinearLayoutCompat>
 

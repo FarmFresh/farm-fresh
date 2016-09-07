@@ -8,7 +8,6 @@ import android.support.v7.widget.RecyclerView;
 import android.util.Log;
 import android.view.View;
 import android.widget.TextView;
-import android.widget.Toast;
 
 import com.farmfresh.farmfresh.R;
 import com.farmfresh.farmfresh.adapter.SellerProductsAdapter;
@@ -87,7 +86,6 @@ public class SellerProfileActivity extends AppCompatActivity {
                     public void onItemClicked(RecyclerView recyclerView, int position, View v) {
                         Product p = products.get(position);
                         // do it
-                        Toast.makeText(getApplicationContext(), "some message", Toast.LENGTH_SHORT).show();
                         Intent intent = new Intent(getBaseContext(), ProductDetailActivity.class);
                         intent.putExtra(Constants.PRODUCT_KEY, p.getId());
                         startActivity(intent);
@@ -177,10 +175,6 @@ public class SellerProfileActivity extends AppCompatActivity {
     void getImageUrl(Product product){
         products.add(product);
         adapter.notifyItemInserted(products.size()-1);
-    }
-
-    void onClickProduct(View view){
-        Toast.makeText(getApplicationContext(), "some message", Toast.LENGTH_SHORT).show();
     }
 
 

@@ -43,7 +43,7 @@
         android:layout_toRightOf="@+id/ivProductImage"
         android:layout_below="@+id/tvName">
 
-        <EditText
+        <TextView
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:text="$ "
@@ -61,7 +61,7 @@
             android:layout_toEndOf="@+id/etDollar" />
 
 
-        <EditText
+        <TextView
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:text="/lb"

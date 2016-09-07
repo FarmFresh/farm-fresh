@@ -23,12 +23,12 @@ public class AddMarkerOnLongClick implements OnMap.Listener {
 
     @Override
     public void onMap(final GoogleMap map) {
-        map.setOnMapLongClickListener(new GoogleMap.OnMapLongClickListener() {
+        /*map.setOnMapLongClickListener(new GoogleMap.OnMapLongClickListener() {
             @Override
             public void onMapLongClick(LatLng latLng) {
                 showAlertDialog(map, latLng);
             }
-        });
+        });*/
     }
 
     private void showAlertDialog(final GoogleMap map, final LatLng latLng) {

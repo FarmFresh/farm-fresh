@@ -28,6 +28,7 @@ import android.view.View;
 import android.widget.EditText;
 import android.widget.ImageView;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import com.android.volley.Request;
 import com.android.volley.RequestQueue;
@@ -57,6 +58,7 @@ import com.farmfresh.farmfresh.helper.OnClient;
 import com.farmfresh.farmfresh.helper.OnMap;
 import com.farmfresh.farmfresh.helper.OnPermission;
 import com.farmfresh.farmfresh.helper.PlaceManager;
+import com.farmfresh.farmfresh.models.MyMarker;
 import com.farmfresh.farmfresh.models.Product;
 import com.farmfresh.farmfresh.models.User;
 import com.farmfresh.farmfresh.utils.Constants;
@@ -99,7 +101,7 @@ import butterknife.BindView;
 import butterknife.ButterKnife;
 
 public class MainActivity extends AppCompatActivity implements FireBaseAuthentication.LoginListener,
-        GoogleApiClient.OnConnectionFailedListener,TrackLocation.Listener, GeoQueryEventListener, LoginFragment.SignUpListener {
+        GoogleApiClient.OnConnectionFailedListener, TrackLocation.Listener, GeoQueryEventListener, LoginFragment.SignUpListener {
 
     public final static String TAG = MainActivity.class.getSimpleName();
     private DrawerLayout mDrawer;
@@ -134,9 +136,11 @@ public class MainActivity extends AppCompatActivity implements FireBaseAuthentic
     private BottomSheetBehavior mBottomSheetBehavior;
 
     final ArrayList<Product> productList = new ArrayList<Product>();
-    HashMap<String, Product> productMap = new HashMap<String, Product>();
+    //    HashMap<String, Product> productMap = new HashMap<String, Product>();
     ArrayList<PlaceManager.Place> placeList = new ArrayList<PlaceManager.Place>();
-    HashMap<String, Marker> markers = new HashMap<String, Marker>();
+    HashMap<String, MyMarker> markers = new HashMap<String, MyMarker>();
+
+    final StringBuffer queryBuf = new StringBuffer();
 
     @BindView(R.id.bottom_sheet)
     View bottomSheet;
@@ -309,7 +313,7 @@ public class MainActivity extends AppCompatActivity implements FireBaseAuthentic
             @Override
             public boolean onQueryTextSubmit(String query) {
                 searchView.clearFocus();
-                placeList.clear();
+                /*placeList.clear();
 
                 for (String key : productMap.keySet()) {
                     Product product = productMap.get(key);
@@ -318,13 +322,40 @@ public class MainActivity extends AppCompatActivity implements FireBaseAuthentic
                     }
                 }
 
-                displayProduct.populateMap(true);
+                displayProduct.populateMap(true);*/
+                queryBuf.delete(0, queryBuf.length());
+                queryBuf.append(query);
+
+                for (String key : markers.keySet()) {
+                    MyMarker myMarker = markers.get(key);
+                    if (myMarker.isInRange()) {
+                        Product product = (Product) myMarker.getMarker().getTag();
+                        if (showMarker(product)) {
+                            myMarker.getMarker().setVisible(true);
+                        } else {
+                            myMarker.getMarker().setVisible(false);
+                        }
+                    }
+                }
+
                 return true;
             }
 
             @Override
             public boolean onQueryTextChange(String newText) {
-                return false;
+                if (newText.length() == 0) {
+                    onQueryTextSubmit("");
+                }
+                return true;
+            }
+
+        });
+
+        searchView.setOnCloseListener(new SearchView.OnCloseListener() {
+            @Override
+            public boolean onClose() {
+                Toast.makeText(MainActivity.this, "Closed", Toast.LENGTH_SHORT).show();
+                return true;
             }
         });
 
@@ -535,19 +566,20 @@ public class MainActivity extends AppCompatActivity implements FireBaseAuthentic
                 Bundle bundle = new Bundle();
 
                 productList.clear();
-                for (String key : productMap.keySet()) {
-                    if (markers.get(key).isVisible()){
-                        Product product = productMap.get(key);
+                for (String key : markers.keySet()) {
+                    if (markers.get(key).getMarker().isVisible()) {
+//                        Product product = productMap.get(key);
+                        Product product = (Product) markers.get(key).getMarker().getTag();
                         float dist = getProductDistance(product, productDistance);
-                        product.setDistance(String.format("%.2f",dist)+" mi");
-                        productList.add(productMap.get(key));
+                        product.setDistance(String.format("%.2f", dist) + " mi");
+                        productList.add(product);
                     }
                 }
                 bundle.putParcelable("productList", Parcels.wrap(productList));
 
                 mBottomSheetBehavior.setState(BottomSheetBehavior.STATE_COLLAPSED);
                 mBottomSheetBehavior.setPeekHeight(1);
-                Log.d("bottomsheetstate",mBottomSheetBehavior.getState()+"");
+                Log.d("bottomsheetstate", mBottomSheetBehavior.getState() + "");
 
                 listItemsFragment.setArguments(bundle);
                 android.app.FragmentTransaction ft = getFragmentManager().beginTransaction().setCustomAnimations(
@@ -568,7 +600,7 @@ public class MainActivity extends AppCompatActivity implements FireBaseAuthentic
             Product product = (Product) marker.getTag();
 
             ivProductImage.setImageResource(0);
-            if(product.getImageUrls() != null && product.getImageUrls().size() !=0){
+            if (product.getImageUrls() != null && product.getImageUrls().size() != 0) {
                 Picasso.with(MainActivity.this)
                         .load(product.getImageUrls().get(0))
                         .into(ivProductImage);
@@ -577,11 +609,10 @@ public class MainActivity extends AppCompatActivity implements FireBaseAuthentic
             Log.d("Markerclicked", product.getName() + "");
 
 
-
 //            String url = "https://maps.googleapis.com/maps/api/distancematrix/json?units=imperial&origins="+User.latLng.latitude+","+User.latLng.longitude+"&destinations="+product.getL().get(0)+","+product.getL().get(1)+"&mode=driving&key="+ Keys.GOOGLE_API_KEY;
 //            Log.d("volley-url",url);
 
-            String url = Constants.GOOGLE_DISTANCE.replace(Constants.USER_LATITUDE,User.latLng.latitude+"").replace(Constants.USER_LONGITUDE,User.latLng.longitude+"").replace(Constants.DESTINATION_LATITUDE,product.getL().get(0)+"").replace(Constants.DESTINATION_LONGITUDE,product.getL().get(1)+"").replace(Constants.GOOGLE_API_KEY,Keys.GOOGLE_API_KEY);
+            String url = Constants.GOOGLE_DISTANCE.replace(Constants.USER_LATITUDE, User.latLng.latitude + "").replace(Constants.USER_LONGITUDE, User.latLng.longitude + "").replace(Constants.DESTINATION_LATITUDE, product.getL().get(0) + "").replace(Constants.DESTINATION_LONGITUDE, product.getL().get(1) + "").replace(Constants.GOOGLE_API_KEY, Keys.GOOGLE_API_KEY);
 
             updateDistance(url);
 
@@ -610,7 +641,7 @@ public class MainActivity extends AppCompatActivity implements FireBaseAuthentic
                     }, new Response.ErrorListener() {
                 @Override
                 public void onErrorResponse(VolleyError error) {
-                    Log.d("volley-error",error.toString());
+                    Log.d("volley-error", error.toString());
                 }
             });
             queue.add(stringRequest);
@@ -676,9 +707,9 @@ public class MainActivity extends AppCompatActivity implements FireBaseAuthentic
         return new CameraPosition.Builder().target(latLng).zoom(14).build();
     }
 
-    private float getProductDistance(Product product, float [] results){
+    private float getProductDistance(Product product, float[] results) {
         Location.distanceBetween(User.latLng.latitude, User.latLng.longitude, product.getL().get(0), product.getL().get(1), results);
-        return(float) (results[0]/1600.00);
+        return (float) (results[0] / 1600.00);
     }
 
     private double zoomLevelToRadius(double zoomLevel) {
@@ -686,20 +717,34 @@ public class MainActivity extends AppCompatActivity implements FireBaseAuthentic
         return 16384000 / Math.pow(2, zoomLevel);
     }
 
+    private boolean showMarker(Product product) {
+        Log.d("Product-key", product.getId());
+        if (product.getName() != null && product.getName().length() != 0) {
+            if (queryBuf.length() == 0 || product.getName().toUpperCase().indexOf(queryBuf.toString().toUpperCase()) != -1)
+                return true;
+        }
+        return false;
+    }
+
     @Override
     public void onKeyEntered(final String key, GeoLocation location) {
         Log.d("entered", key + " " + location.latitude + " " + location.longitude);
-        if (!productMap.containsKey(key)) {
+        if (!markers.containsKey(key)) {
             mFirebaseDatabaseReference.child("products").child(key).addListenerForSingleValueEvent(new ValueEventListener() {
                 @Override
                 public void onDataChange(DataSnapshot dataSnapshot) {
                     Product product = dataSnapshot.getValue(Product.class);
                     product.setId(key);
-                    productMap.put(key, product);
+//                    productMap.put(key, product);
+                    MyMarker myMarker = new MyMarker();
                     Marker marker = adder.addTo(displayProduct.map, product.getName(), new LatLng(product.getL().get(0), product.getL().get(1)), true);
-                    markers.put(key, marker);
+                    myMarker.setMarker(marker);
+                    myMarker.setInRange(true);
                     marker.setTag(product);
-                    marker.setVisible(true);
+                    if (!showMarker(product)) {
+                        marker.setVisible(false);
+                    }
+                    markers.put(key, myMarker);
 
                     Log.d("key ", key + " " + product.getId() + " " + product.getG() + " " + product.getName() + " " + product.getL().get(0) + " " + product.getL().get(1));
                 }
@@ -710,19 +755,26 @@ public class MainActivity extends AppCompatActivity implements FireBaseAuthentic
                 }
             });
         } else {
-            markers.get(key).setVisible(true);
+            Marker marker = markers.get(key).getMarker();
+            Product product = (Product) marker.getTag();
+            markers.get(key).setInRange(true);
+
+            if (showMarker(product)) {
+                marker.setVisible(true);
+            } else {
+                marker.setVisible(false);
+            }
         }
     }
 
     @Override
     public void onKeyExited(String key) {
-        Log.d("exited", key);
-//        productMap.remove(key);
-        Marker marker = markers.get(key);
+//        Log.d("exited", key);
+        MyMarker myMarker = markers.get(key);
+        Marker marker = myMarker.getMarker();
         if (marker != null) {
             marker.setVisible(false);
-//            marker.remove();
-//            markers.remove(key);
+            myMarker.setInRange(false);
         }
     }
 
@@ -732,16 +784,16 @@ public class MainActivity extends AppCompatActivity implements FireBaseAuthentic
         mFirebaseDatabaseReference.child("products").child(key).addValueEventListener(new ValueEventListener() {
             @Override
             public void onDataChange(DataSnapshot dataSnapshot) {
-                Product product = (Product) dataSnapshot.getValue(Product.class);
+                Product product = dataSnapshot.getValue(Product.class);
                 product.setId(key);
-                productMap.put(key, product);
-                Marker marker = markers.get(key);
-                if (marker != null) {
+                Marker marker = markers.get(key).getMarker();
+                /*if (marker != null) {
                     marker.remove();
                     markers.remove(key);
-                }
-                marker = adder.addTo(displayProduct.map, product.getName(), new LatLng(product.getL().get(0), product.getL().get(1)), true);
-                markers.put(key, marker);
+                }*/
+                marker.setPosition(new LatLng(product.getL().get(0), product.getL().get(1)));
+//                marker = adder.addTo(displayProduct.map, product.getName(), new LatLng(product.getL().get(0), product.getL().get(1)), true);
+//                markers.put(key, marker);
                 marker.setTag(product);
             }
 

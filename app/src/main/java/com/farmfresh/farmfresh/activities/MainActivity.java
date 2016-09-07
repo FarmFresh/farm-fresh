@@ -1,6 +1,8 @@
 package com.farmfresh.farmfresh.activities;
 
 import android.Manifest;
+import android.app.Fragment;
+import android.app.FragmentTransaction;
 import android.content.Intent;
 import android.content.res.ColorStateList;
 import android.content.res.Configuration;
@@ -12,8 +14,6 @@ import android.support.annotation.Nullable;
 import android.support.design.widget.BottomSheetBehavior;
 import android.support.design.widget.FloatingActionButton;
 import android.support.design.widget.NavigationView;
-import android.support.v4.app.Fragment;
-import android.support.v4.app.FragmentTransaction;
 import android.support.v4.view.MenuItemCompat;
 import android.support.v4.widget.DrawerLayout;
 import android.support.v7.app.ActionBarDrawerToggle;
@@ -401,7 +401,7 @@ public class MainActivity extends AppCompatActivity implements FireBaseAuthentic
         updateNavigationHeader();
         updateNavigationMenuItems();
         //goto home page after successful login
-        getSupportFragmentManager().popBackStack();
+        getFragmentManager().popBackStack();
         setTitle("Home");
     }
 
@@ -459,7 +459,7 @@ public class MainActivity extends AppCompatActivity implements FireBaseAuthentic
                 return;
         }
 
-        final FragmentTransaction fragmentTransaction = getSupportFragmentManager().beginTransaction();
+        final FragmentTransaction fragmentTransaction = getFragmentManager().beginTransaction();
         if (fragment != null) {
             fragmentTransaction
                     .replace(R.id.flContent, fragment, tag).
@@ -834,7 +834,7 @@ public class MainActivity extends AppCompatActivity implements FireBaseAuthentic
 
     @Override
     public void onSignup() {
-        getSupportFragmentManager().beginTransaction()
+        getFragmentManager().beginTransaction()
                 .replace(R.id.flContent, EmailPasswordSignUpFragment.newInstance(this))
                 .commit();
     }

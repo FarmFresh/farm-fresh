@@ -77,6 +77,7 @@
                                 android:layout_width="wrap_content"
                                 android:layout_height="wrap_content"
                                 android:layout_marginLeft="10dp"
+                                android:textStyle="bold|italic"
                                 tools:text="Product Name"
                                 android:textAppearance="?android:attr/textAppearanceMedium" />
 
@@ -96,7 +97,7 @@
                                 android:layout_height="wrap_content"
                                 android:layout_below="@+id/tvStreetAddress"
                                 android:layout_alignLeft="@+id/tvStreetAddress"
-                                android:layout_marginTop="5dp"
+                                android:layout_marginTop="2dp"
                                 tools:text="City Address"
                                 android:textAppearance="?android:attr/textAppearanceSmall" />
 

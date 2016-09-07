@@ -636,7 +636,11 @@ public class MainActivity extends AppCompatActivity implements FireBaseAuthentic
             String streetAddress = address.substring(0,address.indexOf(","));
             String cityAddress = address.substring(address.indexOf(",")+1).trim();
 
-            tvProductName.setText(product.getName());
+            if(product.getName() != null ) {
+                tvProductName.setText(product.getName().toUpperCase());
+            }else{
+                tvProductName.setText("");
+            }
             tvStreetAddress.setText(streetAddress);
             tvCityAddress.setText(cityAddress);
 

@@ -3,6 +3,7 @@
 # farm-fresh
 app/src/main/java/com/farmfresh/farmfresh/schema/
 app/src/main/java/com/farmfresh/farmfresh/utils/Keys.java
+app/src/main/res/layout/bottomsheet.xml
 *.json
 
 # built application files

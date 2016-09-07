@@ -28,7 +28,6 @@ import android.view.View;
 import android.widget.EditText;
 import android.widget.ImageView;
 import android.widget.TextView;
-import android.widget.Toast;
 
 import com.android.volley.Request;
 import com.android.volley.RequestQueue;
@@ -149,11 +148,17 @@ public class MainActivity extends AppCompatActivity implements FireBaseAuthentic
     @BindView(R.id.ivProductImage)
     ImageView ivProductImage;
 
+    @BindView(R.id.tvProductName)
+    TextView tvProductName;
+
     @BindView(R.id.fabCar)
     FloatingActionButton fabCar;
 
-    @BindView(R.id.tvAddress)
-    TextView tvAddress;
+    @BindView(R.id.tvStreetAddress)
+    TextView tvStreetAddress;
+
+    @BindView(R.id.tvCityAddress)
+    TextView tvCityAddress;
 
     @BindView(R.id.tvDuration)
     TextView tvDuration;
@@ -246,11 +251,13 @@ public class MainActivity extends AppCompatActivity implements FireBaseAuthentic
                     fabCar.setVisibility(View.INVISIBLE);
                     fabCar.setBackgroundTintList(ColorStateList.valueOf(Color.parseColor("#0084B4")));
                     fabCar.setImageResource(R.drawable.car_collapsed);
+                    tvDescription.setVisibility(View.GONE);
                 } else if (newState == BottomSheetBehavior.STATE_EXPANDED) {
                     ivProductImage.setVisibility(View.VISIBLE);
                     fabCar.setVisibility(View.VISIBLE);
                     fabCar.setBackgroundTintList(ColorStateList.valueOf(Color.parseColor("#FFFFFF")));
                     fabCar.setImageResource(R.drawable.car_expanded);
+                    tvDescription.setVisibility(View.VISIBLE);
                 }
             }
 
@@ -373,7 +380,7 @@ public class MainActivity extends AppCompatActivity implements FireBaseAuthentic
         searchView.setOnCloseListener(new SearchView.OnCloseListener() {
             @Override
             public boolean onClose() {
-                Toast.makeText(MainActivity.this, "Closed", Toast.LENGTH_SHORT).show();
+//                Toast.makeText(MainActivity.this, "Closed", Toast.LENGTH_SHORT).show();
                 return true;
             }
         });
@@ -624,9 +631,20 @@ public class MainActivity extends AppCompatActivity implements FireBaseAuthentic
                         .load(product.getImageUrls().get(0))
                         .into(ivProductImage);
             }
+            tvDescription.setText(product.getDescription());
+            String address = product.getAddress();
+            String streetAddress = address.substring(0,address.indexOf(","));
+            String cityAddress = address.substring(address.indexOf(",")+1).trim();
+
+            if(product.getName() != null ) {
+                tvProductName.setText(product.getName().toUpperCase());
+            }else{
+                tvProductName.setText("");
+            }
+            tvStreetAddress.setText(streetAddress);
+            tvCityAddress.setText(cityAddress);
 
             Log.d("Markerclicked", product.getName() + "");
-
 
 //            String url = "https://maps.googleapis.com/maps/api/distancematrix/json?units=imperial&origins="+User.latLng.latitude+","+User.latLng.longitude+"&destinations="+product.getL().get(0)+","+product.getL().get(1)+"&mode=driving&key="+ Keys.GOOGLE_API_KEY;
 //            Log.d("volley-url",url);

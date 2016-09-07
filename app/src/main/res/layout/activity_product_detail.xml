@@ -60,30 +60,8 @@
             android:src="@drawable/user_profile_placeholder"
             android:layout_alignParentLeft="true"
             android:layout_alignParentStart="true"
-            android:onClick="onSellerProfile"
             android:layout_below="@id/detailed_product_toolbar"
             android:layout_marginLeft="5dp"/>
-
-        <!--<android.support.design.widget.CoordinatorLayout-->
-        <!--android:layout_width="match_parent"-->
-        <!--android:layout_height="match_parent"-->
-        <!--android:layout_alignParentRight="true"-->
-        <!--android:layout_alignParentEnd="true"-->
-        <!--android:layout_below="@+id/ivProfileImage"-->
-        <!--android:paddingTop="15dp"-->
-        <!--android:id="@+id/imageView">-->
-
-        <!--<android.support.design.widget.FloatingActionButton-->
-        <!--android:layout_width="wrap_content"-->
-        <!--android:layout_height="wrap_content"-->
-        <!--android:layout_gravity="top|right"-->
-        <!--android:id="@+id/fabMenu"-->
-        <!--android:alpha="1"-->
-        <!--android:layout_margin="16dp"-->
-        <!--android:src="@android:drawable/ic_dialog_info"-->
-        <!--app:layout_anchorGravity="top|right|end" />-->
-
-        <!--</android.support.design.widget.CoordinatorLayout>-->
 
         <android.support.v7.widget.LinearLayoutCompat
             android:layout_width="wrap_content"
@@ -138,7 +116,6 @@
             android:layout_width="40dp"
             android:layout_height="40dp"
             android:id="@+id/ivSellerSMS"
-            android:onClick="onSellerSMS"
             android:src="@drawable/pink_sms_icon"
             android:layout_alignTop="@+id/lvContact"/>
 
@@ -146,7 +123,6 @@
             android:layout_width="40dp"
             android:layout_height="40dp"
             android:id="@+id/ivSellerPhone"
-            android:onClick="onSellerPhone"
             android:src="@drawable/pink_phone_icon"
             android:layout_alignTop="@+id/ivSellerSMS"
             android:layout_centerHorizontal="true"

@@ -52,7 +52,6 @@ import com.farmfresh.farmfresh.auth.GoogleAuthentication;
 import com.farmfresh.farmfresh.fragments.EmailPasswordSignUpFragment;
 import com.farmfresh.farmfresh.fragments.ListItemsFragment;
 import com.farmfresh.farmfresh.fragments.LoginFragment;
-import com.farmfresh.farmfresh.fragments.ProfileFragment;
 import com.farmfresh.farmfresh.helper.OnActivity;
 import com.farmfresh.farmfresh.helper.OnClient;
 import com.farmfresh.farmfresh.helper.OnMap;
@@ -242,7 +241,7 @@ public class MainActivity extends AppCompatActivity implements FireBaseAuthentic
             @Override
             public void onStateChanged(View bottomSheet, int newState) {
                 if (newState == BottomSheetBehavior.STATE_COLLAPSED) {
-                    mBottomSheetBehavior.setPeekHeight(0);
+                    mBottomSheetBehavior.setPeekHeight(1);
                     ivProductImage.setVisibility(View.GONE);
                     fabCar.setVisibility(View.INVISIBLE);
                     fabCar.setBackgroundTintList(ColorStateList.valueOf(Color.parseColor("#0084B4")));
@@ -442,13 +441,14 @@ public class MainActivity extends AppCompatActivity implements FireBaseAuthentic
                 break;
             case R.id.menuHome:
                 title = "Home";
-//                fragment = supportMapFragment;
+                fragment = supportMapFragment;
                 tag = SupportMapFragment.class.getSimpleName();
                 break;
             case R.id.menuProfile:
                 title = "Profile";
-                fragment = new ProfileFragment();
-                tag = ProfileFragment.class.getSimpleName();
+                Intent intent = new Intent(this, SellerProfileActivity.class);
+                intent.putExtra("userId", Parcels.wrap(mCurrentUser.getUid()));
+                startActivity(intent);
                 break;
             case R.id.menuSelling:
                 Intent newProductIntent = new Intent(this, NewProductActivity.class);
@@ -596,8 +596,8 @@ public class MainActivity extends AppCompatActivity implements FireBaseAuthentic
                 }
                 bundle.putParcelable("productList", Parcels.wrap(productList));
 
-                mBottomSheetBehavior.setState(BottomSheetBehavior.STATE_COLLAPSED);
                 mBottomSheetBehavior.setPeekHeight(1);
+                mBottomSheetBehavior.setState(BottomSheetBehavior.STATE_COLLAPSED);
                 Log.d("bottomsheetstate", mBottomSheetBehavior.getState() + "");
 
                 listItemsFragment.setArguments(bundle);

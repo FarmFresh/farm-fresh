@@ -80,7 +80,7 @@ public class SellerProfileActivity extends AppCompatActivity {
 //
         getSellerInfo(userId);
 
-        Log.d("DEBUG:", "getSellerListing");
+        Log.d("DEBUG1:", "getSellerListing");
         System.out.println("userId: " + userId);
         getSellerListing(userId);
 

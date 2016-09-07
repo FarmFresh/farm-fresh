@@ -140,6 +140,8 @@ public class MainActivity extends AppCompatActivity implements FireBaseAuthentic
     ArrayList<PlaceManager.Place> placeList = new ArrayList<PlaceManager.Place>();
     HashMap<String, MyMarker> markers = new HashMap<String, MyMarker>();
 
+    ListItemsFragment listItemsFragment = new ListItemsFragment();
+
     final StringBuffer queryBuf = new StringBuffer();
 
     @BindView(R.id.bottom_sheet)
@@ -336,6 +338,24 @@ public class MainActivity extends AppCompatActivity implements FireBaseAuthentic
                             myMarker.getMarker().setVisible(false);
                         }
                     }
+                }
+
+                android.app.Fragment fragment = getFragmentManager().findFragmentByTag("listItemsFragment");
+                Log.d("fragment==null",(fragment==null)+"");
+
+                if(fragment != null){
+                    float[] productDistance = new float[1];
+                    productList.clear();
+                    for (String key : markers.keySet()) {
+                        if (markers.get(key).getMarker().isVisible()) {
+//                        Product product = productMap.get(key);
+                            Product product = (Product) markers.get(key).getMarker().getTag();
+                            float dist = getProductDistance(product, productDistance);
+                            product.setDistance(String.format("%.2f", dist) + " mi");
+                            productList.add(product);
+                        }
+                    }
+                    listItemsFragment.notifyListUpdate(productList);
                 }
 
                 return true;
@@ -562,7 +582,6 @@ public class MainActivity extends AppCompatActivity implements FireBaseAuthentic
 
             if (distance < radius) {
                 Log.d("New User Location ", latLng + " distance " + distance);
-                ListItemsFragment listItemsFragment = new ListItemsFragment();
                 Bundle bundle = new Bundle();
 
                 productList.clear();
@@ -587,7 +606,7 @@ public class MainActivity extends AppCompatActivity implements FireBaseAuthentic
                         R.animator.card_flip_right_out,
                         R.animator.card_flip_left_in,
                         R.animator.card_flip_left_out);
-                ft.replace(R.id.flContent, listItemsFragment).addToBackStack("listItemsFragment");
+                ft.replace(R.id.flContent, listItemsFragment,"listItemsFragment").addToBackStack("listItemsFragment");
                 ft.commit();
             }
         }

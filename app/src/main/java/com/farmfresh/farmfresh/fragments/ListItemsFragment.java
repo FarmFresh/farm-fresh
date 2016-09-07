@@ -38,6 +38,11 @@ public class ListItemsFragment extends Fragment {
         productsAdapter = new ProductsAdapter(getActivity(),productList);
     }
 
+    public void notifyListUpdate(List<Product> productList){
+        this.productList = productList;
+        productsAdapter.notifyDataSetChanged();
+    }
+
     @Nullable
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {

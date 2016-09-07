@@ -4,8 +4,7 @@
     <RelativeLayout
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        xmlns:app="http://schemas.android.com/tools"
-        android:background="@drawable/product_info_shape">
+        xmlns:app="http://schemas.android.com/tools">
 
         <LinearLayout
             android:id="@+id/llSocial"
@@ -14,9 +13,7 @@
             android:gravity="center_vertical"
             android:orientation="vertical"
             android:layout_marginTop="30dp"
-            android:padding="@dimen/activity_horizontal_margin"
-            android:background="@drawable/product_info_shape"
-            >
+            android:padding="@dimen/activity_horizontal_margin">
             <include
                 android:layout_gravity="center_horizontal"
                 android:layout_height="wrap_content"
@@ -48,7 +45,6 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:padding="@dimen/activity_horizontal_margin"
-            android:background="@drawable/product_info_shape"
             android:layout_alignEnd="@+id/orDivider">
 
             <android.support.design.widget.TextInputLayout
@@ -67,7 +63,6 @@
                     android:ems="10"
                     android:inputType="textEmailAddress"
                     android:imeOptions="actionNext"
-                    android:background="@drawable/product_info_shape"
                     android:hint="@string/user_email" />
 
             </android.support.design.widget.TextInputLayout>
@@ -88,7 +83,6 @@
                     android:ems="10"
                     android:inputType="textPassword"
                     android:imeOptions="actionDone"
-                    android:background="@drawable/product_info_shape"
                     android:hint="@string/user_password"
                     android:layout_alignStart="@+id/user_password_text_input_layout"/>
 

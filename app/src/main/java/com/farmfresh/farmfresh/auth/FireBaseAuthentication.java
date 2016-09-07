@@ -73,7 +73,6 @@ public class FireBaseAuthentication {
                 }
             }
         };
-        mAuth.addAuthStateListener(mAuthListener);
     }
 
     public void addAuthListener() {

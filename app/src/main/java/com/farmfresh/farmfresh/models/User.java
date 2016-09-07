@@ -2,11 +2,14 @@ package com.farmfresh.farmfresh.models;
 
 import com.google.android.gms.maps.model.LatLng;
 
+import org.parceler.Parcel;
+
 import java.util.ArrayList;
 
 /**
  * Created by lucerne on 8/20/16.
  */
+@Parcel
 public class User {
     private String id;
     private String displayName;
@@ -17,6 +20,9 @@ public class User {
     private ArrayList<String> productSold;
     private String userCurrentAddress;
     public static LatLng latLng;
+    private String phone;
+
+    public User() {};
 
     public void setId(String id) {
         this.id = id;
@@ -25,7 +31,6 @@ public class User {
     public void setDisplayName(String displayName) {
         this.displayName = displayName;
     }
-
 
     public void setEmail(String email) {
         this.email = email;
@@ -81,5 +86,13 @@ public class User {
 
     public void setUserCurrentAddress(String userCurrentAddress) {
         this.userCurrentAddress = userCurrentAddress;
+    }
+
+    public String getPhone() {
+        return phone;
+    }
+
+    public void setPhone(String phone) {
+        this.phone = phone;
     }
 }

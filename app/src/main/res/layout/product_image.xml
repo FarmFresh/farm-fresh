@@ -18,8 +18,8 @@
             android:layout_height="80dp"
             android:layout_marginLeft="10dp"
             android:layout_marginTop="10dp"
-            tools:src="@drawable/home_icon"
-            android:src="@drawable/home_icon"/>
+            tools:src="@drawable/product_image_placeholder"
+            android:src="@drawable/product_image_placeholder"/>
 
         <TextView
             android:id="@+id/tvName"

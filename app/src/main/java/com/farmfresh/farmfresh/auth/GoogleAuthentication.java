@@ -3,7 +3,6 @@ package com.farmfresh.farmfresh.auth;
 import android.content.Intent;
 import android.support.v4.app.FragmentActivity;
 
-import com.farmfresh.farmfresh.R;
 import com.farmfresh.farmfresh.utils.Constants;
 import com.google.android.gms.auth.api.Auth;
 import com.google.android.gms.auth.api.signin.GoogleSignInAccount;
@@ -47,7 +46,8 @@ public class GoogleAuthentication extends AppAuthentication{
     private void setup() {
         // Configure Google Sign In
         GoogleSignInOptions gso = new GoogleSignInOptions.Builder(GoogleSignInOptions.DEFAULT_SIGN_IN)
-                .requestIdToken(mActivity.getString(R.string.default_web_client_id))
+//                .requestIdToken(mActivity.getString(R.string.default_web_client_id))
+                .requestIdToken("367269641947-vrspbt3tchd0osu2voqssa18vr5j1deb.apps.googleusercontent.com")
                 .requestEmail()
                 .build();
 

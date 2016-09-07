@@ -2,20 +2,42 @@
 <ScrollView android:layout_width="match_parent"
     android:layout_height="match_parent"
     xmlns:android="http://schemas.android.com/apk/res/android"
-    xmlns:tools="http://schemas.android.com/tools">
+    xmlns:tools="http://schemas.android.com/tools"
+    android:fitsSystemWindows="true"
+    tools:context=".activities.ProductDetailActivity">
 
     <RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         xmlns:app="http://schemas.android.com/apk/res-auto">
 
+        <include
+            android:id="@+id/detailed_product_toolbar"
+            layout="@layout/toolbar"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content" />
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Item"
+            android:textColor="#FFFFFF"
+            android:layout_centerHorizontal="true"
+            android:textSize="25dp"
+            android:layout_margin="10dp"
+            />
 
         <TextView
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:id="@+id/tvSellerName"
             android:text="Seller Name"
-            android:layout_centerHorizontal="true"/>
+            android:textSize="@dimen/seller_name"
+            android:layout_below="@+id/detailed_product_toolbar"
+            android:layout_toEndOf="@+id/ivProfileImage"
+            android:textStyle="bold"
+            android:layout_margin="8dp"
+            android:layout_marginLeft="10dp"/>
 
         <com.synnapps.carouselview.CarouselView
             android:id="@+id/carouselView"
@@ -28,101 +50,127 @@
             app:strokeColor="#FF777777"
             app:strokeWidth="1dp"
             app:autoPlay="false"
+            app:pageTransformer="flow"
             android:layout_below="@+id/tvSellerName"/>
 
-        <ImageView
-            android:layout_width="30dp"
-            android:layout_height="30dp"
+        <de.hdodenhof.circleimageview.CircleImageView
+            android:layout_width="50dp"
+            android:layout_height="50dp"
             android:id="@+id/ivProfileImage"
-            android:src="@drawable/tweet_compose"
-            android:layout_alignParentTop="true"
+            android:src="@drawable/user_profile_placeholder"
             android:layout_alignParentLeft="true"
-            android:layout_alignParentStart="true" />
+            android:layout_alignParentStart="true"
+            android:layout_below="@id/detailed_product_toolbar"
+            android:layout_marginLeft="5dp"/>
 
-        <TextView
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:id="@+id/tvProductName"
-            android:text="Product Name"
-            android:layout_below="@+id/carouselView"
-            android:layout_centerHorizontal="true" />
+        <!--<android.support.design.widget.CoordinatorLayout-->
+        <!--android:layout_width="match_parent"-->
+        <!--android:layout_height="match_parent"-->
+        <!--android:layout_alignParentRight="true"-->
+        <!--android:layout_alignParentEnd="true"-->
+        <!--android:layout_below="@+id/ivProfileImage"-->
+        <!--android:paddingTop="15dp"-->
+        <!--android:id="@+id/imageView">-->
 
-        <TextView
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:text="price"
-            android:id="@+id/tvPrice"
-            android:layout_below="@+id/tvProductName"
-            android:layout_alignParentLeft="true"
-            android:layout_alignParentStart="true" />
+        <!--<android.support.design.widget.FloatingActionButton-->
+        <!--android:layout_width="wrap_content"-->
+        <!--android:layout_height="wrap_content"-->
+        <!--android:layout_gravity="top|right"-->
+        <!--android:id="@+id/fabMenu"-->
+        <!--android:alpha="1"-->
+        <!--android:layout_margin="16dp"-->
+        <!--android:src="@android:drawable/ic_dialog_info"-->
+        <!--app:layout_anchorGravity="top|right|end" />-->
 
-        <EditText
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:hint="Quantity"
-            android:id="@+id/tvQuantity"
-            android:layout_below="@+id/tvPrice"
-            android:layout_alignParentLeft="true"
-            android:layout_alignParentStart="true" />
-
-        <Button
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:id="@+id/btBuyNow"
-            android:layout_below="@+id/tvQuantity"
-            android:layout_centerVertical="true"
-            android:text="Buy Now" />
-
-        <Button
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:id="@+id/btAddCart"
-            android:layout_below="@+id/btBuyNow"
-            android:layout_centerVertical="true"
-            android:text="Add to Cart"/>
-
-        <include android:id="@+id/XMLratings"
-            android:layout_width="match_parent"
-            android:layout_height="match_parent"
-            layout="@layout/product_rating"
-            android:layout_below="@+id/btAddCart"/>
-
-        <TextView
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:id="@+id/tvDescription"
-            android:text="Description"
-            android:layout_below="@+id/XMLratings"
-            android:layout_centerVertical="true"
-            android:layout_alignParentLeft="true"
-            android:layout_alignParentStart="true" />
+        <!--</android.support.design.widget.CoordinatorLayout>-->
 
         <android.support.v7.widget.LinearLayoutCompat
-            android:layout_width="match_parent"
-            android:layout_height="100dp"
-            android:layout_below="@+id/tvDescription">
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:orientation="vertical"
+            android:id="@+id/lvProductInfo"
+            android:layout_marginLeft="20dp"
+            android:layout_marginRight="20dp"
+            android:layout_below="@+id/carouselView"
+            android:layout_alignParentStart="true">
 
-            <ImageView
-                android:layout_width="50dp"
-                android:layout_height="50dp"
-                android:id="@+id/ivSellerEmail"
-                android:layout_below="@+id/tvDescription"
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:id="@+id/tvProductName"
+                android:text="Product Name"
+                android:layout_centerHorizontal="true" />
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="price"
+                android:id="@+id/tvPrice"
                 android:layout_alignParentLeft="true"
-                android:layout_alignParentStart="true"
-                android:src="@drawable/home_icon" />
+                android:layout_alignParentStart="true" />
 
-            <ImageView
-                android:layout_width="50dp"
-                android:layout_height="50dp"
-                android:id="@+id/ivSellerPhone"
-                android:layout_below="@+id/tvDescription"
+            <include android:id="@+id/XMLratings"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                layout="@layout/product_rating"/>
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:id="@+id/tvDescription"
+                android:text="Description"
                 android:layout_centerVertical="true"
                 android:layout_alignParentLeft="true"
-                android:layout_alignParentStart="true"
-                android:src="@drawable/mentions_icon" />
+                android:layout_alignParentStart="true" />
 
         </android.support.v7.widget.LinearLayoutCompat>
 
+        <android.support.v7.widget.LinearLayoutCompat
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:orientation="horizontal"
+            android:id="@+id/lvContact"
+            android:layout_below="@+id/lvProductInfo"
+            android:layout_centerHorizontal="true">
+
+        <ImageView
+            android:layout_width="40dp"
+            android:layout_height="40dp"
+            android:id="@+id/ivSellerSMS"
+            android:onClick="onSellerSMS"
+            android:src="@drawable/pink_sms_icon"
+            android:layout_alignTop="@+id/lvContact"/>
+
+        <ImageView
+            android:layout_width="40dp"
+            android:layout_height="40dp"
+            android:id="@+id/ivSellerPhone"
+            android:onClick="onSellerPhone"
+            android:src="@drawable/pink_phone_icon"
+            android:layout_alignTop="@+id/ivSellerSMS"
+            android:layout_centerHorizontal="true"
+            android:layout_marginLeft="20dp"/>
+
+        <ImageView
+            android:layout_width="40dp"
+            android:layout_height="40dp"
+            android:id="@+id/ivSellerEmail"
+            android:src="@drawable/pink_email_icon"
+            android:layout_alignTop="@+id/lvContact"
+            android:layout_toStartOf="@+id/tvSellerName"
+            android:layout_marginLeft="20dp"/>
+
+        <ImageView
+            android:layout_width="40dp"
+            android:layout_height="40dp"
+            android:id="@+id/ivHeart"
+            android:src="@drawable/pink_heart_icon"
+            android:layout_alignParentBottom="true"
+            android:layout_toEndOf="@+id/ivProfileImage"
+            android:layout_marginLeft="20dp"/>
+
+
+        </android.support.v7.widget.LinearLayoutCompat>
 
     </RelativeLayout>
 </ScrollView>

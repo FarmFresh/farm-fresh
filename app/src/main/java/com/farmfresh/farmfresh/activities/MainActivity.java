@@ -53,7 +53,6 @@ import com.farmfresh.farmfresh.auth.GoogleAuthentication;
 import com.farmfresh.farmfresh.fragments.EmailPasswordSignUpFragment;
 import com.farmfresh.farmfresh.fragments.ListItemsFragment;
 import com.farmfresh.farmfresh.fragments.LoginFragment;
-import com.farmfresh.farmfresh.fragments.ProfileFragment;
 import com.farmfresh.farmfresh.helper.OnActivity;
 import com.farmfresh.farmfresh.helper.OnClient;
 import com.farmfresh.farmfresh.helper.OnMap;
@@ -282,6 +281,18 @@ public class MainActivity extends AppCompatActivity implements FireBaseAuthentic
     }
 
     @Override
+    public void onStart() {
+        super.onStart();
+        mFireBaseAuthentication.addAuthListener();
+    }
+
+    @Override
+    public void onStop() {
+        super.onStop();
+        mFireBaseAuthentication.removeAuthListener();
+    }
+
+    @Override
     protected void onPostCreate(@Nullable Bundle savedInstanceState) {
         super.onPostCreate(savedInstanceState);
         mDrawerToggle.syncState();
@@ -448,8 +459,9 @@ public class MainActivity extends AppCompatActivity implements FireBaseAuthentic
                 break;
             case R.id.menuProfile:
                 title = "Profile";
-                fragment = new ProfileFragment();
-                tag = ProfileFragment.class.getSimpleName();
+                Intent intent = new Intent(this, SellerProfileActivity.class);
+                intent.putExtra("userId", Parcels.wrap(mCurrentUser.getUid()));
+                startActivity(intent);
                 break;
             case R.id.menuSelling:
                 Intent newProductIntent = new Intent(this, NewProductActivity.class);

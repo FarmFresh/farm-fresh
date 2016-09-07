@@ -72,7 +72,7 @@ public class ProductImagesFragment extends Fragment {
         });
 
         Button cameraButton = (Button) getActivity().findViewById(R.id.btnToolBar);
-        cameraButton.setText("Camera");
+        cameraButton.setText("Gallery");
         cameraButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {

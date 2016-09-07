@@ -67,3 +67,6 @@ import-summary.txt
 
 # Secret API keys
 *keys.xml
+
+# Mac
+.DS_Store

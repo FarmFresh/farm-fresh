@@ -1,12 +1,10 @@
 package com.farmfresh.farmfresh.fragments;
 
-import android.content.Intent;
 import android.databinding.DataBindingUtil;
 import android.graphics.Bitmap;
 import android.graphics.Color;
 import android.net.Uri;
 import android.os.Bundle;
-import android.os.Handler;
 import android.os.ParcelFileDescriptor;
 import android.support.annotation.NonNull;
 import android.support.design.widget.Snackbar;
@@ -20,8 +18,6 @@ import android.widget.RelativeLayout;
 import android.widget.TextView;
 
 import com.farmfresh.farmfresh.R;
-import com.farmfresh.farmfresh.activities.MainActivity;
-import com.farmfresh.farmfresh.activities.ProductDetailActivity;
 import com.farmfresh.farmfresh.auth.LocationResultReceiver;
 import com.farmfresh.farmfresh.databinding.FragmentUploadProductBinding;
 import com.farmfresh.farmfresh.fragments.ui.models.ImageViewWithProgressBar;
@@ -85,7 +81,6 @@ public class UploadProductFragment extends Fragment {
         }
         //clear product dummy image urls
         this.product.getImageUrls().clear();
-        updateProductLocationFromItsAddress();
     }
 
     @Override
@@ -141,15 +136,7 @@ public class UploadProductFragment extends Fragment {
 
     private void toolBarSetup() {
         Button cancelButton = (Button) getActivity().findViewById(R.id.btnToolBar);
-        cancelButton.setText("Cancel");
-        cancelButton.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                //go to home activity
-                Intent homeActivityIntent = new Intent(getActivity(), MainActivity.class);
-                startActivity(homeActivityIntent);
-            }
-        });
+        cancelButton.setVisibility(View.INVISIBLE);
     }
 
     /**
@@ -159,19 +146,6 @@ public class UploadProductFragment extends Fragment {
      */
     private void saveProduct() {
         updateProductLocationFromItsAddress();
-    }
-
-    public void openProductDetailActivity() {
-        new Handler().postDelayed(new Runnable() {
-            @Override
-            public void run() {
-                Intent intent = new Intent(getActivity(),
-                        ProductDetailActivity.class);
-                intent.putExtra(Constants.PRODUCT_KEY,
-                        UploadProductFragment.this.newProductKey);
-                startActivity(intent);
-            }
-        }, 2000);
     }
 
     public void showSnackBar() {

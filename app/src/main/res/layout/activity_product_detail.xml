@@ -127,8 +127,7 @@
                 android:id="@+id/tvDescription"
                 android:text="Description"
                 android:textSize="15sp"
-                android:layout_marginLeft="10dp"
-                android:layout_alignLeft="@id/tvDes"/>
+                android:layout_toRightOf="@id/tvDes"/>
 
             </RelativeLayout>
 

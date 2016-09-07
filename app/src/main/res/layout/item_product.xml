@@ -41,23 +41,23 @@
         android:layout_height="wrap_content"
         android:layout_centerHorizontal="true"
         android:layout_toRightOf="@+id/ivProductImage"
-        android:layout_below="@+id/tvName">
+        android:layout_below="@+id/tvName"
+        android:layout_centerVertical="true">
 
         <TextView
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:text="$ "
             android:id="@+id/etDollar"
-            android:textSize="15sp"/>
+            android:textSize="@dimen/product_name"/>
 
         <TextView
             android:id="@+id/tvPrice"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_weight="1"
-            android:text="Price"
+            android:text=""
             android:textSize="@dimen/product_name"
-            android:layout_centerVertical="true"
             android:layout_toEndOf="@+id/etDollar" />
 
 
@@ -66,7 +66,7 @@
             android:layout_height="wrap_content"
             android:text="/lb"
             android:id="@+id/etLb"
-            android:textSize="15sp"
+            android:textSize="@dimen/product_name"
             android:layout_toRightOf="@+id/tvPrice"/>
 
     </RelativeLayout>

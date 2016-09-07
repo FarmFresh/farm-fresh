@@ -60,7 +60,6 @@
             android:src="@drawable/user_profile_placeholder"
             android:layout_alignParentLeft="true"
             android:layout_alignParentStart="true"
-            android:onClick="onSellerProfile"
             android:layout_below="@id/detailed_product_toolbar"
             android:layout_marginLeft="5dp"/>
 

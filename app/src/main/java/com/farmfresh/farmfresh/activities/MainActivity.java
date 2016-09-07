@@ -852,4 +852,16 @@ public class MainActivity extends AppCompatActivity implements FireBaseAuthentic
                 .replace(R.id.flContent, EmailPasswordSignUpFragment.newInstance(this))
                 .commit();
     }
+
+    @Override
+    public void onStart() {
+        super.onStart();
+        mFireBaseAuthentication.addAuthListener();
+    }
+
+    @Override
+    public void onStop() {
+        super.onStop();
+        mFireBaseAuthentication.removeAuthListener();
+    }
 }

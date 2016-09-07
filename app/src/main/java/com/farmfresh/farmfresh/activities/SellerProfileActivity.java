@@ -5,10 +5,10 @@ import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
+import android.support.v7.widget.Toolbar;
 import android.util.Log;
 import android.view.View;
 import android.widget.TextView;
-import android.widget.Toast;
 
 import com.farmfresh.farmfresh.R;
 import com.farmfresh.farmfresh.adapter.SellerProductsAdapter;
@@ -40,12 +40,16 @@ public class SellerProfileActivity extends AppCompatActivity {
     private DatabaseReference productsRef;
 
     private Product product;
-
+    private Toolbar toolbar;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_seller_profile);
 
+        toolbar = (Toolbar)findViewById(R.id.productToolbar);
+        setSupportActionBar(toolbar);
+        getSupportActionBar().setDisplayHomeAsUpEnabled(true);
+        getSupportActionBar().setTitle("Profile");
         this.productKey = getIntent().getStringExtra(Constants.PRODUCT_KEY);
         database = FirebaseDatabase.getInstance();
         productsRef = database.getReference().child(Constants.NODE_PRODUCTS);
@@ -87,7 +91,6 @@ public class SellerProfileActivity extends AppCompatActivity {
                     public void onItemClicked(RecyclerView recyclerView, int position, View v) {
                         Product p = products.get(position);
                         // do it
-                        Toast.makeText(getApplicationContext(), "some message", Toast.LENGTH_SHORT).show();
                         Intent intent = new Intent(getBaseContext(), ProductDetailActivity.class);
                         intent.putExtra(Constants.PRODUCT_KEY, p.getId());
                         startActivity(intent);
@@ -177,10 +180,6 @@ public class SellerProfileActivity extends AppCompatActivity {
     void getImageUrl(Product product){
         products.add(product);
         adapter.notifyItemInserted(products.size()-1);
-    }
-
-    void onClickProduct(View view){
-        Toast.makeText(getApplicationContext(), "some message", Toast.LENGTH_SHORT).show();
     }
 
 

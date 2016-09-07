@@ -1,7 +1,6 @@
 package com.farmfresh.farmfresh.activities;
 
 import android.Manifest;
-import android.support.v4.app.FragmentManager;
 import android.content.Intent;
 import android.content.res.ColorStateList;
 import android.content.res.Configuration;
@@ -53,6 +52,7 @@ import com.farmfresh.farmfresh.auth.GoogleAuthentication;
 import com.farmfresh.farmfresh.fragments.EmailPasswordSignUpFragment;
 import com.farmfresh.farmfresh.fragments.ListItemsFragment;
 import com.farmfresh.farmfresh.fragments.LoginFragment;
+import com.farmfresh.farmfresh.fragments.ProfileFragment;
 import com.farmfresh.farmfresh.helper.OnActivity;
 import com.farmfresh.farmfresh.helper.OnClient;
 import com.farmfresh.farmfresh.helper.OnMap;
@@ -73,6 +73,7 @@ import com.google.android.gms.common.api.GoogleApiClient;
 import com.google.android.gms.location.LocationRequest;
 import com.google.android.gms.location.LocationServices;
 import com.google.android.gms.maps.GoogleMap;
+import com.google.android.gms.maps.MapFragment;
 import com.google.android.gms.maps.OnMapReadyCallback;
 import com.google.android.gms.maps.SupportMapFragment;
 import com.google.android.gms.maps.model.CameraPosition;
@@ -123,7 +124,7 @@ public class MainActivity extends AppCompatActivity implements FireBaseAuthentic
     private TrackLocation track;
     private ReadyDisplayProduct displayProduct;
     private AddToMap adder;
-    private SupportMapFragment supportMapFragment;
+    private MapFragment supportMapFragment;
     private GeoFire geoFire;
     private GeoQuery geoQuery;
     private Circle searchCircle;
@@ -220,9 +221,8 @@ public class MainActivity extends AppCompatActivity implements FireBaseAuthentic
         new OnActivity.Builder(this, manager, track).build();
 
         mNvView.getMenu().getItem(0).setChecked(true);
-//        android.app.FragmentManager fragmentManager = getFragmentManager();
-        FragmentManager fragmentManager = getSupportFragmentManager();
-        supportMapFragment = new SupportMapFragment();
+        android.app.FragmentManager fragmentManager = getFragmentManager();
+        supportMapFragment = new MapFragment();
         if (supportMapFragment != null) {
             getMapAsync(supportMapFragment, new OnMap(manager, click, layer, move, track, displayProduct));
         }
@@ -278,18 +278,6 @@ public class MainActivity extends AppCompatActivity implements FireBaseAuthentic
 
             }
         });*/
-    }
-
-    @Override
-    public void onStart() {
-        super.onStart();
-        mFireBaseAuthentication.addAuthListener();
-    }
-
-    @Override
-    public void onStop() {
-        super.onStop();
-        mFireBaseAuthentication.removeAuthListener();
     }
 
     @Override
@@ -459,9 +447,8 @@ public class MainActivity extends AppCompatActivity implements FireBaseAuthentic
                 break;
             case R.id.menuProfile:
                 title = "Profile";
-                Intent intent = new Intent(this, SellerProfileActivity.class);
-                intent.putExtra("userId", Parcels.wrap(mCurrentUser.getUid()));
-                startActivity(intent);
+                fragment = new ProfileFragment();
+                tag = ProfileFragment.class.getSimpleName();
                 break;
             case R.id.menuSelling:
                 Intent newProductIntent = new Intent(this, NewProductActivity.class);
@@ -539,7 +526,7 @@ public class MainActivity extends AppCompatActivity implements FireBaseAuthentic
         return new GoogleApiClient.Builder(this).enableAutoManage(MainActivity.this, 1, null).addApi(LocationServices.API).build();
     }
 
-    private void getMapAsync(SupportMapFragment fragment, OnMapReadyCallback callback) {
+    private void getMapAsync(MapFragment fragment, OnMapReadyCallback callback) {
         fragment.getMapAsync(callback);
     }
 

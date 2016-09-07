@@ -79,9 +79,6 @@ public class ProductInfoFragment extends Fragment {
         etDescription = (TextInputEditText)view.findViewById(R.id.etProductDescription);
         etPrice = (TextInputEditText)view.findViewById(R.id.etProductPrice);
         etAddress = (TextInputEditText)view.findViewById(R.id.etProductAddress);
-        if(currentUser != null && currentUser.getUserCurrentAddress() != null) {
-            etAddress.setText(currentUser.getUserCurrentAddress());
-        }
         if(this.product != null) {
             etName.setText(this.product.getName());
             etDescription.setText(this.product.getDescription());
@@ -169,7 +166,7 @@ public class ProductInfoFragment extends Fragment {
             public void onDataChange(DataSnapshot dataSnapshot) {
                 ProductInfoFragment.this.currentUser = dataSnapshot.getValue(User.class);
                 if(etAddress != null) {
-                    etAddress.setText(ProductInfoFragment.this.currentUser.getUserCurrentAddress());
+                    //etAddress.setText(ProductInfoFragment.this.currentUser.getUserCurrentAddress());
                 }
             }
 

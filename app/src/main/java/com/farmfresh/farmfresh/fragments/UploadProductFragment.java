@@ -1,5 +1,6 @@
 package com.farmfresh.farmfresh.fragments;
 
+import android.app.Fragment;
 import android.databinding.DataBindingUtil;
 import android.graphics.Bitmap;
 import android.graphics.Color;
@@ -8,7 +9,6 @@ import android.os.Bundle;
 import android.os.ParcelFileDescriptor;
 import android.support.annotation.NonNull;
 import android.support.design.widget.Snackbar;
-import android.support.v4.app.Fragment;
 import android.support.v4.content.ContextCompat;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -185,7 +185,7 @@ public class UploadProductFragment extends Fragment {
                     final Uri downloadUrl = taskSnapshot.getDownloadUrl();
                     imageViewWithProgressBar.getProgressBar().setVisibility(View.INVISIBLE);
                     imageViewWithProgressBar.getImageView().setBorderWidth(50);
-                    imageViewWithProgressBar.getImageView().setBorderColor(ContextCompat.getColor(getContext(),
+                    imageViewWithProgressBar.getImageView().setBorderColor(ContextCompat.getColor(getActivity(),
                             R.color.green));
                     addImageUrlToProduct(downloadUrl.toString());
                 }

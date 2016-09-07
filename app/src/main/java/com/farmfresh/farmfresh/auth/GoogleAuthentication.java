@@ -52,7 +52,6 @@ public class GoogleAuthentication extends AppAuthentication{
                 .build();
 
         mGoogleApiClient = new GoogleApiClient.Builder(mActivity)
-                .enableAutoManage(mActivity, mConnectionFailedListener)
                 .addApi(Auth.GOOGLE_SIGN_IN_API, gso)
                 .build();
     }

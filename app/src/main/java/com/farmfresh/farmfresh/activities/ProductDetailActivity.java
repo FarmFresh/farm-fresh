@@ -6,6 +6,7 @@ import android.graphics.Bitmap;
 import android.net.Uri;
 import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
+import android.support.v7.widget.Toolbar;
 import android.view.View;
 import android.widget.ImageView;
 import android.widget.TextView;
@@ -15,6 +16,7 @@ import com.farmfresh.farmfresh.models.Product;
 import com.farmfresh.farmfresh.models.User;
 import com.farmfresh.farmfresh.utils.Constants;
 import com.farmfresh.farmfresh.utils.GetFirebase;
+import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
@@ -48,6 +50,10 @@ public class ProductDetailActivity extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_product_detail);
+        Toolbar toolbar = (Toolbar)findViewById(R.id.productToolbar);
+        setSupportActionBar(toolbar);
+        getSupportActionBar().setDisplayHomeAsUpEnabled(true);
+        getSupportActionBar().setTitle("Item");
         this.productKey = getIntent().getStringExtra(Constants.PRODUCT_KEY);
         database = FirebaseDatabase.getInstance();
         productsRef = database.getReference().child(Constants.NODE_PRODUCTS);
@@ -196,11 +202,12 @@ public class ProductDetailActivity extends AppCompatActivity {
 
                 User user = (User) ivSellerEmail.getTag();
                 // Do something here
+                String buyerName = FirebaseAuth.getInstance().getCurrentUser().getDisplayName();
                 String uriText =
                         "mailto:" + user.getEmail() +
-                                "?subject=" + Uri.encode(user.getDisplayName() +
+                                "?subject=" + Uri.encode(buyerName +
                                 " is interested in your " + product.getName()) +
-                                "&body=" + Uri.encode("I'm " + user.getDisplayName() + " ." +
+                                "&body=" + Uri.encode("I'm " + buyerName + " ." +
                                 "I saw your ad in FarmFresh app. " +
                                 "I'm interested in your " + product.getName() + " ." +
                                 "I would like to know how I can buy from you.");

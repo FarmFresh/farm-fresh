@@ -42,7 +42,7 @@ public class ProductDetailActivity extends AppCompatActivity {
     private ImageView ivSellerEmail;
     private ImageView ivSellerPhone;
     private ImageView ivSellerSMS;
-
+    private CircleImageView ivProfileImage;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -54,7 +54,7 @@ public class ProductDetailActivity extends AppCompatActivity {
         ivSellerEmail = (ImageView)findViewById(R.id.ivSellerEmail);
         ivSellerPhone = (ImageView)findViewById(R.id.ivSellerPhone);
         ivSellerSMS = (ImageView)findViewById(R.id.ivSellerSMS);
-
+        ivProfileImage = (CircleImageView) findViewById(R.id.ivProfileImage);
         productsRef.child(this.productKey).addValueEventListener(new ValueEventListener() {
             @Override
             public void onDataChange(DataSnapshot dataSnapshot) {
@@ -128,7 +128,6 @@ public class ProductDetailActivity extends AppCompatActivity {
         TextView tvSellerName = (TextView) findViewById(R.id.tvSellerName);
         tvSellerName.setText(user.getDisplayName());
 
-        CircleImageView ivProfileImage = (CircleImageView) findViewById(R.id.ivProfileImage);
         ivProfileImage.setTag(user);
 
         Picasso.with(ProductDetailActivity.this)
@@ -184,10 +183,10 @@ public class ProductDetailActivity extends AppCompatActivity {
             }
         });
 
-        ivSellerEmail.setOnClickListener(new View.OnClickListener() {
+        ivProfileImage.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-
+                onSellerProfile(v);
             }
         });
 

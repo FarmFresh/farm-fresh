@@ -22,6 +22,7 @@ import java.util.List;
 
 import butterknife.BindView;
 import butterknife.ButterKnife;
+import jp.wasabeef.recyclerview.animators.SlideInUpAnimator;
 
 public class ListItemsFragment extends Fragment {
 
@@ -38,11 +39,18 @@ public class ListItemsFragment extends Fragment {
         productsAdapter = new ProductsAdapter(getActivity(),productList);
     }
 
+    public void notifyListUpdate(List<Product> productList){
+        this.productList = productList;
+        productsAdapter.notifyDataSetChanged();
+    }
+
     @Nullable
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
         View v = inflater.inflate(R.layout.product_listing, container, false);
         ButterKnife.bind(this, v);
+
+        rvProducts.setItemAnimator(new SlideInUpAnimator());
 
         LinearLayoutManager layoutManager = new LinearLayoutManager(getActivity());
 

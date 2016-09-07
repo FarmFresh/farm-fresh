@@ -1,6 +1,7 @@
 package com.farmfresh.farmfresh.fragments;
 
 import android.app.Activity;
+import android.app.Fragment;
 import android.content.ClipData;
 import android.content.Context;
 import android.content.Intent;
@@ -10,7 +11,6 @@ import android.os.Bundle;
 import android.os.ParcelFileDescriptor;
 import android.provider.MediaStore;
 import android.support.annotation.Nullable;
-import android.support.v4.app.Fragment;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;

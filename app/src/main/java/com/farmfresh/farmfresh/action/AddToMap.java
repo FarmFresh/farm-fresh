@@ -27,6 +27,8 @@ public class AddToMap {
         MarkerOptions opts = new MarkerOptions()
                 .position(latLng)
                 .icon(BitmapDescriptorFactory.fromBitmap(bitmap));
+        opts = new MarkerOptions()
+                .position(latLng);
         Marker marker = map.addMarker(opts);
         if (animate) {
             animate(map, marker);

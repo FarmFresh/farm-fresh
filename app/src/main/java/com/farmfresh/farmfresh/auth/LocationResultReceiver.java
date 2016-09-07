@@ -62,7 +62,7 @@ public class LocationResultReceiver extends ResultReceiver {
                         }
                     });
         }else {
-            Helper.showToast(uploadProductFragment.getContext(),
+            Helper.showToast(uploadProductFragment.getActivity(),
                     resultData.getString(Constants.ADDRESS_DATA_EXTRA));
         }
     }

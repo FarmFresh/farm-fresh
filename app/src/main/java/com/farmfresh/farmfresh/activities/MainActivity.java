@@ -132,6 +132,8 @@ public class MainActivity extends AppCompatActivity implements FireBaseAuthentic
     private GoogleApiClient mGoogleClient;
     private DatabaseReference mFirebaseDatabaseReference;
     private BottomSheetBehavior mBottomSheetBehavior;
+    private MenuItem globelist;
+    private boolean isMap = true;
 
     final ArrayList<Product> productList = new ArrayList<Product>();
     //    HashMap<String, Product> productMap = new HashMap<String, Product>();
@@ -304,7 +306,8 @@ public class MainActivity extends AppCompatActivity implements FireBaseAuthentic
         MenuInflater menuInflater = getMenuInflater();
         menuInflater.inflate(R.menu.menu_search, menu);
 
-        MenuItem searchItem = menu.findItem(R.id.action_search);
+        final MenuItem searchItem = menu.findItem(R.id.action_search);
+        globelist = menu.findItem(R.id.action_globe);
 
         final SearchView searchView = (SearchView) MenuItemCompat.getActionView(searchItem);
 
@@ -320,7 +323,13 @@ public class MainActivity extends AppCompatActivity implements FireBaseAuthentic
         searchView.setOnQueryTextListener(new SearchView.OnQueryTextListener() {
             @Override
             public boolean onQueryTextSubmit(String query) {
-                searchView.clearFocus();
+//                searchView.clearFocus();
+                mToolbar.collapseActionView();
+//                MenuItemCompat.collapseActionView(searchItem);
+                /*searchItem.getActionView();
+                searchItem.collapseActionView();*/
+//                searchView.onActionViewCollapsed();
+//                searchView.setIconified(false);
                 /*placeList.clear();
 
                 for (String key : productMap.keySet()) {
@@ -347,9 +356,9 @@ public class MainActivity extends AppCompatActivity implements FireBaseAuthentic
                 }
 
                 android.app.Fragment fragment = getFragmentManager().findFragmentByTag("listItemsFragment");
-                Log.d("fragment==null",(fragment==null)+"");
+                Log.d("fragment==null", (fragment == null) + "");
 
-                if(fragment != null){
+                if (fragment != null) {
                     float[] productDistance = new float[1];
                     productList.clear();
                     for (String key : markers.keySet()) {
@@ -392,6 +401,25 @@ public class MainActivity extends AppCompatActivity implements FireBaseAuthentic
 
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
+
+        int id = item.getItemId();
+
+        switch (id) {
+            case R.id.action_globe:
+                if (isMap) {
+                    globelist.setIcon(R.mipmap.ic_globe);
+                    showListItems();
+                    isMap = false;
+                } else {
+                    getFragmentManager().popBackStack();
+                    globelist.setIcon(R.mipmap.ic_list1);
+                    isMap = true;
+                }
+                break;
+            /*case R.id.action_search:
+                break;*/
+        }
+
         if (mDrawerToggle.onOptionsItemSelected(item)) {
             return true;
         }
@@ -449,6 +477,10 @@ public class MainActivity extends AppCompatActivity implements FireBaseAuthentic
             case R.id.menuHome:
                 title = "Home";
                 fragment = supportMapFragment;
+                if(globelist != null) {
+                    globelist.setIcon(R.mipmap.ic_list1);
+                    isMap = true;
+                }
                 tag = SupportMapFragment.class.getSimpleName();
                 break;
             case R.id.menuProfile:
@@ -469,9 +501,8 @@ public class MainActivity extends AppCompatActivity implements FireBaseAuthentic
         final FragmentTransaction fragmentTransaction = getFragmentManager().beginTransaction();
         if (fragment != null) {
             fragmentTransaction
-                    .replace(R.id.flContent, fragment, tag).
-                    addToBackStack(tag).commit();
-            getSupportFragmentManager().executePendingTransactions();
+                    .replace(R.id.flContent, fragment, tag).commit();
+            getFragmentManager().executePendingTransactions();
             //Highlight the selected item
             item.setChecked(true);
             //Set the toolbar title
@@ -585,36 +616,9 @@ public class MainActivity extends AppCompatActivity implements FireBaseAuthentic
             float[] results = new float[1];
             Location.distanceBetween(geoQuery.getCenter().latitude, geoQuery.getCenter().longitude, latLng.latitude, latLng.longitude, results);
             float distance = results[0];
-            float[] productDistance = new float[1];
 
             if (distance < radius) {
-                Log.d("New User Location ", latLng + " distance " + distance);
-                Bundle bundle = new Bundle();
-
-                productList.clear();
-                for (String key : markers.keySet()) {
-                    if (markers.get(key).getMarker().isVisible()) {
-//                        Product product = productMap.get(key);
-                        Product product = (Product) markers.get(key).getMarker().getTag();
-                        float dist = getProductDistance(product, productDistance);
-                        product.setDistance(String.format("%.2f", dist) + " mi");
-                        productList.add(product);
-                    }
-                }
-                bundle.putParcelable("productList", Parcels.wrap(productList));
-
-                mBottomSheetBehavior.setPeekHeight(1);
-                mBottomSheetBehavior.setState(BottomSheetBehavior.STATE_COLLAPSED);
-                Log.d("bottomsheetstate", mBottomSheetBehavior.getState() + "");
-
-                listItemsFragment.setArguments(bundle);
-                android.app.FragmentTransaction ft = getFragmentManager().beginTransaction().setCustomAnimations(
-                        R.animator.card_flip_right_in,
-                        R.animator.card_flip_right_out,
-                        R.animator.card_flip_left_in,
-                        R.animator.card_flip_left_out);
-                ft.replace(R.id.flContent, listItemsFragment,"listItemsFragment").addToBackStack("listItemsFragment");
-                ft.commit();
+                showListItems();
             }
         }
 
@@ -633,21 +637,18 @@ public class MainActivity extends AppCompatActivity implements FireBaseAuthentic
             }
             tvDescription.setText(product.getDescription());
             String address = product.getAddress();
-            String streetAddress = address.substring(0,address.indexOf(","));
-            String cityAddress = address.substring(address.indexOf(",")+1).trim();
+            String streetAddress = address.substring(0, address.indexOf(","));
+            String cityAddress = address.substring(address.indexOf(",") + 1).trim();
 
-            if(product.getName() != null ) {
+            if (product.getName() != null) {
                 tvProductName.setText(product.getName().toUpperCase());
-            }else{
+            } else {
                 tvProductName.setText("");
             }
             tvStreetAddress.setText(streetAddress);
             tvCityAddress.setText(cityAddress);
 
             Log.d("Markerclicked", product.getName() + "");
-
-//            String url = "https://maps.googleapis.com/maps/api/distancematrix/json?units=imperial&origins="+User.latLng.latitude+","+User.latLng.longitude+"&destinations="+product.getL().get(0)+","+product.getL().get(1)+"&mode=driving&key="+ Keys.GOOGLE_API_KEY;
-//            Log.d("volley-url",url);
 
             String url = Constants.GOOGLE_DISTANCE.replace(Constants.USER_LATITUDE, User.latLng.latitude + "").replace(Constants.USER_LONGITUDE, User.latLng.longitude + "").replace(Constants.DESTINATION_LATITUDE, product.getL().get(0) + "").replace(Constants.DESTINATION_LONGITUDE, product.getL().get(1) + "").replace(Constants.GOOGLE_API_KEY, Keys.GOOGLE_API_KEY);
 
@@ -683,6 +684,39 @@ public class MainActivity extends AppCompatActivity implements FireBaseAuthentic
             });
             queue.add(stringRequest);
         }
+    }
+
+    private void showListItems() {
+        float[] productDistance = new float[1];
+        Bundle bundle = new Bundle();
+
+        productList.clear();
+        for (String key : markers.keySet()) {
+            if (markers.get(key).getMarker().isVisible()) {
+//                        Product product = productMap.get(key);
+                Product product = (Product) markers.get(key).getMarker().getTag();
+                float dist = getProductDistance(product, productDistance);
+                product.setDistance(String.format("%.2f", dist) + " mi");
+                productList.add(product);
+            }
+        }
+        bundle.putParcelable("productList", Parcels.wrap(productList));
+
+        mBottomSheetBehavior.setState(BottomSheetBehavior.STATE_COLLAPSED);
+        mBottomSheetBehavior.setPeekHeight(1);
+        Log.d("bottomsheetstate", mBottomSheetBehavior.getState() + "");
+
+        if (getFragmentManager().findFragmentByTag("listItemsFragment") == null) {
+            listItemsFragment.setArguments(bundle);
+        }
+        android.app.FragmentTransaction ft = getFragmentManager().beginTransaction().setCustomAnimations(
+                R.animator.card_flip_right_in,
+                R.animator.card_flip_right_out,
+                R.animator.card_flip_left_in,
+                R.animator.card_flip_left_out);
+
+        ft.replace(R.id.flContent, listItemsFragment, "listItemsFragment").addToBackStack("listItemsFragment");
+        ft.commit();
     }
 
     @Override

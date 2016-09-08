@@ -23,9 +23,6 @@ public class ViewHolderProductImage extends RecyclerView.ViewHolder  {
     @BindView(R.id.tvName)
     TextView tvName;
 
-    @BindView(R.id.tvDescription)
-    TextView tvDescription;
-
     @BindView(R.id.tvPrice)
     TextView tvPrice;
 
@@ -57,10 +54,6 @@ public class ViewHolderProductImage extends RecyclerView.ViewHolder  {
 
     public ImageView getIvImage() {
         return ivImage;
-    }
-
-    public TextView getTvDescription() {
-        return tvDescription;
     }
 
     public TextView getTvName() {

@@ -77,7 +77,9 @@ public class ProductsAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolde
     private void configureViewHolderProductDescription(final ViewHolderProductOnly viewProduct, int position) {
         Product product = productList.get(position);
 
-        viewProduct.getTvName().setText(product.getName());
+        if(product.getName() != null){
+            viewProduct.getTvName().setText(product.getName().toUpperCase());
+        }
         viewProduct.getTvDescription().setText(product.getDescription());
         viewProduct.getTvPrice().setText(product.getPrice());
 
@@ -87,9 +89,11 @@ public class ProductsAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolde
 
         Product product = productList.get(position);
 
-        viewProduct.getTvName().setText(product.getName());
-        viewProduct.getTvDescription().setText(product.getDescription());
-        viewProduct.getTvPrice().setText(product.getPrice());
+        if(product.getName() != null){
+            viewProduct.getTvName().setText(product.getName().toUpperCase());
+        }
+//        viewProduct.getTvDescription().setText(product.getDescription());
+        viewProduct.getTvPrice().setText("$"+product.getPrice());
         viewProduct.getTvDistance().setText(product.getDistance());
         Picasso.with(context).load(product.getImageUrls().get(0)).transform(new RoundedCornersTransformation(10, 10)).into(viewProduct.getIvImage());
     }

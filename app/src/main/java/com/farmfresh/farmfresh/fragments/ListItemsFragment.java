@@ -6,6 +6,7 @@ import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
+import android.support.v7.widget.StaggeredGridLayoutManager;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -13,6 +14,7 @@ import android.view.ViewGroup;
 import com.farmfresh.farmfresh.R;
 import com.farmfresh.farmfresh.activities.ProductDetailActivity;
 import com.farmfresh.farmfresh.adapter.ProductsAdapter;
+import com.farmfresh.farmfresh.decorator.SpacesItemDecoration;
 import com.farmfresh.farmfresh.models.Product;
 import com.farmfresh.farmfresh.utils.Constants;
 
@@ -53,8 +55,13 @@ public class ListItemsFragment extends Fragment {
         rvProducts.setItemAnimator(new SlideInUpAnimator());
 
         LinearLayoutManager layoutManager = new LinearLayoutManager(getActivity());
+        StaggeredGridLayoutManager gridLayoutManager = new StaggeredGridLayoutManager(2, StaggeredGridLayoutManager.VERTICAL);
+        gridLayoutManager.setGapStrategy(StaggeredGridLayoutManager.GAP_HANDLING_MOVE_ITEMS_BETWEEN_SPANS);
 
-        rvProducts.setLayoutManager(layoutManager);
+        SpacesItemDecoration decoration = new SpacesItemDecoration(16);
+        rvProducts.addItemDecoration(decoration);
+
+        rvProducts.setLayoutManager(gridLayoutManager);
         rvProducts.setAdapter(productsAdapter);
 
         productsAdapter.setOnOnProductClickListener(new ProductsAdapter.OnProductClickListener(){
